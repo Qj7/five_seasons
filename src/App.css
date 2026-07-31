@@ -2,16 +2,20 @@
 .app-shell {
   width: 100%;
   max-width: 430px;
+  height: 100dvh;
+  max-height: 100dvh;
   min-height: 100dvh;
   background: var(--bg);
   display: flex;
   flex-direction: column;
   position: relative;
+  overflow: hidden;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 24px 80px rgba(0, 0, 0, 0.12);
 }
 
 .app-main {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   padding-bottom: calc(var(--nav-h) + 20px + env(safe-area-inset-bottom));
@@ -1829,10 +1833,10 @@
   }
 
   .app-shell {
+    height: calc(100dvh - 48px);
     min-height: calc(100dvh - 48px);
     max-height: calc(100dvh - 48px);
     border-radius: 28px;
-    overflow: hidden;
   }
 
   .bottom-nav {
