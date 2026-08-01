@@ -1,5 +1,5 @@
-# Publish Vite build to the main branch root.
-# Works with Pages "Deploy from a branch → main" (no settings change).
+# Publish Vite build to the main branch root for Pages.
+# Local dev always restores index.html from index.template.html.
 name: Deploy to GitHub Pages
 
 on:

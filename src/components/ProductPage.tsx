@@ -647,6 +647,10 @@ function ShareNetworkIcon({ id }: { id: 'telegram' | 'whatsapp' | 'vk' | 'copy' 
   )
 }
 
+function canHover() {
+  return window.matchMedia('(hover: hover) and (pointer: fine)').matches
+}
+
 function OriginalityInfo() {
   const [open, setOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
@@ -669,6 +673,14 @@ function OriginalityInfo() {
     closeTimer.current = window.setTimeout(() => setOpen(false), 120)
   }
 
+  const onHoverEnter = () => {
+    if (canHover()) show()
+  }
+
+  const onHoverLeave = () => {
+    if (canHover()) hideSoon()
+  }
+
   useEffect(() => {
     if (!open) return
     const onPointerDown = (e: PointerEvent) => {
@@ -684,8 +696,8 @@ function OriginalityInfo() {
     <div
       ref={wrapRef}
       className={`pdp-original__info${open ? ' is-open' : ''}`}
-      onMouseEnter={show}
-      onMouseLeave={hideSoon}
+      onMouseEnter={onHoverEnter}
+      onMouseLeave={onHoverLeave}
     >
       <button
         type="button"
@@ -704,8 +716,8 @@ function OriginalityInfo() {
           className="pdp-original__popover"
           role="dialog"
           aria-labelledby="pdp-originality-title"
-          onMouseEnter={show}
-          onMouseLeave={hideSoon}
+          onMouseEnter={onHoverEnter}
+          onMouseLeave={onHoverLeave}
         >
           <button
             type="button"
@@ -715,16 +727,16 @@ function OriginalityInfo() {
           >
             <CloseIcon />
           </button>
-          <h3 id="pdp-originality-title">Гарантируем оригинальность</h3>
+          <h3 id="pdp-originality-title">100% оригинальная продукция</h3>
           <p className="pdp-original__popover-lead">
-            Все товары проходят проверку, есть сертификат и пломба. Мы
-            гарантируем, что любой купленный товар является оригинальным.
+            Мы поставляем исключительно оригинальную обувь Crocs напрямую из
+            Вьетнама — ключевого региона производства бренда, где выпускается
+            более половина мирового объема.
           </p>
           <p>
-            Материал, подошва, швы, ярлычок, стелька, коробка — каждый товар
-            проверяется на оригинальность по 16 параметрам. Если всё хорошо, на
-            обувь вешается ярлычок с пломбой, а в коробку кладется сертификат
-            подлинности.
+            Поставки и контроль качества осуществляются в рамках прямых
+            соглашений с производителем и под курированием официального офиса
+            компании в Saigon Centre Tower 2 (Хошимин).
           </p>
         </div>
       )}

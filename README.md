@@ -11,7 +11,9 @@ npm install
 npm run dev
 ```
 
-Каталог: Classic Clog, BAPE × Crocs, Naruto × Crocs, Jibbitz и топ-20 популярных моделей.
+Открывай **http://localhost:5173/**
+
+`index.html` для Pages перезаписывается при деплое — `npm run dev` сам восстанавливает Vite-вход из `index.template.html`.
 
 ## Сборка
 
@@ -22,7 +24,4 @@ npm run preview
 
 ## GitHub Pages
 
-Пуш в `main` → Actions собирает сайт и коммитит готовую сборку в корень `main`
-(`index.html` + `assets/`). Pages с ветки `main` отдаёт уже собранный сайт.
-
-Переключать Source / ветку в настройках не нужно.
+Пуш в `main` → Actions публикует сборку в корень ветки. Настройки Pages менять не нужно.
