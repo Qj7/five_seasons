@@ -34,6 +34,15 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Verify production build
+        run: |
+          test -f dist/index.html
+          grep -q '/magic_shoes/assets/' dist/index.html
+          ! grep -q 'src/main.tsx' dist/index.html
+          test -d dist/products
+          test -d dist/assets
+          touch dist/.nojekyll
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

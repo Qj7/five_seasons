@@ -2,10 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import crocsLogo from '../assets/crocs-logo.png'
 import sizeChartImg from '../assets/size-guide/size-chart.png'
-import sizeGuideStep1 from '../assets/size-guide/step-1.png'
-import sizeGuideStep2 from '../assets/size-guide/step-2.png'
-import sizeGuideStep3 from '../assets/size-guide/step-3.png'
-import sizeGuideStep4 from '../assets/size-guide/step-4.png'
+import sizeGuideStep1 from '../assets/size-guide/step-1.jpg'
+import sizeGuideStep2 from '../assets/size-guide/step-2.jpg'
+import sizeGuideStep3 from '../assets/size-guide/step-3.jpg'
+import sizeGuideStep4 from '../assets/size-guide/step-4.jpg'
 import {
   formatPrice,
   products,

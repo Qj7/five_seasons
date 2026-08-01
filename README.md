@@ -22,11 +22,11 @@ npm run preview
 
 ## GitHub Pages
 
-Деплой идёт автоматически через GitHub Actions при пуше в `main`.
+Пуш в `main` → GitHub Actions собирает сайт и публикует его. Ветку переключать не нужно.
 
-Один раз в репозитории:
+Один раз в репозитории (если ещё не сделано):
 
-1. **Settings → Pages → Build and deployment → Source:** GitHub Actions
-2. Запушьте `main` (или запустите workflow вручную: Actions → Deploy to GitHub Pages → Run workflow)
+1. **Settings → Pages → Build and deployment → Source:** GitHub Actions  
+   (не «Deploy from a branch»)
 
-Сайт будет доступен по адресу `https://qj7.github.io/magic_shoes/`.
+После этого каждый пуш в `main` обновляет https://qj7.github.io/magic_shoes/
