@@ -1,4 +1,5 @@
-# Deploy Vite site to GitHub Pages
+# Publish Vite build to the main branch root.
+# Works with Pages "Deploy from a branch → main" (no settings change).
 name: Deploy to GitHub Pages
 
 on:
@@ -7,16 +8,15 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: pages
+  group: pages-main
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-and-publish:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -41,20 +41,22 @@ jobs:
           ! grep -q 'src/main.tsx' dist/index.html
           test -d dist/products
           test -d dist/assets
-          touch dist/.nojekyll
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
+      - name: Publish build to branch root
+        run: |
+          cp dist/index.html index.html
+          rm -rf assets
+          cp -r dist/assets assets
+          touch .nojekyll
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A index.html assets .nojekyll
+          if git diff --staged --quiet; then
+            echo "No site changes to publish"
+            exit 0
+          fi
+          git commit -m "deploy: publish production build to Pages"
+          git push
