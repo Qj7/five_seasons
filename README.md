@@ -13,8 +13,6 @@ npm run dev
 
 Открывай **http://localhost:5173/**
 
-`index.html` для Pages перезаписывается при деплое — `npm run dev` сам восстанавливает Vite-вход из `index.template.html`.
-
 ## Сборка
 
 ```bash
@@ -24,4 +22,4 @@ npm run preview
 
 ## GitHub Pages
 
-Пуш в `main` → Actions публикует сборку в корень ветки. Настройки Pages менять не нужно.
+Пуш в `main` → Actions собирает сайт и публикует в ветку `gh-pages`. В **Settings → Pages** источник: **Deploy from a branch**, ветка `gh-pages`, папка `/ (root)`.
