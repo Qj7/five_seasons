@@ -47,4 +47,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
           publish_branch: gh-pages
-          commit_message: deploy: publish production build to Pages
+          commit_message: "deploy: publish production build to Pages"
