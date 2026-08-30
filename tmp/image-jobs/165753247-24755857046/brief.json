@@ -1,0 +1,103 @@
+{
+  "skus": [
+    {
+      "id": "pollex-white",
+      "colorName": "White",
+      "stem": "pollex-white",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24755857046/originals/06.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24755857046/originals/10.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24755857046/originals/06.jpg",
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24755857046/originals/10.jpg"
+        ],
+        "top": [],
+        "heel": []
+      }
+    },
+    {
+      "id": "pollex-green",
+      "colorName": "Green",
+      "stem": "pollex-green",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24755857046/originals/07.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24755857046/originals/11.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24755857046/originals/07.jpg"
+        ],
+        "top": [],
+        "heel": []
+      },
+      "notes": "07.jpg is olive with matching green straps (toe right pair). 11.jpg is lime/cucumber side profile, toe left, cream strap."
+    },
+    {
+      "id": "pollex-navy",
+      "colorName": "Dark Blue",
+      "stem": "pollex-navy",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24755857046/originals/12.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24755857046/originals/12.jpg"
+        ],
+        "top": [],
+        "heel": []
+      }
+    },
+    {
+      "id": "pollex-black-grey",
+      "colorName": "Black Grey",
+      "stem": "pollex-black-grey",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24755857046/originals/05.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24755857046/originals/13.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24755857046/originals/05.jpg",
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24755857046/originals/13.jpg"
+        ],
+        "top": [],
+        "heel": []
+      }
+    },
+    {
+      "id": "pollex-purple",
+      "colorName": "Purple",
+      "stem": "pollex-purple",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24755857046/originals/08.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24755857046/originals/14.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24755857046/originals/08.jpg",
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24755857046/originals/14.jpg"
+        ],
+        "top": [],
+        "heel": []
+      }
+    },
+    {
+      "id": "pollex-khaki",
+      "colorName": "Khaki",
+      "stem": "pollex-khaki",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24755857046/originals/15.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24755857046/originals/15.jpg"
+        ],
+        "top": [],
+        "heel": []
+      },
+      "notes": "04.jpg is a Horchata promo banner of this colorway; skipped as identity (infographic)."
+    }
+  ]
+}

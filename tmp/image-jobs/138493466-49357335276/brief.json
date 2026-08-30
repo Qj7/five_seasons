@@ -1,0 +1,20 @@
+{
+  "skus": [
+    {
+      "id": "southpark-teal",
+      "colorName": "Teal Grey",
+      "stem": "southpark-teal",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/138493466-49357335276/originals/00.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/138493466-49357335276/originals/00.jpg"
+        ],
+        "top": [],
+        "heel": []
+      },
+      "notes": "02.jpg is a cardboard shipping box with no shoe; skipped."
+    }
+  ]
+}

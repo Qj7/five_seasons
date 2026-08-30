@@ -1,0 +1,68 @@
+{
+  "jobDir": "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616",
+  "photos": [
+    {
+      "file": "00.jpg",
+      "view": "other",
+      "colorway": "mixed",
+      "identity": false,
+      "toe": "right"
+    },
+    {
+      "file": "02.jpg",
+      "view": "pair",
+      "colorway": "bape-blue",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "03.jpg",
+      "view": "pair",
+      "colorway": "bape-pink",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "04.jpg",
+      "view": "pair",
+      "colorway": "bape-army-green",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "05.jpg",
+      "view": "pair",
+      "colorway": "bape-black",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "06.jpg",
+      "view": "three_quarter",
+      "colorway": "bape-grey",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "07.jpg",
+      "view": "pair",
+      "colorway": "bape-purple",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "08.jpg",
+      "view": "side",
+      "colorway": "bape-dark-grey",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "09.jpg",
+      "view": "pair",
+      "colorway": "bape-light-brown",
+      "identity": true,
+      "toe": "right"
+    }
+  ]
+}

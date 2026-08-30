@@ -1,0 +1,64 @@
+{
+  "skus": [
+    {
+      "id": "classic-white",
+      "colorName": "White",
+      "stem": "classic-white",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/06.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [],
+        "heel": []
+      }
+    },
+    {
+      "id": "classic-black",
+      "colorName": "Black",
+      "stem": "classic-black",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/08.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [],
+        "heel": []
+      }
+    },
+    {
+      "id": "classic-navy",
+      "colorName": "Navy",
+      "stem": "classic-navy",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/12.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [],
+        "heel": []
+      }
+    },
+    {
+      "id": "classic-grey",
+      "colorName": "Grey",
+      "stem": "classic-grey",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/05.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/00.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/02.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/03.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/04.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/02.jpg"
+        ],
+        "top": [],
+        "heel": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/04.jpg"
+        ]
+      }
+    }
+  ]
+}

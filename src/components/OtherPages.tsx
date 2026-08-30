@@ -41,9 +41,9 @@ export function CartPage() {
   const count = items.reduce((s, i) => s + i.qty, 0)
 
   let discount = 0
-  if (count >= 4) discount = 2000
-  else if (count >= 3) discount = 1500
-  else if (count >= 2) discount = 1000
+  if (count >= 4) discount = 600000
+  else if (count >= 3) discount = 450000
+  else if (count >= 2) discount = 300000
 
   return (
     <div className="page cart-page">
@@ -54,7 +54,7 @@ export function CartPage() {
       {items.length === 0 ? (
         <div className="empty-state">
           <p>Корзина пуста</p>
-          <span>Скидка до −2 000 ₽ при заказе нескольких пар</span>
+          <span>Скидка до −600 000 ₫ при заказе нескольких пар</span>
           <button type="button" className="btn-primary" onClick={() => setTab('catalog')}>
             Выбрать Crocs
           </button>

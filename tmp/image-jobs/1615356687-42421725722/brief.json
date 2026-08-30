@@ -1,0 +1,27 @@
+{
+  "skus": [
+    {
+      "id": "cars-mcqueen",
+      "colorName": "McQueen",
+      "stem": "cars-mcqueen",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-42421725722/originals/shopify-side.png"
+      ],
+      "supportingRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-42421725722/originals/00.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-42421725722/originals/02.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-42421725722/originals/03.jpg"
+      ],
+      "doNotUseAsRef": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-42421725722/originals/user-bad-hero.png",
+        "/Users/v/projects/lazy_shoes/public/products/new/cars-mcqueen.png"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [],
+        "heel": []
+      },
+      "notes": "GOLD identity is shopify-side.png (user screenshot of the listing). Racing-red Classic clog, strict side profile, toe right, strap forward. VAMP (top of the clog, not the sidewall): a windshield print wrapping the curve — two white lobes with blue irises and black pupils looking TOWARD THE TOE, grey windshield frame. Vent holes sit on RED foam around the windshield; NEVER punch a hole through the white face. Sidewall: yellow 95, lightning/flame trail, Rust-eze near heel, stacked sponsor rectangles near the toe, taillight at rear, small smile on the front bumper. REJECT if eyes are two solid blue dots on a flat white rectangle, or if a Crocs hole cuts the windshield."
+    }
+  ]
+}

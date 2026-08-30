@@ -1,0 +1,197 @@
+{
+  "skus": [
+    {
+      "id": "char-peanut",
+      "colorName": "Peanut",
+      "stem": "char-peanut",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/02.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/02.jpg"
+        ],
+        "top": [],
+        "heel": []
+      },
+      "notes": "White Peanuts/Snoopy, red PEANUTS straps. 08.jpg is an exact duplicate of 02.jpg; omitted."
+    },
+    {
+      "id": "char-monster",
+      "colorName": "Monster",
+      "stem": "char-monster",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/09.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/09.jpg"
+        ],
+        "heel": []
+      },
+      "notes": "Lime-green Mike Wazowski face clog. Overhead pair only."
+    },
+    {
+      "id": "char-batman",
+      "colorName": "Winged Batman",
+      "stem": "char-batman",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/10.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/05.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/05.jpg"
+        ],
+        "heel": []
+      },
+      "notes": "10.jpg is the only side profile but toe-left (flip for cutout). Not in 00.jpg collage."
+    },
+    {
+      "id": "char-starwars",
+      "colorName": "Star Wars",
+      "stem": "char-starwars",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/11.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/11.jpg"
+        ],
+        "heel": []
+      },
+      "notes": "Cream Grogu/Baby Yoda head charms. Overhead pair only."
+    },
+    {
+      "id": "char-simpson",
+      "colorName": "Simpson",
+      "stem": "char-simpson",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/12.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/12.jpg"
+        ],
+        "heel": []
+      },
+      "notes": "White line-art Simpsons print, yellow straps. Overhead pair only."
+    },
+    {
+      "id": "char-mater",
+      "colorName": "Brown Car",
+      "stem": "char-mater",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/06.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/06.jpg"
+        ],
+        "heel": []
+      },
+      "notes": "Rusty Mater windshield-eyes clog. Overhead pair only."
+    },
+    {
+      "id": "char-zenitsu",
+      "colorName": "Zenitsu",
+      "stem": "char-zenitsu",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/16.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/16.jpg"
+        ],
+        "heel": []
+      },
+      "notes": "Yellow-to-orange triangle haori pattern. Also in 07.jpg collage, top-left (side/3/4, toe right)."
+    },
+    {
+      "id": "char-inosuke",
+      "colorName": "Inosuke",
+      "stem": "char-inosuke",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/13.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/13.jpg"
+        ],
+        "top": [],
+        "heel": []
+      },
+      "notes": "Blue chevron with brown faux-fur collar. Also in 07.jpg collage, top-right (side/3/4, toe right)."
+    },
+    {
+      "id": "char-nezuko",
+      "colorName": "Nezuko",
+      "stem": "char-nezuko",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/14.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/14.jpg"
+        ],
+        "top": [],
+        "heel": []
+      },
+      "notes": "Pink asanoha kimono print, bamboo muzzle. Also in 07.jpg collage (bottom row)."
+    },
+    {
+      "id": "char-spongebob",
+      "colorName": "Yellow Sponge",
+      "stem": "char-spongebob",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/03.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/03.jpg"
+        ],
+        "heel": []
+      },
+      "notes": "Yellow sponge clog with 3D collar/tie. Overhead pair only."
+    },
+    {
+      "id": "char-patrick",
+      "colorName": "Pink Sponge",
+      "stem": "char-patrick",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/04.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/04.jpg"
+        ],
+        "heel": []
+      },
+      "notes": "Pink Patrick face footbeds. Overhead pair only."
+    },
+    {
+      "id": "char-shinobu",
+      "colorName": "Shinobu",
+      "stem": "char-shinobu",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/15.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935/originals/15.jpg"
+        ],
+        "top": [],
+        "heel": []
+      },
+      "notes": "Pink-to-teal butterfly-wing gradient. Only dedicated shot; not in 00.jpg collage."
+    }
+  ]
+}

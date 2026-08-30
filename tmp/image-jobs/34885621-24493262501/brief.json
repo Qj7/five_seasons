@@ -1,0 +1,45 @@
+{
+  "skus": [
+    {
+      "id": "minecraft-green",
+      "colorName": "Green",
+      "stem": "minecraft-green",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-24493262501/originals/02.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-24493262501/originals/03.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-24493262501/originals/04.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-24493262501/originals/07.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-24493262501/originals/00.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-24493262501/originals/06.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-24493262501/originals/05.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-24493262501/originals/08.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-24493262501/originals/07.jpg",
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-24493262501/originals/02.jpg"
+        ],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-24493262501/originals/03.jpg",
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-24493262501/originals/04.jpg",
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-24493262501/originals/06.jpg",
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-24493262501/originals/00.jpg"
+        ],
+        "heel": []
+      },
+      "notes": "Grass-block Creeper print. 00.jpg shows two lining variants (black straps left, green straps right). 05.jpg and 08.jpg have light-blue straps."
+    },
+    {
+      "id": "minecraft-black",
+      "colorName": "Black",
+      "stem": "minecraft-black",
+      "identityRefs": [],
+      "angleRefs": {
+        "front": [],
+        "top": [],
+        "heel": []
+      },
+      "notes": "No identity photo. Listing only shows the grass-block Minecraft clog (black vs green lining in 00.jpg), not the solid-black catalog SKU."
+    }
+  ]
+}

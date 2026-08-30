@@ -1,0 +1,117 @@
+{
+  "jobDir": "/Users/v/projects/lazy_shoes/tmp/image-jobs/34885621-29387379935",
+  "photos": [
+    {
+      "file": "00.jpg",
+      "view": "other",
+      "colorway": "mixed",
+      "identity": false,
+      "toe": "unknown"
+    },
+    {
+      "file": "02.jpg",
+      "view": "pair",
+      "colorway": "char-peanut",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "03.jpg",
+      "view": "top",
+      "colorway": "char-spongebob",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "04.jpg",
+      "view": "top",
+      "colorway": "char-patrick",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "05.jpg",
+      "view": "top",
+      "colorway": "char-batman",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "06.jpg",
+      "view": "top",
+      "colorway": "char-mater",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "07.jpg",
+      "view": "other",
+      "colorway": "mixed",
+      "identity": false,
+      "toe": "right"
+    },
+    {
+      "file": "08.jpg",
+      "view": "pair",
+      "colorway": "char-peanut",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "09.jpg",
+      "view": "top",
+      "colorway": "char-monster",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "10.jpg",
+      "view": "side",
+      "colorway": "char-batman",
+      "identity": true,
+      "toe": "left"
+    },
+    {
+      "file": "11.jpg",
+      "view": "top",
+      "colorway": "char-starwars",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "12.jpg",
+      "view": "top",
+      "colorway": "char-simpson",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "13.jpg",
+      "view": "pair",
+      "colorway": "char-inosuke",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "14.jpg",
+      "view": "pair",
+      "colorway": "char-nezuko",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "15.jpg",
+      "view": "pair",
+      "colorway": "char-shinobu",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "16.jpg",
+      "view": "top",
+      "colorway": "char-zenitsu",
+      "identity": true,
+      "toe": "unknown"
+    }
+  ]
+}

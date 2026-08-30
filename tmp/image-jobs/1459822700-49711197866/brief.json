@@ -1,0 +1,108 @@
+{
+  "skus": [
+    {
+      "id": "naruto-uzumaki",
+      "colorName": "Naruto",
+      "stem": "naruto-uzumaki",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866/originals/05.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866/originals/04.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866/originals/09.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866/originals/01.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866/originals/03.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866/originals/03.jpg",
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866/originals/04.jpg",
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866/originals/05.jpg"
+        ],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866/originals/01.jpg"
+        ],
+        "heel": []
+      },
+      "notes": "Orange Uzumaki swirl. 05.jpg is the strongest 3/4 identity but toe-left (flip for cutout). 01.jpg is overhead pair, also toe-left."
+    },
+    {
+      "id": "naruto-kakashi",
+      "colorName": "Kakashi",
+      "stem": "naruto-kakashi",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866/originals/08.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866/originals/08.jpg"
+        ],
+        "top": [],
+        "heel": []
+      },
+      "notes": "Sage-green flak-jacket strap, Kakashi charms. Also side-profile in 00.jpg collage, middle-left."
+    },
+    {
+      "id": "naruto-sasuke",
+      "colorName": "Sasuke",
+      "stem": "naruto-sasuke",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866/originals/10.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866/originals/10.jpg"
+        ],
+        "heel": []
+      },
+      "notes": "Dark purple with lavender rope. Overhead pair only; side exists in 00.jpg collage, middle-right."
+    },
+    {
+      "id": "naruto-itachi",
+      "colorName": "Itachi",
+      "stem": "naruto-itachi",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866/originals/12.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866/originals/12.jpg"
+        ],
+        "top": [],
+        "heel": []
+      },
+      "notes": "Navy with red Akatsuki clouds. Also side-profile in 00.jpg collage, top-right."
+    },
+    {
+      "id": "naruto-minato",
+      "colorName": "Minato",
+      "stem": "naruto-minato",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866/originals/07.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866/originals/07.jpg"
+        ],
+        "top": [],
+        "heel": []
+      },
+      "notes": "White with red/white Hokage flames, yellow-hair charm. Also side-profile in 00.jpg collage, bottom-left."
+    },
+    {
+      "id": "naruto-jiraiya",
+      "colorName": "Jiraiya",
+      "stem": "naruto-jiraiya",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866/originals/11.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866/originals/11.jpg"
+        ],
+        "top": [],
+        "heel": []
+      },
+      "notes": "Olive/grey with red straps and 油 plate. Also side-profile in 00.jpg collage, bottom-right."
+    }
+  ]
+}

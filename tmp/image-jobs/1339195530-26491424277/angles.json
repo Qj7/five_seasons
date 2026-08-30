@@ -1,0 +1,110 @@
+{
+  "jobDir": "tmp/image-jobs/1339195530-26491424277",
+  "photos": [
+    {
+      "file": "00.jpg",
+      "view": "side",
+      "colorway": "grey",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "02.jpg",
+      "view": "three_quarter",
+      "colorway": "grey",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "03.jpg",
+      "view": "side",
+      "colorway": "grey",
+      "identity": true,
+      "toe": "left"
+    },
+    {
+      "file": "04.jpg",
+      "view": "heel",
+      "colorway": "grey",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "05.jpg",
+      "view": "side",
+      "colorway": "grey",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "06.jpg",
+      "view": "side",
+      "colorway": "white",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "07.jpg",
+      "view": "side",
+      "colorway": "pink",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "08.jpg",
+      "view": "side",
+      "colorway": "black",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "09.jpg",
+      "view": "side",
+      "colorway": "mint",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "10.jpg",
+      "view": "side",
+      "colorway": "beige",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "11.jpg",
+      "view": "three_quarter",
+      "colorway": "light-blue",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "12.jpg",
+      "view": "side",
+      "colorway": "navy",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "13.jpg",
+      "view": "side",
+      "colorway": "green",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "14.jpg",
+      "view": "side",
+      "colorway": "chocolate",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "15.jpg",
+      "view": "side",
+      "colorway": "plum",
+      "identity": true,
+      "toe": "right"
+    }
+  ]
+}

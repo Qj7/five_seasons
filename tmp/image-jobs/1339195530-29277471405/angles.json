@@ -1,0 +1,121 @@
+{
+  "jobDir": "tmp/image-jobs/1339195530-29277471405",
+  "alsoUse": "tmp/image-jobs/1615356687-42421725722",
+  "photos": [
+    {
+      "file": "00.jpg",
+      "view": "three_quarter",
+      "colorway": "mcqueen",
+      "identity": true,
+      "toe": "right",
+      "notes": "Pair on orange studio. Front clog 3/4 with windshield eyes + smile; rear clog shows heel."
+    },
+    {
+      "file": "01.png",
+      "view": "infographic",
+      "colorway": null,
+      "identity": false,
+      "notes": "9.9 voucher badge. Drop."
+    },
+    {
+      "file": "02.jpg",
+      "view": "three_quarter",
+      "colorway": "mcqueen",
+      "identity": true,
+      "toe": "right",
+      "notes": "Pair on stone pedestal, high-angle 3/4. Clear vamp windshield + sidewall 95."
+    },
+    {
+      "file": "03.jpg",
+      "view": "other",
+      "colorway": null,
+      "identity": false,
+      "notes": "Green Crocs box + bag. No shoe. Drop."
+    },
+    {
+      "file": "04.jpg",
+      "view": "side",
+      "colorway": "mcqueen",
+      "identity": true,
+      "toe": "right",
+      "notes": "Single clog strict side on acrylic stand."
+    },
+    {
+      "file": "05.jpg",
+      "view": "side",
+      "colorway": "mcqueen",
+      "identity": true,
+      "toe": "right",
+      "notes": "Pair stacked on acrylic, side profile."
+    },
+    {
+      "file": "06.jpg",
+      "view": "three_quarter",
+      "colorway": "mcqueen",
+      "identity": true,
+      "toe": "right",
+      "notes": "Pair with green hanger + Disney tag. Strong vamp + sidewall identity."
+    },
+    {
+      "file": "07.jpg",
+      "view": "side",
+      "colorway": "mcqueen",
+      "identity": true,
+      "toe": "right",
+      "notes": "GOLD side: single clog, white studio, strict profile, strap forward."
+    },
+    {
+      "file": "08.jpg",
+      "view": "detail",
+      "colorway": "mcqueen",
+      "identity": false,
+      "notes": "Soles up. Supporting only."
+    },
+    {
+      "file": "09.jpg",
+      "view": "heel",
+      "colorway": "mcqueen",
+      "identity": true,
+      "toe": "away",
+      "notes": "Pair rear/high-angle on pedestal. Yellow crocs on heel, strap forward."
+    }
+  ],
+  "priorListing": [
+    {
+      "file": "tmp/image-jobs/1615356687-42421725722/originals/shopify-side.png",
+      "view": "side",
+      "identity": true,
+      "notes": "User screenshot of listing. Clean white-bg side profile."
+    },
+    {
+      "file": "tmp/image-jobs/1615356687-42421725722/originals/00.jpg",
+      "view": "on_foot",
+      "identity": true,
+      "notes": "On-foot + clog on side showing 95 sidewall."
+    },
+    {
+      "file": "tmp/image-jobs/1615356687-42421725722/originals/02.jpg",
+      "view": "top",
+      "identity": true,
+      "notes": "On-foot top-down. Windshield on vamp, 95 on outer sidewall."
+    },
+    {
+      "file": "tmp/image-jobs/1615356687-42421725722/originals/03.jpg",
+      "view": "top",
+      "identity": true,
+      "notes": "On-foot top-down, straps back."
+    },
+    {
+      "file": "tmp/image-jobs/1615356687-42421725722/originals/01.png",
+      "view": "infographic",
+      "identity": false,
+      "notes": "Promo badge. Drop."
+    },
+    {
+      "file": "tmp/image-jobs/1615356687-42421725722/originals/user-bad-hero.png",
+      "view": "other",
+      "identity": false,
+      "notes": "Failed prior hero. Do not use."
+    }
+  ]
+}

@@ -8,7 +8,9 @@ import sizeGuideStep3 from '../assets/size-guide/step-3.jpg'
 import sizeGuideStep4 from '../assets/size-guide/step-4.jpg'
 import {
   formatPrice,
+  galleryOf,
   products,
+  variantsOf,
   type Category,
   type Product,
 } from '../data/products'
@@ -49,18 +51,19 @@ type SizeSystem = 'eu' | 'mw'
 
 const CATEGORY_TAGS: Record<Category, string[]> = {
   classic: ['Обувь', 'Classic Clog', 'Crocs'],
+  exclusive: ['Обувь', 'Exclusive', 'Crocs'],
+  bayaband: ['Обувь', 'Bayaband', 'Crocs'],
   bape: ['Обувь', 'BAPE × Crocs', 'Collab'],
   naruto: ['Обувь', 'Naruto × Crocs', 'Аниме'],
+  characters: ['Обувь', 'Character Set', 'Collab'],
   jibbitz: ['Аксессуары', 'Jibbitz', 'Украшения'],
   popular: ['Обувь', 'Хит', 'Crocs'],
   salehe: ['Обувь', 'Salehe Bembury', 'Collab'],
   cars: ['Обувь', 'Cars × Crocs', 'Collab'],
-  pokemon: ['Обувь', 'Pokémon × Crocs', 'Collab'],
-  harry: ['Обувь', 'Harry Potter', 'Collab'],
-  spiderman: ['Обувь', 'Spider-Man', 'Marvel'],
-  hellokitty: ['Обувь', 'Hello Kitty', 'Collab'],
-  demonslayer: ['Обувь', 'Demon Slayer', 'Аниме'],
-  sonic: ['Обувь', 'Sonic × Crocs', 'Collab'],
+  minecraft: ['Обувь', 'Minecraft × Crocs', 'Collab'],
+  spongebob: ['Обувь', 'SpongeBob × Crocs', 'Collab'],
+  simpsons: ['Обувь', 'The Simpsons × Crocs', 'Collab'],
+  southpark: ['Обувь', 'South Park × Crocs', 'Collab'],
 }
 
 const FEATURES: Record<string, string> = {
@@ -106,7 +109,8 @@ const REVIEWS = [
 ]
 
 export function ProductPage({ productId }: { productId: string }) {
-  const { closeProduct, favorites, toggleFavorite, addToCart } = useStore()
+  const { closeProduct, openProduct, favorites, toggleFavorite, addToCart } =
+    useStore()
   const product = products.find((p) => p.id === productId)
   const [sizeSystem, setSizeSystem] = useState<SizeSystem>('eu')
   const [sizeIndex, setSizeIndex] = useState(1)
@@ -133,8 +137,16 @@ export function ProductPage({ productId }: { productId: string }) {
   }, [sizeGuideOpen])
 
   const liked = product ? favorites.has(product.id) : false
+  const variants = useMemo(
+    () => (product ? variantsOf(product) : []),
+    [product],
+  )
   const { mark, lines } = useMemo(
     () => (product ? heroLines(product) : { mark: '', lines: [] }),
+    [product],
+  )
+  const gallery = useMemo(
+    () => (product ? galleryOf(product) : []),
     [product],
   )
 
@@ -244,6 +256,29 @@ export function ProductPage({ productId }: { productId: string }) {
           </div>
         </div>
 
+        {variants.length > 1 && (
+          <div className="pdp-colors">
+            <h4 className="pdp-colors__label">Цвет — {product.colorName}</h4>
+            <div className="pdp-colors__list">
+              {variants.map((v) => (
+                <button
+                  key={v.id}
+                  type="button"
+                  className={`pdp-colors__swatch${
+                    v.id === product.id ? ' is-active' : ''
+                  }${v.soldOut ? ' is-sold-out' : ''}`}
+                  aria-label={v.colorName}
+                  aria-current={v.id === product.id ? 'true' : undefined}
+                  onClick={() => openProduct(v.id)}
+                >
+                  <img src={v.image} alt="" draggable={false} />
+                  <span>{v.colorName}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {!isJibbitz && (
           <div className="pdp-sizes">
             <div className="pdp-sizes__row">
@@ -291,49 +326,30 @@ export function ProductPage({ productId }: { productId: string }) {
           </div>
         )}
 
+        <PhotoCarousel key={product.id} images={gallery} alt={product.name} />
+
         <div className="pdp-delivery">
           <button
             type="button"
-            className={delivery === 'standard' ? 'is-active' : ''}
-            onClick={() => setDelivery('standard')}
+            className={`pdp-delivery__option pdp-delivery__option--express${
+              delivery === 'express' ? ' is-active' : ''
+            }`}
+            onClick={() => setDelivery('express')}
           >
-            <strong>{formatPrice(product.price)}</strong>
-            <span>{product.delivery}</span>
+            <span className="pdp-delivery__badge">Экспресс</span>
+            <span className="pdp-delivery__price">{formatPrice(expressPrice)}</span>
+            <span className="pdp-delivery__eta">от 3 до 7 дней</span>
           </button>
           <button
             type="button"
-            className={delivery === 'express' ? 'is-active' : ''}
-            onClick={() => setDelivery('express')}
+            className={`pdp-delivery__option pdp-delivery__option--standard${
+              delivery === 'standard' ? ' is-active' : ''
+            }`}
+            onClick={() => setDelivery('standard')}
           >
-            <strong>{formatPrice(expressPrice)}</strong>
-            <span>Сегодня или завтра</span>
-          </button>
-        </div>
-
-        <p className="pdp-note">
-          Доставка в Москву. Товар проходит таможню — сроки могут чуть сдвинуться.{' '}
-          <button type="button">Подробнее</button>
-        </p>
-      </section>
-
-      <section className="pdp-panel pdp-panel--flush">
-        <div className="pdp-photo">
-          <img src={product.image} alt={product.name} />
-        </div>
-      </section>
-
-      <section className="pdp-panel">
-        <div className="pdp-guarantee">
-          <div className="pdp-guarantee__check">
-            <CheckBig />
-          </div>
-          <h3>Тройная гарантия оригинальности</h3>
-          <p>
-            Товар сертифицирован и опломбирован, проверен по 16 параметрам. Если
-            получите подделку — тройной возврат денег.
-          </p>
-          <button type="button">
-            Как мы проверяем товары <ChevronRight />
+            <strong className="pdp-delivery__name">Стандартная</strong>
+            <span className="pdp-delivery__price">{formatPrice(product.price)}</span>
+            <span className="pdp-delivery__eta">25–35 дней</span>
           </button>
         </div>
       </section>
@@ -351,14 +367,6 @@ export function ProductPage({ productId }: { productId: string }) {
             </div>
             <p>392 оценки · 141 отзыв</p>
           </div>
-        </div>
-
-        <div className="pdp-reviews__photos">
-          {[0, 1, 2, 3, 4].map((i) => (
-            <div key={i} className="pdp-reviews__thumb">
-              <img src={product.image} alt="" style={{ objectPosition: `${i * 20}% center` }} />
-            </div>
-          ))}
         </div>
 
         <div className="pdp-reviews__cards">
@@ -384,31 +392,33 @@ export function ProductPage({ productId }: { productId: string }) {
             </article>
           ))}
         </div>
-
-        <button type="button" className="pdp-brand-reviews">
-          Отзывы на Crocs <ChevronRight />
-        </button>
       </section>
 
       <div className="pdp-spacer" aria-hidden />
 
       {createPortal(
-        <div className="pdp-buybar pdp-buybar--sticky">
-          <button
-            type="button"
-            className="pdp-buybar__cart"
-            onClick={() => addToCart(product.id)}
-          >
-            В корзину
-          </button>
-          <button
-            type="button"
-            className="pdp-buybar__buy"
-            onClick={() => addToCart(product.id)}
-          >
-            Купить {formatPrice(buyPrice)}
-          </button>
-        </div>,
+        product.soldOut ? (
+          <div className="pdp-buybar pdp-buybar--sticky pdp-buybar--sold-out">
+            <span className="pdp-buybar__sold-out">Sold out</span>
+          </div>
+        ) : (
+          <div className="pdp-buybar pdp-buybar--sticky">
+            <button
+              type="button"
+              className="pdp-buybar__cart"
+              onClick={() => addToCart(product.id)}
+            >
+              В корзину
+            </button>
+            <button
+              type="button"
+              className="pdp-buybar__buy"
+              onClick={() => addToCart(product.id)}
+            >
+              Купить {formatPrice(buyPrice)}
+            </button>
+          </div>
+        ),
         document.querySelector('.app-shell') ?? document.body,
       )}
 
@@ -417,6 +427,81 @@ export function ProductPage({ productId }: { productId: string }) {
           <SizeGuideSheet onClose={() => setSizeGuideOpen(false)} />,
           document.querySelector('.app-shell') ?? document.body,
         )}
+    </div>
+  )
+}
+
+function PhotoCarousel({ images, alt }: { images: string[]; alt: string }) {
+  const scrollerRef = useRef<HTMLDivElement>(null)
+  const [index, setIndex] = useState(0)
+  const [failed, setFailed] = useState<Set<string>>(() => new Set())
+
+  const slides = useMemo(
+    () => images.filter((src) => !failed.has(src)),
+    [images, failed],
+  )
+
+  useEffect(() => {
+    setFailed(new Set())
+    setIndex(0)
+    scrollerRef.current?.scrollTo({ left: 0 })
+  }, [images])
+
+  const onScroll = () => {
+    const el = scrollerRef.current
+    if (!el) return
+    const w = el.clientWidth
+    if (!w) return
+    setIndex(Math.round(el.scrollLeft / w))
+  }
+
+  const goTo = (i: number) => {
+    const el = scrollerRef.current
+    if (!el) return
+    el.scrollTo({ left: i * el.clientWidth, behavior: 'smooth' })
+  }
+
+  if (slides.length === 0) return null
+
+  return (
+    <div className="pdp-carousel">
+      <div
+        ref={scrollerRef}
+        className="pdp-carousel__track"
+        onScroll={onScroll}
+      >
+        {slides.map((src, i) => (
+          <div key={src} className="pdp-carousel__slide">
+            <img
+              src={src}
+              alt={i === 0 ? alt : ''}
+              draggable={false}
+              onError={() =>
+                setFailed((prev) => {
+                  if (prev.has(src)) return prev
+                  const next = new Set(prev)
+                  next.add(src)
+                  return next
+                })
+              }
+            />
+          </div>
+        ))}
+      </div>
+      {slides.length > 1 && (
+        <div className="pdp-carousel__dots">
+          {slides.map((src, i) => (
+            <button
+              key={src}
+              type="button"
+              className={i === index ? 'is-active' : ''}
+              aria-label={`Фото ${i + 1} из ${slides.length}`}
+              aria-current={i === index ? 'true' : undefined}
+              onClick={() => goTo(i)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -791,15 +876,6 @@ function RulerIcon() {
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
       <rect x="3" y="8" width="18" height="8" rx="1.5" />
       <path d="M7 8v3M11 8v2M15 8v3M19 8v2" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function CheckBig() {
-  return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#fff" strokeWidth="2.2">
-      <circle cx="14" cy="14" r="12" />
-      <path d="m8.5 14.5 3.5 3.5 7.5-8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }

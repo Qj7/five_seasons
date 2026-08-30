@@ -1,0 +1,27 @@
+{
+  "skus": [
+    {
+      "id": "simpsons-black-yellow",
+      "colorName": "Black Yellow",
+      "stem": "simpsons-black-yellow",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1648894812-52358441844/originals/00.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1648894812-52358441844/originals/04.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1648894812-52358441844/originals/02.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1648894812-52358441844/originals/03.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1648894812-52358441844/originals/04.jpg",
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1648894812-52358441844/originals/02.jpg"
+        ],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1648894812-52358441844/originals/03.jpg"
+        ],
+        "heel": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1648894812-52358441844/originals/05.jpg"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "jobDir": "tmp/image-jobs/1615356687-29942096121",
+  "photos": [
+    {
+      "file": "00.jpg",
+      "view": "infographic",
+      "colorway": "spongebob-yellow",
+      "identity": false,
+      "toe": "right"
+    },
+    {
+      "file": "02.jpg",
+      "view": "pair",
+      "colorway": "spongebob-yellow",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "03.jpg",
+      "view": "pair",
+      "colorway": "spongebob-yellow",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "04.jpg",
+      "view": "infographic",
+      "colorway": "spongebob-yellow",
+      "identity": false,
+      "toe": "unknown"
+    },
+    {
+      "file": "05.jpg",
+      "view": "pair",
+      "colorway": "spongebob-yellow",
+      "identity": true,
+      "toe": "left"
+    },
+    {
+      "file": "06.jpg",
+      "view": "top",
+      "colorway": "spongebob-yellow",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "07.jpg",
+      "view": "side",
+      "colorway": "spongebob-yellow",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "08.jpg",
+      "view": "top",
+      "colorway": "spongebob-yellow",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "09.jpg",
+      "view": "heel",
+      "colorway": "spongebob-yellow",
+      "identity": true,
+      "toe": "unknown"
+    }
+  ]
+}

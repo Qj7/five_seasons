@@ -1,0 +1,163 @@
+{
+  "skus": [
+    {
+      "id": "exclusive-mint",
+      "colorName": "Mint",
+      "stem": "exclusive-mint",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/09.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [],
+        "heel": []
+      }
+    },
+    {
+      "id": "exclusive-pink",
+      "colorName": "Pink",
+      "stem": "exclusive-pink",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24357421303/originals/11.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24357421303/originals/05.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24357421303/originals/05.jpg"
+        ],
+        "top": [],
+        "heel": []
+      }
+    },
+    {
+      "id": "exclusive-beige",
+      "colorName": "Beige",
+      "stem": "exclusive-beige",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/10.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [],
+        "heel": []
+      }
+    },
+    {
+      "id": "exclusive-blue",
+      "colorName": "Blue",
+      "stem": "exclusive-blue",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24357421303/originals/06.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24357421303/originals/10.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [],
+        "heel": []
+      }
+    },
+    {
+      "id": "exclusive-green",
+      "colorName": "Green",
+      "stem": "exclusive-green",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/13.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24357421303/originals/04.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24357421303/originals/14.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24357421303/originals/03.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/165753247-24357421303/originals/03.jpg"
+        ],
+        "top": [],
+        "heel": []
+      },
+      "notes": "Primary identity from Classic listing 13.jpg; exclusive listing greens are neon lime extras."
+    },
+    {
+      "id": "exclusive-chocolate",
+      "colorName": "Chocolate",
+      "stem": "exclusive-chocolate",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/14.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [],
+        "heel": []
+      }
+    },
+    {
+      "id": "exclusive-plum",
+      "colorName": "Plum",
+      "stem": "exclusive-plum",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/15.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [],
+        "heel": []
+      }
+    },
+    {
+      "id": "exclusive-grey",
+      "colorName": "Grey",
+      "stem": "exclusive-grey",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/00.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/02.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/05.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/02.jpg"
+        ],
+        "top": [],
+        "heel": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/04.jpg"
+        ]
+      }
+    },
+    {
+      "id": "exclusive-white",
+      "colorName": "White",
+      "stem": "exclusive-white",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/06.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [],
+        "heel": []
+      }
+    },
+    {
+      "id": "exclusive-black",
+      "colorName": "Black",
+      "stem": "exclusive-black",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/08.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [],
+        "heel": []
+      }
+    },
+    {
+      "id": "exclusive-navy",
+      "colorName": "Navy",
+      "stem": "exclusive-navy",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-26491424277/originals/12.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [],
+        "heel": []
+      }
+    }
+  ]
+}

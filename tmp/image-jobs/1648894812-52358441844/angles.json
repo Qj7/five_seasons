@@ -1,0 +1,47 @@
+{
+  "jobDir": "tmp/image-jobs/1648894812-52358441844",
+  "photos": [
+    {
+      "file": "00.jpg",
+      "view": "side",
+      "colorway": "simpsons-black-yellow",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "02.jpg",
+      "view": "pair",
+      "colorway": "simpsons-black-yellow",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "03.jpg",
+      "view": "top",
+      "colorway": "simpsons-black-yellow",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "04.jpg",
+      "view": "three_quarter",
+      "colorway": "simpsons-black-yellow",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "05.jpg",
+      "view": "heel",
+      "colorway": "simpsons-black-yellow",
+      "identity": false,
+      "toe": "unknown"
+    },
+    {
+      "file": "06.jpg",
+      "view": "detail",
+      "colorway": "simpsons-black-yellow",
+      "identity": false,
+      "toe": "left"
+    }
+  ]
+}

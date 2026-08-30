@@ -1,0 +1,28 @@
+{
+  "skus": [
+    {
+      "id": "bayaband-black",
+      "colorName": "Black",
+      "stem": "bayaband-black",
+      "identityRefs": [],
+      "angleRefs": {
+        "front": [],
+        "top": [],
+        "heel": []
+      },
+      "notes": "No identity photo in this listing (photos are pink, grey, beige collages with jibbitz; 00.jpg is a promo infographic)."
+    },
+    {
+      "id": "bayaband-white",
+      "colorName": "White",
+      "stem": "bayaband-white",
+      "identityRefs": [],
+      "angleRefs": {
+        "front": [],
+        "top": [],
+        "heel": []
+      },
+      "notes": "No identity photo in this listing. 04.jpg is cream/beige with a blue sole stripe, not Bayaband White."
+    }
+  ]
+}

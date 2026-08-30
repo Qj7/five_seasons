@@ -1,0 +1,103 @@
+{
+  "jobDir": "tmp/image-jobs/165753247-24357421303",
+  "photos": [
+    {
+      "file": "00.jpg",
+      "view": "pair",
+      "colorway": "orange",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "02.jpg",
+      "view": "side",
+      "colorway": "orange",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "03.jpg",
+      "view": "pair",
+      "colorway": "green",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "04.jpg",
+      "view": "side",
+      "colorway": "green",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "05.jpg",
+      "view": "pair",
+      "colorway": "pink",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "06.jpg",
+      "view": "side",
+      "colorway": "blue",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "07.jpg",
+      "view": "side",
+      "colorway": "yellow",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "08.jpg",
+      "view": "side",
+      "colorway": "red",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "09.jpg",
+      "view": "side",
+      "colorway": "orange",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "10.jpg",
+      "view": "side",
+      "colorway": "blue",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "11.jpg",
+      "view": "side",
+      "colorway": "pink",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "12.jpg",
+      "view": "side",
+      "colorway": "yellow",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "13.jpg",
+      "view": "side",
+      "colorway": "red",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "14.jpg",
+      "view": "side",
+      "colorway": "green",
+      "identity": true,
+      "toe": "right"
+    }
+  ]
+}

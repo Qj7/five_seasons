@@ -1,0 +1,32 @@
+{
+  "skus": [
+    {
+      "id": "spongebob-yellow",
+      "colorName": "Yellow",
+      "stem": "spongebob-yellow",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-29942096121/originals/07.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-29942096121/originals/02.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-29942096121/originals/05.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-29942096121/originals/06.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-29942096121/originals/09.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-29942096121/originals/08.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-29942096121/originals/03.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-29942096121/originals/02.jpg",
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-29942096121/originals/05.jpg"
+        ],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-29942096121/originals/06.jpg",
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-29942096121/originals/08.jpg"
+        ],
+        "heel": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-29942096121/originals/09.jpg"
+        ]
+      },
+      "notes": "07.jpg is the cleanest side (toe right). 00.jpg and 04.jpg are promo/cartoon overlays, skipped as identity."
+    }
+  ]
+}

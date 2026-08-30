@@ -1,0 +1,96 @@
+{
+  "jobDir": "/Users/v/projects/lazy_shoes/tmp/image-jobs/1459822700-49711197866",
+  "photos": [
+    {
+      "file": "00.jpg",
+      "view": "other",
+      "colorway": "mixed",
+      "identity": false,
+      "toe": "right"
+    },
+    {
+      "file": "01.jpg",
+      "view": "top",
+      "colorway": "naruto-uzumaki",
+      "identity": true,
+      "toe": "left"
+    },
+    {
+      "file": "02.jpg",
+      "view": "pair",
+      "colorway": "naruto-uzumaki",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "03.jpg",
+      "view": "front",
+      "colorway": "naruto-uzumaki",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "04.jpg",
+      "view": "pair",
+      "colorway": "naruto-uzumaki",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "05.jpg",
+      "view": "three_quarter",
+      "colorway": "naruto-uzumaki",
+      "identity": true,
+      "toe": "left"
+    },
+    {
+      "file": "06.jpg",
+      "view": "infographic",
+      "colorway": "none",
+      "identity": false,
+      "toe": "unknown"
+    },
+    {
+      "file": "07.jpg",
+      "view": "pair",
+      "colorway": "naruto-minato",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "08.jpg",
+      "view": "pair",
+      "colorway": "naruto-kakashi",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "09.jpg",
+      "view": "pair",
+      "colorway": "naruto-uzumaki",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "10.jpg",
+      "view": "top",
+      "colorway": "naruto-sasuke",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "11.jpg",
+      "view": "pair",
+      "colorway": "naruto-jiraiya",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "12.jpg",
+      "view": "pair",
+      "colorway": "naruto-itachi",
+      "identity": true,
+      "toe": "right"
+    }
+  ]
+}

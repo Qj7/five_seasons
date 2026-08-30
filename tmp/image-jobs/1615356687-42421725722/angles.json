@@ -1,0 +1,26 @@
+{
+  "jobDir": "tmp/image-jobs/1615356687-42421725722",
+  "photos": [
+    {
+      "file": "00.jpg",
+      "view": "on_foot",
+      "colorway": "mcqueen-red",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "02.jpg",
+      "view": "on_foot",
+      "colorway": "mcqueen-red",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "03.jpg",
+      "view": "on_foot",
+      "colorway": "mcqueen-red",
+      "identity": true,
+      "toe": "unknown"
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "skus": [
+    {
+      "id": "bape-blue",
+      "colorName": "Blue",
+      "stem": "bape-blue",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/02.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/02.jpg"
+        ],
+        "top": [],
+        "heel": []
+      }
+    },
+    {
+      "id": "bape-purple",
+      "colorName": "Purple",
+      "stem": "bape-purple",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/07.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/07.jpg"
+        ],
+        "top": [],
+        "heel": []
+      }
+    },
+    {
+      "id": "bape-pink",
+      "colorName": "Pink",
+      "stem": "bape-pink",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/03.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/03.jpg"
+        ],
+        "top": [],
+        "heel": []
+      }
+    },
+    {
+      "id": "bape-army-green",
+      "colorName": "Army Green",
+      "stem": "bape-army-green",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/04.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/04.jpg"
+        ],
+        "top": [],
+        "heel": []
+      }
+    },
+    {
+      "id": "bape-black",
+      "colorName": "Black",
+      "stem": "bape-black",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/05.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/05.jpg"
+        ],
+        "top": [],
+        "heel": []
+      },
+      "notes": "Darkest dedicated pair-on-box shot (black/charcoal ABC camo). Also appears in 00.jpg collage, top-left panel."
+    },
+    {
+      "id": "bape-dark-grey",
+      "colorName": "Dark Grey",
+      "stem": "bape-dark-grey",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/08.jpg"
+      ],
+      "angleRefs": {
+        "front": [],
+        "top": [],
+        "heel": []
+      },
+      "notes": "Warehouse handheld side profile only; no front/top/heel. Also in 00.jpg collage, middle-left panel."
+    },
+    {
+      "id": "bape-grey",
+      "colorName": "Grey",
+      "stem": "bape-grey",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/06.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/06.jpg"
+        ],
+        "top": [],
+        "heel": []
+      },
+      "notes": "Light grey/white ABC camo, handheld three-quarter. Also in 00.jpg collage, top-right panel."
+    },
+    {
+      "id": "bape-light-brown",
+      "colorName": "Light Brown",
+      "stem": "bape-light-brown",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/09.jpg"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/09.jpg"
+        ],
+        "top": [],
+        "heel": []
+      }
+    }
+  ]
+}

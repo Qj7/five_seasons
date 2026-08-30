@@ -1,0 +1,40 @@
+{
+  "jobDir": "tmp/image-jobs/448420091-11606054754",
+  "photos": [
+    {
+      "file": "00.jpg",
+      "view": "infographic",
+      "colorway": "multiple",
+      "identity": false,
+      "toe": "right"
+    },
+    {
+      "file": "02.jpg",
+      "view": "pair",
+      "colorway": "pink",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "03.jpg",
+      "view": "pair",
+      "colorway": "grey",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "04.jpg",
+      "view": "pair",
+      "colorway": "beige",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "05.jpg",
+      "view": "pair",
+      "colorway": "grey",
+      "identity": true,
+      "toe": "right"
+    }
+  ]
+}

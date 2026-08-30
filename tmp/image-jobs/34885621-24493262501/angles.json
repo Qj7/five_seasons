@@ -1,0 +1,61 @@
+{
+  "jobDir": "tmp/image-jobs/34885621-24493262501",
+  "photos": [
+    {
+      "file": "00.jpg",
+      "view": "top",
+      "colorway": "minecraft-green",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "02.jpg",
+      "view": "pair",
+      "colorway": "minecraft-green",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "03.jpg",
+      "view": "top",
+      "colorway": "minecraft-green",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "04.jpg",
+      "view": "top",
+      "colorway": "minecraft-green",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "05.jpg",
+      "view": "top",
+      "colorway": "minecraft-green",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "06.jpg",
+      "view": "top",
+      "colorway": "minecraft-green",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "07.jpg",
+      "view": "pair",
+      "colorway": "minecraft-green",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "08.jpg",
+      "view": "pair",
+      "colorway": "minecraft-green",
+      "identity": true,
+      "toe": "unknown"
+    }
+  ]
+}

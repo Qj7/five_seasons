@@ -1,0 +1,47 @@
+{
+  "skus": [
+    {
+      "id": "cars-mcqueen",
+      "colorName": "McQueen",
+      "stem": "cars-mcqueen",
+      "identityRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-29277471405/originals/07.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-29277471405/originals/04.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-29277471405/originals/00.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-42421725722/originals/shopify-side.png"
+      ],
+      "supportingRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-29277471405/originals/02.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-29277471405/originals/05.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-29277471405/originals/06.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-29277471405/originals/09.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-42421725722/originals/02.jpg"
+      ],
+      "doNotUseAsRef": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-29277471405/originals/01.png",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-29277471405/originals/03.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-42421725722/originals/user-bad-hero.png",
+        "/Users/v/projects/lazy_shoes/public/products/new/cars-mcqueen.png",
+        "/Users/v/projects/lazy_shoes/public/products/new/gallery/cars-mcqueen-front.png",
+        "/Users/v/projects/lazy_shoes/public/products/new/gallery/cars-mcqueen-top.png",
+        "/Users/v/projects/lazy_shoes/public/products/new/gallery/cars-mcqueen-heel.png"
+      ],
+      "angleRefs": {
+        "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-29277471405/originals/00.jpg",
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-29277471405/originals/02.jpg",
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-29277471405/originals/06.jpg"
+        ],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1615356687-42421725722/originals/02.jpg",
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-29277471405/originals/06.jpg"
+        ],
+        "heel": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-29277471405/originals/09.jpg",
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-29277471405/originals/00.jpg"
+        ]
+      },
+      "notes": "FULL REDO. Prior AI tiles are slop: holes punched through the white windshield, 95 stuck on the toe instead of the sidewall, flat blue-dot eyes, missing bumper smile. Do NOT use any public/products/new/cars-mcqueen* file as a reference.\n\nThis is the official Disney Pixar Cars Lightning McQueen Classic Clog. Racing-red Croslite foam, matching red strap.\n\nVAMP (top of the clog, not the sidewall): a windshield print wrapping the curve of the upper — two white almond/lobe shapes with light-blue irises and black pupils looking TOWARD THE TOE, grey windshield frame. Vent holes sit on RED foam AROUND the windshield; NEVER punch a hole through the white face.\n\nFRONT BUMPER (toe tip): small printed smirk/smile with white teeth — not a ventilation slit standing in as a mouth.\n\nSIDEWALL (strict side profile): large slanted yellow 95 with black outline, yellow-orange lightning/flame trail toward the heel, circular Rust-eze Medicated Bumper Ointment logo near the heel, stacked small sponsor rectangles (Piston Cup / Octane Gain / RPM / Clutch Aid) near the toe, black dual-exhaust graphic along the lower sidewall, red/yellow taillight at the rear, headlight graphic near the front corner. 95 lives on the SIDE, never on the vamp.\n\nHEEL: raised red panel with yellow 'crocs' wordmark; strap forward (clog mode) with 'crocs' embossed on the circular pivot.\n\nREJECT if: eyes are two solid blue dots on a flat white rectangle; a Crocs hole cuts the windshield; 95 is on the toe box; extra figurines/people/tags/green hanger; left-facing toe; checkerboard or white halo on the cutout."
+    }
+  ]
+}

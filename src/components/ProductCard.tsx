@@ -20,6 +20,13 @@ export function ProductCard({ product }: { product: Product }) {
       }}
     >
       <div className="product-card__media">
+        {product.soldOut ? (
+          <span className="product-card__badge">Sold out</span>
+        ) : product.tag ? (
+          <span className="product-card__badge product-card__badge--tag">
+            {product.tag}
+          </span>
+        ) : null}
         <button
           type="button"
           className={`product-card__heart ${liked ? 'is-liked' : ''}`}
@@ -56,13 +63,14 @@ export function ProductCard({ product }: { product: Product }) {
         </p>
         <button
           type="button"
-          className="product-card__add"
+          className={`product-card__add${product.soldOut ? ' is-disabled' : ''}`}
+          disabled={product.soldOut}
           onClick={(e) => {
             e.stopPropagation()
-            addToCart(product.id)
+            if (!product.soldOut) addToCart(product.id)
           }}
         >
-          В корзину
+          {product.soldOut ? 'Sold out' : 'В корзину'}
         </button>
       </div>
     </article>

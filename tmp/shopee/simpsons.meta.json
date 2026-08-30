@@ -1,0 +1,24 @@
+{
+  "title": "Shopee Việt Nam | Mua và Bán Trên Ứng Dụng Di Động Hoặc Website",
+  "url": "https://shopee.vn/product/1648894812/52358441844",
+  "shop": 1648894812,
+  "item": 52358441844,
+  "imgs": [],
+  "texts": [
+    "bỏ qua nội dung chính",
+    "Đăng nhập",
+    "Trở về trang chủ"
+  ],
+  "api_url": "https://shopee.vn/api/v4/pdp/get_pc?item_id=52358441844&shop_id=1648894812&tz_offset_in_minutes=420&detail_level=0&incoming_pdp_page_source=0&incoming_pdp_page_scenario=0",
+  "has_api": true,
+  "api_keys": [
+    "5",
+    "2",
+    "4",
+    "0",
+    "3",
+    "error",
+    "1",
+    "9"
+  ]
+}

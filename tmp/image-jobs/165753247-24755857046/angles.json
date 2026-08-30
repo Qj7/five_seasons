@@ -1,0 +1,110 @@
+{
+  "jobDir": "tmp/image-jobs/165753247-24755857046",
+  "photos": [
+    {
+      "file": "00.jpg",
+      "view": "other",
+      "colorway": "multiple",
+      "identity": false,
+      "toe": "left"
+    },
+    {
+      "file": "02.jpg",
+      "view": "other",
+      "colorway": "multiple",
+      "identity": false,
+      "toe": "right"
+    },
+    {
+      "file": "03.jpg",
+      "view": "other",
+      "colorway": "multiple",
+      "identity": false,
+      "toe": "left"
+    },
+    {
+      "file": "04.jpg",
+      "view": "infographic",
+      "colorway": "khaki",
+      "identity": false,
+      "toe": "right"
+    },
+    {
+      "file": "05.jpg",
+      "view": "pair",
+      "colorway": "black-grey",
+      "identity": true,
+      "toe": "left"
+    },
+    {
+      "file": "06.jpg",
+      "view": "pair",
+      "colorway": "white",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "07.jpg",
+      "view": "pair",
+      "colorway": "green",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "08.jpg",
+      "view": "pair",
+      "colorway": "purple",
+      "identity": true,
+      "toe": "unknown"
+    },
+    {
+      "file": "09.jpg",
+      "view": "detail",
+      "colorway": "white",
+      "identity": false,
+      "toe": "left"
+    },
+    {
+      "file": "10.jpg",
+      "view": "pair",
+      "colorway": "white",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "11.jpg",
+      "view": "side",
+      "colorway": "green",
+      "identity": true,
+      "toe": "left"
+    },
+    {
+      "file": "12.jpg",
+      "view": "pair",
+      "colorway": "navy",
+      "identity": true,
+      "toe": "left"
+    },
+    {
+      "file": "13.jpg",
+      "view": "pair",
+      "colorway": "black-grey",
+      "identity": true,
+      "toe": "right"
+    },
+    {
+      "file": "14.jpg",
+      "view": "pair",
+      "colorway": "purple",
+      "identity": true,
+      "toe": "left"
+    },
+    {
+      "file": "15.jpg",
+      "view": "pair",
+      "colorway": "khaki",
+      "identity": true,
+      "toe": "unknown"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+---
+description: Product photos — Shopee refs, cutout for hero, three gallery angles
+alwaysApply: true
+---
+
+# Product images (HARD RULE)
+
+The app never shows raw Shopee photos. Shopee files are GenerateImage references only.
+
+Each SKU (except jibbitz) is four files:
+
+## 1. Hero / card cutout — `public/products/new/{stem}.png`
+
+Used on catalog cards, section tiles, PDP hero (`?cut=1`, rotated −90° over type), color swatches, first carousel slide.
+
+- Canvas **1000×720 RGBA**, transparent corners (no black/white box)
+- Single clog, strict **side profile**, toe **RIGHT**
+- No floor, no shadow, **no white fringe / halo / checkerboard**
+- Camera gold: `public/products/new/classic-white.png`
+
+Opaque listing JPGs on the hero cover the title. Do not put them in `product.image`.
+
+## 2. PDP gallery — `public/products/new/gallery/{stem}-{front|top|heel}.png`
+
+- Canvas **1536×1024 RGB**, white studio
+- **front**: three-quarter, ~35°, toe right — gold `gallery/classic-white-front.png`
+- **top**: straight top-down, toe right — gold `gallery/classic-white-top.png`
+- **heel**: rear three-quarter — gold `gallery/classic-white-heel.png`
+
+## After a Shopee link
+
+Follow the **shopee-catalog-images** skill, then the **product-image-gen** subagent.
+
+1. Download every listing photo (do not pick one and ignore the rest).
+2. Classify angle + colorway. Keep identity refs per SKU.
+3. Generate all four files. `reference_image_paths` = Shopee identity photos + the gold camera file for that view.
+4. Prefer GenerateImage over rembg / flood-cut when edges look dirty.
+5. Do not ship left-facing cutouts. Flip in the prompt (toe right), not by shipping a left-facing PNG.
+6. Do not install rembg/onnx/playwright unless the user asks.
+7. Do not generate from the product name alone. Do not use a previous AI tile as the identity ref.
+
+## Quality gate (before saying done)
+
+Open the actual PNG in the UI:
+
+- cutout: toe on the **right**, no halo on `#f7f7f8` cards, no box on `#f3f4f7` hero
+- gallery: same clog as the listing, correct named view
