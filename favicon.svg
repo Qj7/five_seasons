@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100">
+  <defs><path id="t" d="M0 0C0-.6.35-1 .8-1 .62-.7.7-.3 1 0Z"/></defs>
+  <g fill="#d92a1f">
+    <rect x="0" y="5" width="90" height="90"/>
+    <use href="#t" xlink:href="#t" transform="translate(1 5.5) scale(9.8 5.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(10.8 5.5) scale(9.8 5.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(20.6 5.5) scale(9.8 5.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(30.4 5.5) scale(9.8 5.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(40.2 5.5) scale(9.8 5.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(50 5.5) scale(9.8 5.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(59.8 5.5) scale(9.8 5.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(69.6 5.5) scale(9.8 5.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(79.4 5.5) scale(9.8 5.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(89.5 5) rotate(90) scale(10 10.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(89.5 15) rotate(90) scale(10 10.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(89.5 25) rotate(90) scale(10 10.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(89.5 35) rotate(90) scale(10 10.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(89.5 45) rotate(90) scale(10 10.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(89.5 55) rotate(90) scale(10 10.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(89.5 65) rotate(90) scale(10 10.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(89.5 75) rotate(90) scale(10 10.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(89.5 85) rotate(90) scale(10 10.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(89 94.5) rotate(180) scale(9.9 5.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(79.1 94.5) rotate(180) scale(9.9 5.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(69.2 94.5) rotate(180) scale(9.9 5.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(59.3 94.5) rotate(180) scale(9.9 5.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(49.4 94.5) rotate(180) scale(9.9 5.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(39.5 94.5) rotate(180) scale(9.9 5.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(29.6 94.5) rotate(180) scale(9.9 5.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(19.7 94.5) rotate(180) scale(9.9 5.5)"/>
+    <use href="#t" xlink:href="#t" transform="translate(9.8 94.5) rotate(180) scale(9.9 5.5)"/>
+  </g>
+  <rect x="7" y="12" width="76" height="76" fill="#3b8fea"/>
+  <rect x="12.25" y="17.25" width="65.5" height="65.5" fill="#ffe11a"/>
+  <rect x="17.5" y="22.5" width="55" height="55" fill="#146b30"/>
+  <rect x="22.75" y="27.75" width="44.5" height="44.5" fill="#ff6fae"/>
+</svg>
