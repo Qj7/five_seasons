@@ -7,13 +7,28 @@ import {
   products,
   top20,
 } from '../data/products'
+import {
+  brandBySlug,
+  brands,
+  featuredBrandSlugs,
+  type Brand,
+  type BrandGroup,
+} from '../data/brands'
 import { useStore } from '../store'
 import { ProductCard } from './ProductCard'
 import { CrocVisual } from './CrocVisual'
+import { BrandTile } from './BrandsPage'
+import { BrandLogo, BrandMark } from './BrandMark'
+import { LanguageSwitcher } from './LanguageSwitcher'
+import { useI18n } from '../i18n'
 
 function productById(id: string) {
   return products.find((p) => p.id === id)
 }
+
+const featuredBrands = featuredBrandSlugs
+  .map(brandBySlug)
+  .filter((b): b is Brand => Boolean(b))
 
 const categoryChips = [
   { id: 'salehe', name: 'Salehe Bembury', sampleId: 'salehe-green' },
@@ -28,7 +43,8 @@ const categoryChips = [
 ]
 
 export function HomePage() {
-  const { setTab, setCatalogFilter, search, setSearch, openProduct } = useStore()
+  const { setTab, setCatalogFilter, search, setSearch, openBrands } = useStore()
+  const { t } = useI18n()
   const [banner, setBanner] = useState(0)
 
   const openCatalog = (filter: string | null) => {
@@ -41,48 +57,62 @@ export function HomePage() {
     .map(productById)
     .filter((p): p is NonNullable<typeof p> => Boolean(p))
 
-  const bannerSlides = [
+  const bannerSlides: {
+    eyebrow: string
+    title: string
+    desc: string
+    cta: string
+    group?: BrandGroup
+    logos: string[]
+    theme: 'fire' | 'sand' | 'night'
+  }[] = [
     {
-      filter: 'salehe',
-      eyebrow: 'FASHION DROP',
-      title: 'SALEHE POLLEX',
-      desc: 'Salehe Bembury × Crocs — культовый Pollex Clog',
-      cta: 'Смотреть Salehe',
-      productId: 'salehe-black-grey',
-      theme: 'pink' as const,
+      eyebrow: 'НОВЫЙ СЕЗОН',
+      title: '99 БРЕНДОВ',
+      desc: 'Обувь, одежда и аксессуары — только оригиналы',
+      cta: 'Смотреть бренды',
+      logos: ['nike', 'adidas', 'new-balance', 'jordan'],
+      theme: 'fire',
     },
     {
-      filter: 'cars',
-      eyebrow: 'PIXAR CARS',
-      title: 'MCQUEEN',
-      desc: 'Lightning McQueen и Mater — в наличии',
-      cta: 'Смотреть Cars',
-      productId: 'cars-1',
-      theme: 'orange' as const,
+      eyebrow: 'STREETWEAR',
+      title: 'ОДЕЖДА',
+      desc: 'Stone Island, Supreme, Stüssy и The North Face',
+      cta: 'Выбрать одежду',
+      group: 'clothing',
+      logos: ['stone-island', 'supreme', 'stussy', 'the-north-face'],
+      theme: 'sand',
     },
     {
-      filter: 'minecraft',
-      eyebrow: 'GAMING',
-      title: 'MINECRAFT × CROCS',
-      desc: 'Creeper и блоки — для фанатов игры',
-      cta: 'Выбрать Minecraft',
-      productId: 'minecraft-green',
-      theme: 'naruto' as const,
+      eyebrow: 'PREMIUM',
+      title: 'ЛЮКС',
+      desc: 'Prada, Gucci, Dior и Balenciaga — с доставкой',
+      cta: 'Смотреть люкс',
+      group: 'luxury',
+      logos: ['prada', 'gucci', 'dior', 'balenciaga'],
+      theme: 'night',
     },
   ]
 
   const slide = bannerSlides[banner]
-  const bannerProduct = productById(slide.productId)
+  const slideLogos = slide.logos
+    .map(brandBySlug)
+    .filter((b): b is Brand => Boolean(b))
 
   return (
     <div className="page home">
       <header className="home-header">
-        <h1 className="logo">MAGIC SHOES</h1>
+        <div className="home-header__top">
+          <h1 className="logo">
+            <BrandLogo />
+          </h1>
+          <LanguageSwitcher />
+        </div>
         <label className="search">
           <SearchIcon />
           <input
             type="search"
-            placeholder="Найти Crocs или Jibbitz"
+            placeholder={t('Найти бренд, обувь или одежду')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => {
@@ -96,21 +126,24 @@ export function HomePage() {
         <div
           className={`hero-banner hero-banner--${slide.theme}`}
           data-slide={banner}
-          onClick={() => bannerProduct && openProduct(bannerProduct.id)}
+          onClick={() => openBrands(slide.group)}
           role="button"
           tabIndex={0}
-          onKeyDown={(e) =>
-            e.key === 'Enter' && bannerProduct && openProduct(bannerProduct.id)
-          }
+          onKeyDown={(e) => e.key === 'Enter' && openBrands(slide.group)}
         >
+          <BrandMark size={170} className="hero-banner__mark" />
           <div className="hero-banner__text">
-            <p className="hero-banner__eyebrow">{slide.eyebrow}</p>
-            <h2>{slide.title}</h2>
-            <p className="hero-banner__desc">{slide.desc}</p>
-            <span className="hero-banner__cta">{slide.cta}</span>
+            <p className="hero-banner__eyebrow">{t(slide.eyebrow)}</p>
+            <h2>{t(slide.title)}</h2>
+            <p className="hero-banner__desc">{t(slide.desc)}</p>
+            <span className="hero-banner__cta">{t(slide.cta)}</span>
           </div>
-          <div className="hero-banner__visual">
-            {bannerProduct && <CrocVisual product={bannerProduct} tall />}
+          <div className="hero-banner__logos" aria-hidden>
+            {slideLogos.map((b) => (
+              <span key={b.slug} className="hero-banner__logo">
+                <img src={b.logo} alt="" />
+              </span>
+            ))}
           </div>
         </div>
         <div className="hero-dots">
@@ -119,17 +152,42 @@ export function HomePage() {
               key={i}
               type="button"
               className={banner === i ? 'is-active' : ''}
-              aria-label={`Баннер ${i + 1}`}
+              aria-label={t('Баннер {n}', { n: i + 1 })}
               onClick={() => setBanner(i)}
             />
           ))}
         </div>
       </section>
 
+      <section className="section home-brands">
+        <div className="section__head section__head--stack">
+          <div>
+            <h2>{t('Бренды')}</h2>
+            <p className="section__sub">
+              {t('Обувь, одежда и аксессуары — {n} брендов', { n: brands.length })}
+            </p>
+          </div>
+          <button type="button" className="section__all" onClick={() => openBrands()}>
+            {t('Все')} <Chevron />
+          </button>
+        </div>
+        <div className="brand-grid">
+          {featuredBrands.map((b) => (
+            <BrandTile key={b.slug} brand={b} />
+          ))}
+          <button type="button" className="brand-tile brand-tile--all" onClick={() => openBrands()}>
+            <span className="brand-tile__logo">
+              <span className="brand-tile__count">{brands.length}</span>
+            </span>
+            <span className="brand-tile__name">{t('Все бренды')}</span>
+          </button>
+        </div>
+      </section>
+
       <section className="action-grid">
         <div className="action-stack">
           <div className="action-card action-card--points">
-            <span className="action-card__label">Баллы</span>
+            <span className="action-card__label">{t('Баллы')}</span>
             <span className="action-card__value">
               0 <PointsIcon />
             </span>
@@ -140,9 +198,9 @@ export function HomePage() {
             onClick={() => openCatalog(null)}
           >
             <span className="action-card__label">
-              Сайт Magic Shoes <Chevron />
+              {t('Сайт Five Seasons')} <Chevron />
             </span>
-            <span className="action-card__hint">Выбрать и заказать на сайте</span>
+            <span className="action-card__hint">{t('Выбрать и заказать на сайте')}</span>
           </button>
         </div>
         <button
@@ -150,7 +208,7 @@ export function HomePage() {
           className="action-card action-card--order"
           onClick={() => openCatalog(null)}
         >
-          <span className="action-card__order-title">Выбрать и заказать</span>
+          <span className="action-card__order-title">{t('Выбрать и заказать')}</span>
           <span className="action-card__arrow">
             <ArrowRight />
           </span>
@@ -159,11 +217,11 @@ export function HomePage() {
 
       <section className="promo-discount" onClick={() => setTab('cart')} role="button" tabIndex={0}>
         <div className="promo-discount__text">
-          <h2>Скидки в корзине!</h2>
+          <h2>{t('Скидки в корзине!')}</h2>
           <ul>
-            <li>−300 000 ₫ на вторые</li>
-            <li>−450 000 ₫ на третьи</li>
-            <li>−600 000 ₫ на четвёртые</li>
+            <li>{t('−300 000 ₫ на вторые')}</li>
+            <li>{t('−450 000 ₫ на третьи')}</li>
+            <li>{t('−600 000 ₫ на четвёртые')}</li>
           </ul>
         </div>
         <div className="promo-discount__art" aria-hidden>
@@ -180,9 +238,9 @@ export function HomePage() {
 
       <section className="section">
         <div className="section__head">
-          <h2>Коллекции</h2>
+          <h2>{t('Коллекции')}</h2>
           <button type="button" className="section__all" onClick={() => openCatalog(null)}>
-            Все <Chevron />
+            {t('Все')} <Chevron />
           </button>
         </div>
         <div className="brand-row">
@@ -209,13 +267,13 @@ export function HomePage() {
       <section className="section">
         <div className="section__head section__head--stack">
           <div>
-            <h2>Новые коллабы</h2>
+            <h2>{t('Новые коллабы')}</h2>
             <p className="section__sub">
-              Salehe, Cars, Characters, Minecraft, SpongeBob, Simpsons и South Park
+              {t('Salehe, Cars, Characters, Minecraft, SpongeBob, Simpsons и South Park')}
             </p>
           </div>
           <button type="button" className="section__all" onClick={() => openCatalog(null)}>
-            Все <Chevron />
+            {t('Все')} <Chevron />
           </button>
         </div>
         <div className="brand-row">
@@ -259,13 +317,13 @@ export function HomePage() {
       <section className="section">
         <div className="section__head section__head--stack">
           <div>
-            <h2>Naruto × Crocs — вся серия</h2>
+            <h2>{t('Naruto × Crocs — вся серия')}</h2>
             <p className="section__sub">
-              Naruto, Kakashi, Sasuke, Itachi, Minato и Jiraiya
+              {t('Naruto, Kakashi, Sasuke, Itachi, Minato и Jiraiya')}
             </p>
           </div>
           <button type="button" className="section__all" onClick={() => openCatalog('naruto')}>
-            Все <Chevron />
+            {t('Все')} <Chevron />
           </button>
         </div>
         <div className="product-grid">
@@ -277,9 +335,9 @@ export function HomePage() {
 
       <section className="section">
         <div className="section__head">
-          <h2>Бестселлеры</h2>
+          <h2>{t('Бестселлеры')}</h2>
           <button type="button" className="section__all" onClick={() => openCatalog('popular')}>
-            Все <Chevron />
+            {t('Все')} <Chevron />
           </button>
         </div>
         <div className="product-grid">
@@ -289,7 +347,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="chips-row" aria-label="Категории">
+      <section className="chips-row" aria-label={t('Категории')}>
         {categoryChips.map((c) => {
           const sample = productById(c.sampleId)
           if (!sample) return null
@@ -311,9 +369,9 @@ export function HomePage() {
 
       <section className="section">
         <div className="section__head">
-          <h2>Только что купили</h2>
+          <h2>{t('Только что купили')}</h2>
           <button type="button" className="section__all" onClick={() => openCatalog(null)}>
-            Все <Chevron />
+            {t('Все')} <Chevron />
           </button>
         </div>
         <div className="product-grid">
@@ -326,11 +384,11 @@ export function HomePage() {
       <section className="section">
         <div className="section__head section__head--stack">
           <div>
-            <h2>Топ 20 популярных</h2>
-            <p className="section__sub">В наличии — самовывоз или доставка 1–2 дня</p>
+            <h2>{t('Топ 20 популярных')}</h2>
+            <p className="section__sub">{t('В наличии — самовывоз или доставка 1–2 дня')}</p>
           </div>
           <button type="button" className="section__all" onClick={() => openCatalog('popular')}>
-            Все <Chevron />
+            {t('Все')} <Chevron />
           </button>
         </div>
         <div className="product-grid">
@@ -341,13 +399,14 @@ export function HomePage() {
       </section>
 
       <section className="curated">
-        <h2>Актуальные подборки</h2>
+        <h2>{t('Актуальные подборки')}</h2>
         <p>
-          Salehe Bembury, Lightning McQueen, Characters, Minecraft, SpongeBob,
-          Simpsons и South Park — собрали главные дропы.
+          {t(
+            'Salehe Bembury, Lightning McQueen, Characters, Minecraft, SpongeBob, Simpsons и South Park — собрали главные дропы.',
+          )}
         </p>
         <button type="button" onClick={() => openCatalog('salehe')}>
-          Открыть коллабы
+          {t('Открыть коллабы')}
         </button>
       </section>
     </div>
@@ -372,25 +431,12 @@ function Chevron() {
 }
 
 function PointsIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="10" fill="url(#pg)" />
-      <text x="12" y="16" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="700" fontFamily="Syne,sans-serif">
-        M
-      </text>
-      <defs>
-        <linearGradient id="pg" x1="0" y1="0" x2="24" y2="24">
-          <stop stopColor="#ff6b9d" />
-          <stop offset="1" stopColor="#76ba0f" />
-        </linearGradient>
-      </defs>
-    </svg>
-  )
+  return <BrandMark size={24} />
 }
 
 function ArrowRight() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#76ba0f" strokeWidth="2.4">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
       <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )

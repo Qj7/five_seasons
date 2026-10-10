@@ -5,6 +5,7 @@ import {
   useCallback,
   type ReactNode,
 } from 'react'
+import type { BrandGroup } from './data/brands'
 
 export type Tab = 'home' | 'catalog' | 'favorites' | 'cart' | 'profile'
 
@@ -24,6 +25,11 @@ interface StoreCtx {
   selectedProductId: string | null
   openProduct: (id: string) => void
   closeProduct: () => void
+  /** Brand screens stack: 'all' / 'all:{group}' is the brands index, otherwise a brand slug. */
+  brandStack: string[]
+  openBrands: (group?: BrandGroup) => void
+  openBrand: (slug: string) => void
+  closeBrand: () => void
 }
 
 const Ctx = createContext<StoreCtx | null>(null)
@@ -35,6 +41,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [catalogFilter, setCatalogFilter] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null)
+  const [brandStack, setBrandStack] = useState<string[]>([])
+
+  const openBrands = useCallback((group?: BrandGroup) => {
+    const screen = group ? `all:${group}` : 'all'
+    setSelectedProductId(null)
+    setBrandStack((prev) => (prev.at(-1) === screen ? prev : [...prev, screen]))
+  }, [])
+
+  const openBrand = useCallback((slug: string) => {
+    setSelectedProductId(null)
+    setBrandStack((prev) => [...prev, slug])
+  }, [])
+
+  const closeBrand = useCallback(() => {
+    setBrandStack((prev) => prev.slice(0, -1))
+  }, [])
 
   const openProduct = useCallback((id: string) => {
     setSelectedProductId(id)
@@ -46,6 +68,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const handleSetTab = useCallback((t: Tab) => {
     setSelectedProductId(null)
+    setBrandStack([])
     setTab(t)
   }, [])
 
@@ -96,6 +119,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         selectedProductId,
         openProduct,
         closeProduct,
+        brandStack,
+        openBrands,
+        openBrand,
+        closeBrand,
       }}
     >
       {children}

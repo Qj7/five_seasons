@@ -37,9 +37,6 @@ export interface Product {
 export const formatPrice = (n: number) =>
   n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₫'
 
-export const splitPrice = (n: number) =>
-  formatPrice(Math.round(n / 2)) + ' × 2 в сплит'
-
 /** Public asset path that respects Vite `base` (needed for GitHub Pages). */
 const asset = (path: string) =>
   `${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`
@@ -791,6 +788,20 @@ export function galleryOf(product: Product): string[] {
     img(`gallery/${stem}-heel.png`),
   ]
 }
+
+const collabBrands: Partial<Record<Category, string>> = {
+  bape: 'a-bathing-ape',
+  simpsons: 'the-simpsons',
+}
+
+/** Brand slugs a product belongs to (collabs count for both brands). */
+export function brandsOf(product: Product): string[] {
+  const collab = collabBrands[product.category]
+  return collab ? ['crocs', collab] : ['crocs']
+}
+
+export const productsOfBrand = (slug: string) =>
+  products.filter((p) => brandsOf(p).includes(slug))
 
 export const top20 = products
   .filter((p) => p.popularRank)

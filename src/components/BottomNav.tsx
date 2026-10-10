@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 import { useStore, type Tab } from '../store'
+import { UserAvatar } from './UserAvatar'
+import { useI18n } from '../i18n'
 
 const items: { id: Tab; label: string; icon: () => ReactNode }[] = [
   {
@@ -48,16 +50,19 @@ const items: { id: Tab; label: string; icon: () => ReactNode }[] = [
     id: 'profile',
     label: 'Профиль',
     icon: () => (
-      <span className="nav-avatar">M</span>
+      <span className="nav-avatar">
+        <UserAvatar size={24} />
+      </span>
     ),
   },
 ]
 
 export function BottomNav() {
   const { tab, setTab, cartCount, favorites } = useStore()
+  const { t } = useI18n()
 
   return (
-    <nav className="bottom-nav" aria-label="Основная навигация">
+    <nav className="bottom-nav" aria-label={t('Основная навигация')}>
       {items.map((item) => {
         const active = tab === item.id
         return (
@@ -76,7 +81,7 @@ export function BottomNav() {
                 <span className="bottom-nav__badge">{favorites.size}</span>
               )}
             </span>
-            <span className="bottom-nav__label">{item.label}</span>
+            <span className="bottom-nav__label">{t(item.label)}</span>
           </button>
         )
       })}

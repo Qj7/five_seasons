@@ -1,4 +1,5 @@
 import type { Product } from '../data/products'
+import { useI18n } from '../i18n'
 
 export function CrocVisual({
   product,
@@ -7,6 +8,7 @@ export function CrocVisual({
   product: Product
   tall?: boolean
 }) {
+  const { t } = useI18n()
   return (
     <div
       className={`croc-visual ${tall ? 'croc-visual--tall' : ''}`}
@@ -19,7 +21,7 @@ export function CrocVisual({
         loading="lazy"
         decoding="async"
       />
-      {product.tag && <span className="croc-visual__badge">{product.tag}</span>}
+      {product.tag && <span className="croc-visual__badge">{t(product.tag)}</span>}
     </div>
   )
 }

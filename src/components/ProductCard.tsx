@@ -1,10 +1,13 @@
-import { formatPrice, splitPrice, type Product } from '../data/products'
+import { formatPrice, type Product } from '../data/products'
 import { useStore } from '../store'
+import { useI18n } from '../i18n'
 import { CrocVisual } from './CrocVisual'
 
 export function ProductCard({ product }: { product: Product }) {
   const { favorites, toggleFavorite, addToCart, openProduct } = useStore()
+  const { t } = useI18n()
   const liked = favorites.has(product.id)
+  const price = formatPrice(product.price)
 
   return (
     <article
@@ -24,13 +27,13 @@ export function ProductCard({ product }: { product: Product }) {
           <span className="product-card__badge">Sold out</span>
         ) : product.tag ? (
           <span className="product-card__badge product-card__badge--tag">
-            {product.tag}
+            {t(product.tag)}
           </span>
         ) : null}
         <button
           type="button"
           className={`product-card__heart ${liked ? 'is-liked' : ''}`}
-          aria-label={liked ? 'Убрать из избранного' : 'В избранное'}
+          aria-label={t(liked ? 'Убрать из избранного' : 'В избранное')}
           onClick={(e) => {
             e.stopPropagation()
             toggleFavorite(product.id)
@@ -47,18 +50,19 @@ export function ProductCard({ product }: { product: Product }) {
       </div>
       <div className="product-card__body">
         <p className="product-card__price">
-          {product.fromPrice ? 'от ' : ''}
-          {formatPrice(product.price)}
+          {product.fromPrice ? t('от {price}', { price }) : price}
         </p>
-        <span className="product-card__split">{splitPrice(product.price)}</span>
+        <span className="product-card__split">
+          {t('{price} × 2 в сплит', { price: formatPrice(Math.round(product.price / 2)) })}
+        </span>
         <h3 className="product-card__name">{product.name}</h3>
         <p className="product-card__meta">
           {product.returnable ? (
             <span className="product-card__return">
-              <DiamondIcon /> Можно вернуть
+              <DiamondIcon /> {t('Можно вернуть')}
             </span>
           ) : (
-            product.delivery
+            t(product.delivery)
           )}
         </p>
         <button
@@ -70,7 +74,7 @@ export function ProductCard({ product }: { product: Product }) {
             if (!product.soldOut) addToCart(product.id)
           }}
         >
-          {product.soldOut ? 'Sold out' : 'В корзину'}
+          {product.soldOut ? 'Sold out' : t('В корзину')}
         </button>
       </div>
     </article>

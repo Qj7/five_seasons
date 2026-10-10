@@ -1,8 +1,8 @@
-# Magic Shoes
+# Five Seasons
 
 Мобильный магазин Crocs и Jibbitz в стиле Unicorn-приложения.
 
-**Live:** https://qj7.github.io/magic_shoes/
+**Live:** https://qj7.github.io/five_seasons/
 
 ## Запуск
 

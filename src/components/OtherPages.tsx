@@ -2,22 +2,25 @@ import { products, formatPrice } from '../data/products'
 import { useStore } from '../store'
 import { ProductCard } from './ProductCard'
 import { CrocVisual } from './CrocVisual'
+import { UserAvatar } from './UserAvatar'
+import { useI18n } from '../i18n'
 
 export function FavoritesPage() {
   const { favorites, setTab } = useStore()
+  const { t } = useI18n()
   const list = products.filter((p) => favorites.has(p.id))
 
   return (
     <div className="page">
       <header className="page-header">
-        <h1>Избранное</h1>
+        <h1>{t('Избранное')}</h1>
       </header>
       {list.length === 0 ? (
         <div className="empty-state">
-          <p>Пока пусто</p>
-          <span>Добавляйте Crocs и Jibbitz сердечком</span>
+          <p>{t('Пока пусто')}</p>
+          <span>{t('Добавляйте Crocs и Jibbitz сердечком')}</span>
           <button type="button" className="btn-primary" onClick={() => setTab('catalog')}>
-            В каталог
+            {t('В каталог')}
           </button>
         </div>
       ) : (
@@ -33,6 +36,7 @@ export function FavoritesPage() {
 
 export function CartPage() {
   const { cart, addToCart, removeFromCart, setTab, openProduct } = useStore()
+  const { t } = useI18n()
   const items = [...cart.entries()]
     .map(([id, qty]) => ({ product: products.find((p) => p.id === id)!, qty }))
     .filter((x) => x.product)
@@ -48,22 +52,22 @@ export function CartPage() {
   return (
     <div className="page cart-page">
       <header className="page-header">
-        <h1>Корзина</h1>
+        <h1>{t('Корзина')}</h1>
       </header>
 
       {items.length === 0 ? (
         <div className="empty-state">
-          <p>Корзина пуста</p>
-          <span>Скидка до −600 000 ₫ при заказе нескольких пар</span>
+          <p>{t('Корзина пуста')}</p>
+          <span>{t('Скидка до −600 000 ₫ при заказе нескольких пар')}</span>
           <button type="button" className="btn-primary" onClick={() => setTab('catalog')}>
-            Выбрать Crocs
+            {t('Выбрать Crocs')}
           </button>
         </div>
       ) : (
         <>
           {discount > 0 && (
             <div className="cart-discount">
-              Скидка в корзине: −{formatPrice(discount)}
+              {t('Скидка в корзине: −{amount}', { amount: formatPrice(discount) })}
             </div>
           )}
           <ul className="cart-list">
@@ -105,11 +109,11 @@ export function CartPage() {
           </ul>
           <div className="cart-footer">
             <div className="cart-footer__row">
-              <span>Итого</span>
+              <span>{t('Итого')}</span>
               <strong>{formatPrice(total - discount)}</strong>
             </div>
             <button type="button" className="btn-primary btn-primary--block">
-              Оформить заказ
+              {t('Оформить заказ')}
             </button>
           </div>
         </>
@@ -118,28 +122,31 @@ export function CartPage() {
   )
 }
 
+const PROFILE_MENU = ['Мои заказы', 'Адреса доставки', 'Баллы и бонусы', 'Поддержка', 'О магазине']
+
 export function ProfilePage() {
+  const { t } = useI18n()
   return (
     <div className="page">
       <header className="page-header">
-        <h1>Профиль</h1>
+        <h1>{t('Профиль')}</h1>
       </header>
       <div className="profile-card">
-        <span className="profile-card__avatar">M</span>
+        <span className="profile-card__avatar">
+          <UserAvatar size={48} />
+        </span>
         <div>
-          <h2>Magic Shoes</h2>
+          <h2>Five Seasons</h2>
           <p>Crocs · Jibbitz · Collabs</p>
         </div>
       </div>
       <ul className="profile-menu">
-        <li>Мои заказы</li>
-        <li>Адреса доставки</li>
-        <li>Баллы и бонусы</li>
-        <li>Поддержка</li>
-        <li>О магазине</li>
+        {PROFILE_MENU.map((item) => (
+          <li key={item}>{t(item)}</li>
+        ))}
       </ul>
       <p className="profile-note">
-        Magic Shoes — официальный ассортимент Classic Clog, BAPE × Crocs, Naruto × Crocs и Jibbitz.
+        {t('Five Seasons — официальный ассортимент Classic Clog, BAPE × Crocs, Naruto × Crocs и Jibbitz.')}
       </p>
     </div>
   )

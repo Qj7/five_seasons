@@ -36,7 +36,7 @@ jobs:
       - name: Verify production build
         run: |
           test -f dist/index.html
-          grep -q '/magic_shoes/assets/' dist/index.html
+          grep -q '/five_seasons/assets/' dist/index.html
           ! grep -q 'src/main.tsx' dist/index.html
           test -d dist/products
           test -d dist/assets

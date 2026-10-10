@@ -15,6 +15,8 @@ import {
   type Product,
 } from '../data/products'
 import { useStore } from '../store'
+import { BrandLogo } from './BrandMark'
+import { useI18n } from '../i18n'
 
 const SIZE_GUIDE_STEPS = [
   {
@@ -111,6 +113,7 @@ const REVIEWS = [
 export function ProductPage({ productId }: { productId: string }) {
   const { closeProduct, openProduct, favorites, toggleFavorite, addToCart } =
     useStore()
+  const { t } = useI18n()
   const product = products.find((p) => p.id === productId)
   const [sizeSystem, setSizeSystem] = useState<SizeSystem>('eu')
   const [sizeIndex, setSizeIndex] = useState(1)
@@ -153,9 +156,9 @@ export function ProductPage({ productId }: { productId: string }) {
   if (!product) {
     return (
       <div className="page">
-        <p>Товар не найден</p>
+        <p>{t('Товар не найден')}</p>
         <button type="button" className="btn-primary" onClick={closeProduct}>
-          Назад
+          {t('Назад')}
         </button>
       </div>
     )
@@ -175,12 +178,14 @@ export function ProductPage({ productId }: { productId: string }) {
           <button
             type="button"
             className="pdp__back"
-            aria-label="Назад"
+            aria-label={t('Назад')}
             onClick={closeProduct}
           >
             <BackIcon />
           </button>
-          <p className="pdp__brand logo">MAGIC SHOES</p>
+          <p className="pdp__brand logo">
+            <BrandLogo size={22} compact />
+          </p>
         </div>
 
         <div className="pdp-hero__title" aria-hidden="true">
@@ -219,14 +224,14 @@ export function ProductPage({ productId }: { productId: string }) {
         <div className="pdp-toolbar">
           <div className="pdp-original">
             <CheckIcon />
-            <span>Оригинал</span>
+            <span>{t('Оригинал')}</span>
             <OriginalityInfo />
           </div>
           <div className="pdp-toolbar__actions">
             <ShareButton product={product} />
             <button
               type="button"
-              aria-label={liked ? 'Убрать из избранного' : 'В избранное'}
+              aria-label={t(liked ? 'Убрать из избранного' : 'В избранное')}
               className={liked ? 'is-liked' : ''}
               onClick={() => toggleFavorite(product.id)}
             >
@@ -236,29 +241,31 @@ export function ProductPage({ productId }: { productId: string }) {
         </div>
 
         <div className="pdp-tags">
-          {tags.map((t) => (
-            <span key={t}>{t}</span>
+          {tags.map((tag) => (
+            <span key={tag}>{t(tag)}</span>
           ))}
         </div>
 
         <div className="pdp-specs">
           <div>
-            <h4>Артикул</h4>
+            <h4>{t('Артикул')}</h4>
             <p>{sku}</p>
           </div>
           <div>
-            <h4>Особенности</h4>
-            <p>{features}</p>
+            <h4>{t('Особенности')}</h4>
+            <p>{t(features)}</p>
           </div>
           <div>
-            <h4>Посадка</h4>
-            <p>{isJibbitz ? 'Универсальная' : 'Унисекс'}</p>
+            <h4>{t('Посадка')}</h4>
+            <p>{t(isJibbitz ? 'Универсальная' : 'Унисекс')}</p>
           </div>
         </div>
 
         {variants.length > 1 && (
           <div className="pdp-colors">
-            <h4 className="pdp-colors__label">Цвет — {product.colorName}</h4>
+            <h4 className="pdp-colors__label">
+              {t('Цвет — {color}', { color: product.colorName })}
+            </h4>
             <div className="pdp-colors__list">
               {variants.map((v) => (
                 <button
@@ -321,7 +328,7 @@ export function ProductPage({ productId }: { productId: string }) {
         {!isJibbitz && (
           <div className="pdp-links">
             <button type="button" onClick={() => setSizeGuideOpen(true)}>
-              <RulerIcon /> Как определить размер обуви
+              <RulerIcon /> {t('Как определить размер обуви')}
             </button>
           </div>
         )}
@@ -336,9 +343,9 @@ export function ProductPage({ productId }: { productId: string }) {
             }`}
             onClick={() => setDelivery('express')}
           >
-            <span className="pdp-delivery__badge">Экспресс</span>
+            <span className="pdp-delivery__badge">{t('Экспресс')}</span>
             <span className="pdp-delivery__price">{formatPrice(expressPrice)}</span>
-            <span className="pdp-delivery__eta">от 3 до 7 дней</span>
+            <span className="pdp-delivery__eta">{t('от 3 до 7 дней')}</span>
           </button>
           <button
             type="button"
@@ -347,16 +354,16 @@ export function ProductPage({ productId }: { productId: string }) {
             }`}
             onClick={() => setDelivery('standard')}
           >
-            <strong className="pdp-delivery__name">Стандартная</strong>
+            <strong className="pdp-delivery__name">{t('Стандартная')}</strong>
             <span className="pdp-delivery__price">{formatPrice(product.price)}</span>
-            <span className="pdp-delivery__eta">25–35 дней</span>
+            <span className="pdp-delivery__eta">{t('25–35 дней')}</span>
           </button>
         </div>
       </section>
 
       <section className="pdp-panel">
         <button type="button" className="pdp-reviews__head">
-          <span>Отзывы на этот товар</span>
+          <span>{t('Отзывы на этот товар')}</span>
           <ChevronRight />
         </button>
         <div className="pdp-reviews__score">
@@ -365,7 +372,7 @@ export function ProductPage({ productId }: { productId: string }) {
             <div className="pdp-stars" aria-hidden>
               {'★★★★★'}
             </div>
-            <p>392 оценки · 141 отзыв</p>
+            <p>{t('392 оценки · 141 отзыв')}</p>
           </div>
         </div>
 
@@ -376,18 +383,18 @@ export function ProductPage({ productId }: { productId: string }) {
                 <span className="pdp-review__avatar">{r.user[0].toUpperCase()}</span>
                 <div>
                   <strong>{r.user}</strong>
-                  <span>{r.when}</span>
+                  <span>{t(r.when)}</span>
                 </div>
               </header>
               <div className="pdp-stars pdp-stars--sm">{'★★★★★'}</div>
               <p>
-                <b>Достоинства:</b> {r.pros}
+                <b>{t('Достоинства:')}</b> {t(r.pros)}
               </p>
               <p>
-                <b>Недостатки:</b> {r.cons}
+                <b>{t('Недостатки:')}</b> {t(r.cons)}
               </p>
               <p>
-                <b>Комментарий:</b> {r.comment}
+                <b>{t('Комментарий:')}</b> {t(r.comment)}
               </p>
             </article>
           ))}
@@ -408,14 +415,14 @@ export function ProductPage({ productId }: { productId: string }) {
               className="pdp-buybar__cart"
               onClick={() => addToCart(product.id)}
             >
-              В корзину
+              {t('В корзину')}
             </button>
             <button
               type="button"
               className="pdp-buybar__buy"
               onClick={() => addToCart(product.id)}
             >
-              Купить {formatPrice(buyPrice)}
+              {t('Купить {price}', { price: formatPrice(buyPrice) })}
             </button>
           </div>
         ),
@@ -432,6 +439,7 @@ export function ProductPage({ productId }: { productId: string }) {
 }
 
 function PhotoCarousel({ images, alt }: { images: string[]; alt: string }) {
+  const { t } = useI18n()
   const scrollerRef = useRef<HTMLDivElement>(null)
   const [index, setIndex] = useState(0)
   const [failed, setFailed] = useState<Set<string>>(() => new Set())
@@ -495,7 +503,7 @@ function PhotoCarousel({ images, alt }: { images: string[]; alt: string }) {
               key={src}
               type="button"
               className={i === index ? 'is-active' : ''}
-              aria-label={`Фото ${i + 1} из ${slides.length}`}
+              aria-label={t('Фото {n} из {total}', { n: i + 1, total: slides.length })}
               aria-current={i === index ? 'true' : undefined}
               onClick={() => goTo(i)}
             />
@@ -507,12 +515,13 @@ function PhotoCarousel({ images, alt }: { images: string[]; alt: string }) {
 }
 
 function SizeGuideSheet({ onClose }: { onClose: () => void }) {
+  const { t } = useI18n()
   return (
     <div className="size-guide" role="presentation">
       <button
         type="button"
         className="size-guide__backdrop"
-        aria-label="Закрыть"
+        aria-label={t('Закрыть')}
         onClick={onClose}
       />
       <div
@@ -522,11 +531,11 @@ function SizeGuideSheet({ onClose }: { onClose: () => void }) {
         aria-labelledby="size-guide-title"
       >
         <header className="size-guide__head">
-          <h2 id="size-guide-title">Как определить размер обуви</h2>
+          <h2 id="size-guide-title">{t('Как определить размер обуви')}</h2>
           <button
             type="button"
             className="size-guide__close"
-            aria-label="Закрыть"
+            aria-label={t('Закрыть')}
             onClick={onClose}
           >
             <CloseIcon />
@@ -535,22 +544,21 @@ function SizeGuideSheet({ onClose }: { onClose: () => void }) {
 
         <div className="size-guide__body">
           <p className="size-guide__intro">
-            Поставьте ногу на чистый лист бумаги. Измерьте расстояние от
-            основания пятки до крайней точки самого длинного пальца. Измерьте
-            обе стопы и используйте наибольшее значение для определения размера.
-            При выборе размера ориентируйтесь на длину стопы.
+            {t(
+              'Поставьте ногу на чистый лист бумаги. Измерьте расстояние от основания пятки до крайней точки самого длинного пальца. Измерьте обе стопы и используйте наибольшее значение для определения размера. При выборе размера ориентируйтесь на длину стопы.',
+            )}
           </p>
 
           <ol className="size-guide__steps">
             {SIZE_GUIDE_STEPS.map((step, i) => (
               <li key={step.caption} className="size-guide__step">
                 <img src={step.image} alt="" draggable={false} />
-                <p>{step.caption}</p>
+                <p>{t(step.caption)}</p>
                 {i === SIZE_GUIDE_STEPS.length - 1 && (
                   <img
                     className="size-guide__chart"
                     src={sizeChartImg}
-                    alt="Размерная сетка: EU, M/W и мм"
+                    alt={t('Размерная сетка: EU, M/W и мм')}
                     draggable={false}
                   />
                 )}
@@ -587,10 +595,11 @@ function productShareUrl(product: Product) {
 }
 
 function productShareText(product: Product) {
-  return `${product.name} — ${formatPrice(product.price)} · MAGIC SHOES`
+  return `${product.name} — ${formatPrice(product.price)} · FIVE SEASONS`
 }
 
 function ShareButton({ product }: { product: Product }) {
+  const { t } = useI18n()
   const [open, setOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
@@ -611,8 +620,8 @@ function ShareButton({ product }: { product: Product }) {
 
   useEffect(() => {
     if (!copied) return
-    const t = window.setTimeout(() => setCopied(false), 1800)
-    return () => window.clearTimeout(t)
+    const timer = window.setTimeout(() => setCopied(false), 1800)
+    return () => window.clearTimeout(timer)
   }, [copied])
 
   const shareNative = async () => {
@@ -637,7 +646,7 @@ function ShareButton({ product }: { product: Product }) {
       await navigator.clipboard.writeText(url)
       setCopied(true)
     } catch {
-      window.prompt('Скопируйте ссылку:', url)
+      window.prompt(t('Скопируйте ссылку:'), url)
     }
   }
 
@@ -654,7 +663,7 @@ function ShareButton({ product }: { product: Product }) {
     },
     {
       id: 'vk',
-      label: 'ВКонтакте',
+      label: t('ВКонтакте'),
       href: `https://vk.com/share.php?url=${encodedUrl}&title=${encodedText}`,
     },
   ] as const
@@ -663,7 +672,7 @@ function ShareButton({ product }: { product: Product }) {
     <div ref={wrapRef} className={`pdp-share${open ? ' is-open' : ''}`}>
       <button
         type="button"
-        aria-label="Поделиться"
+        aria-label={t('Поделиться')}
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={onShareClick}
@@ -672,7 +681,7 @@ function ShareButton({ product }: { product: Product }) {
       </button>
 
       {open && (
-        <div className="pdp-share__menu" role="menu" aria-label="Поделиться в соцсетях">
+        <div className="pdp-share__menu" role="menu" aria-label={t('Поделиться в соцсетях')}>
           {networks.map((n) => (
             <a
               key={n.id}
@@ -694,7 +703,7 @@ function ShareButton({ product }: { product: Product }) {
             onClick={copyLink}
           >
             <ShareNetworkIcon id="copy" />
-            {copied ? 'Скопировано' : 'Скопировать ссылку'}
+            {t(copied ? 'Скопировано' : 'Скопировать ссылку')}
           </button>
         </div>
       )}
@@ -737,6 +746,7 @@ function canHover() {
 }
 
 function OriginalityInfo() {
+  const { t } = useI18n()
   const [open, setOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
   const closeTimer = useRef<number | null>(null)
@@ -787,7 +797,7 @@ function OriginalityInfo() {
       <button
         type="button"
         className="pdp-original__info-btn"
-        aria-label="Об оригинальности"
+        aria-label={t('Об оригинальности')}
         aria-expanded={open}
         aria-controls="pdp-originality-tip"
         onClick={() => setOpen((v) => !v)}
@@ -807,21 +817,21 @@ function OriginalityInfo() {
           <button
             type="button"
             className="pdp-original__popover-close"
-            aria-label="Закрыть"
+            aria-label={t('Закрыть')}
             onClick={() => setOpen(false)}
           >
             <CloseIcon />
           </button>
-          <h3 id="pdp-originality-title">100% оригинальная продукция</h3>
+          <h3 id="pdp-originality-title">{t('100% оригинальная продукция')}</h3>
           <p className="pdp-original__popover-lead">
-            Мы поставляем исключительно оригинальную обувь Crocs напрямую из
-            Вьетнама — ключевого региона производства бренда, где выпускается
-            более половина мирового объема.
+            {t(
+              'Мы поставляем исключительно оригинальную обувь Crocs напрямую из Вьетнама — ключевого региона производства бренда, где выпускается более половина мирового объема.',
+            )}
           </p>
           <p>
-            Поставки и контроль качества осуществляются в рамках прямых
-            соглашений с производителем и под курированием официального офиса
-            компании в Saigon Centre Tower 2 (Хошимин).
+            {t(
+              'Поставки и контроль качества осуществляются в рамках прямых соглашений с производителем и под курированием официального офиса компании в Saigon Centre Tower 2 (Хошимин).',
+            )}
           </p>
         </div>
       )}

@@ -1,7 +1,16 @@
 import { useMemo, useState } from 'react'
-import { products, top20, type Category, type Product } from '../data/products'
+import {
+  brandsOf,
+  products,
+  top20,
+  type Category,
+  type Product,
+} from '../data/products'
+import { brands } from '../data/brands'
 import { useStore } from '../store'
 import { ProductCard } from './ProductCard'
+import { BrandTile } from './BrandsPage'
+import { useI18n } from '../i18n'
 
 type Audience = 'adults' | 'kids'
 type CardSize = 'wide' | 'narrow' | 'half' | 'full'
@@ -135,6 +144,7 @@ function BackChevron() {
 
 export function CatalogPage() {
   const { catalogFilter, setCatalogFilter, search, setSearch } = useStore()
+  const { t } = useI18n()
   const [audience, setAudience] = useState<Audience>('adults')
   const [sectionId, setSectionId] = useState<string | null>(null)
 
@@ -160,9 +170,17 @@ export function CatalogPage() {
     list = products.filter((p) => p.category === (catalogFilter as Category))
   }
 
-  if (search.trim()) {
-    const q = search.trim().toLowerCase()
-    list = list.filter((p) => p.name.toLowerCase().includes(q))
+  const q = search.trim().toLowerCase()
+  const matchedBrands = q
+    ? brands.filter((b) => b.name.toLowerCase().includes(q)).slice(0, 8)
+    : []
+
+  if (q) {
+    list = list.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        matchedBrands.some((b) => brandsOf(p).includes(b.slug)),
+    )
   }
 
   const openSection = (id: string) => {
@@ -182,12 +200,13 @@ export function CatalogPage() {
     setSearch('')
   }
 
-  const sectionTitle =
+  const sectionTitle = t(
     sectionId === 'all'
       ? 'Все товары'
       : (activeSection?.label ??
         filters.find((f) => f.id === catalogFilter)?.label ??
-        (search.trim() ? 'Поиск' : 'Каталог'))
+        (search.trim() ? 'Поиск' : 'Каталог')),
+  )
 
   return (
     <div className="page catalog">
@@ -201,12 +220,12 @@ export function CatalogPage() {
             type="button"
             className="catalog-back"
             onClick={backToBrowse}
-            aria-label="Назад"
+            aria-label={t('Назад')}
           >
             <BackChevron />
           </button>
         )}
-        <h1>{showBrowse ? 'Каталог' : sectionTitle}</h1>
+        <h1>{showBrowse ? t('Каталог') : sectionTitle}</h1>
         <label className="search">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2">
             <circle cx="11" cy="11" r="7" />
@@ -214,7 +233,7 @@ export function CatalogPage() {
           </svg>
           <input
             type="search"
-            placeholder="Найти Crocs или Jibbitz"
+            placeholder={t('Найти бренд, обувь или одежду')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -223,7 +242,7 @@ export function CatalogPage() {
 
       {showBrowse ? (
         <>
-          <div className="gender-tabs" role="tablist" aria-label="Возраст">
+          <div className="gender-tabs" role="tablist" aria-label={t('Возраст')}>
             <button
               type="button"
               role="tab"
@@ -231,7 +250,7 @@ export function CatalogPage() {
               className={`gender-tabs__btn ${audience === 'adults' ? 'is-active' : ''}`}
               onClick={() => setAudience('adults')}
             >
-              Взрослым
+              {t('Взрослым')}
             </button>
             <button
               type="button"
@@ -240,12 +259,12 @@ export function CatalogPage() {
               className={`gender-tabs__btn ${audience === 'kids' ? 'is-active' : ''}`}
               onClick={() => setAudience('kids')}
             >
-              Детям
+              {t('Детям')}
             </button>
           </div>
 
           <CatalogSection
-            title="Обувь"
+            title={t('Обувь')}
             sections={shoeSections}
             audience={audience}
             onAll={() => openSection('all')}
@@ -253,7 +272,7 @@ export function CatalogPage() {
           />
 
           <CatalogSection
-            title="Аксессуары"
+            title={t('Аксессуары')}
             sections={accessorySections}
             audience={audience}
             onAll={() => openSection('jibbitz')}
@@ -273,13 +292,21 @@ export function CatalogPage() {
                   }`}
                   onClick={() => selectFilter(f.id)}
                 >
-                  {f.label}
+                  {t(f.label)}
                 </button>
               ))}
             </div>
           )}
 
-          <p className="catalog-count">{list.length} товаров</p>
+          {matchedBrands.length > 0 && (
+            <div className="brand-grid catalog-brands">
+              {matchedBrands.map((b) => (
+                <BrandTile key={b.slug} brand={b} />
+              ))}
+            </div>
+          )}
+
+          <p className="catalog-count">{t('{n} товаров', { n: list.length })}</p>
 
           <div className="product-grid">
             {list.map((p) => (
@@ -288,7 +315,7 @@ export function CatalogPage() {
           </div>
 
           {list.length === 0 && (
-            <p className="empty">Ничего не найдено. Попробуйте другой запрос.</p>
+            <p className="empty">{t('Ничего не найдено. Попробуйте другой запрос.')}</p>
           )}
         </>
       )}
@@ -309,12 +336,13 @@ function CatalogSection({
   onAll: () => void
   onOpen: (id: string) => void
 }) {
+  const { t } = useI18n()
   return (
     <section className="catalog-section">
       <div className="section__head">
         <h2>{title}</h2>
         <button type="button" className="section__all" onClick={onAll}>
-          Все <Chevron />
+          {t('Все')} <Chevron />
         </button>
       </div>
       <div className="catalog-mosaic">
@@ -332,7 +360,7 @@ function CatalogSection({
               className={`catalog-tile catalog-tile--${s.size}`}
               onClick={() => onOpen(s.id)}
             >
-              <span className="catalog-tile__label">{s.label}</span>
+              <span className="catalog-tile__label">{t(s.label)}</span>
               {mediaMode === 'stack' ? (
                 <div className="catalog-tile__media catalog-tile__media--stack" aria-hidden>
                   {stack!.map((src, i) => (

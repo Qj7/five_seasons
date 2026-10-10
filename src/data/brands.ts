@@ -1,0 +1,152 @@
+export type BrandGroup =
+  | 'footwear'
+  | 'clothing'
+  | 'luxury'
+  | 'accessories'
+  | 'collectibles'
+
+export interface Brand {
+  slug: string
+  name: string
+  logo: string
+  group: BrandGroup
+}
+
+export const brandGroups: { id: BrandGroup; label: string }[] = [
+  { id: 'footwear', label: 'Обувь' },
+  { id: 'clothing', label: 'Одежда' },
+  { id: 'luxury', label: 'Люкс' },
+  { id: 'accessories', label: 'Аксессуары' },
+  { id: 'collectibles', label: 'Коллекционное' },
+]
+
+const b = (slug: string, name: string, group: BrandGroup): Brand => ({
+  slug,
+  name,
+  group,
+  logo: `${import.meta.env.BASE_URL}brands/logos/${slug}.webp`,
+})
+
+/** Popular brands, in storefront order (top 10 first, then A–Z). */
+export const brands: Brand[] = [
+  b('nike', 'Nike', 'footwear'),
+  b('new-balance', 'New Balance', 'footwear'),
+  b('adidas', 'Adidas', 'footwear'),
+  b('jordan', 'Jordan', 'footwear'),
+  b('asics', 'ASICS', 'footwear'),
+  b('stone-island', 'Stone Island', 'clothing'),
+  b('puma', 'Puma', 'footwear'),
+  b('converse', 'Converse', 'footwear'),
+  b('vans', 'Vans', 'footwear'),
+  b('timberland', 'Timberland', 'footwear'),
+  b('361', '361°', 'footwear'),
+  b('714street', '714Street', 'footwear'),
+  b('a-bathing-ape', 'A BATHING APE', 'clothing'),
+  b('a-square-roota', 'A Square Roota', 'clothing'),
+  b('arcteryx', 'Arcteryx', 'clothing'),
+  b('berbrick', 'BE@RBRICK', 'collectibles'),
+  b('balenciaga', 'Balenciaga', 'luxury'),
+  b('birkenstock', 'Birkenstock', 'footwear'),
+  b('burberry', 'Burberry', 'luxury'),
+  b('calvin-klein', 'Calvin Klein', 'clothing'),
+  b('carhartt', 'Carhartt', 'clothing'),
+  b('carhartt-wip', 'Carhartt WIP', 'clothing'),
+  b('cartier', 'Cartier', 'luxury'),
+  b('casio', 'Casio', 'accessories'),
+  b('cat', 'Cat', 'footwear'),
+  b('catsofa', 'Cat&Sofa', 'clothing'),
+  b('champion', 'Champion', 'clothing'),
+  b('chanel', 'Chanel', 'luxury'),
+  b('coach', 'Coach', 'luxury'),
+  b('crocs', 'Crocs', 'footwear'),
+  b('dickies', 'Dickies', 'clothing'),
+  b('dior', 'Dior', 'luxury'),
+  b('drmartens', 'Dr.Martens', 'footwear'),
+  b('eqlz', 'Eqlz', 'clothing'),
+  b('fila', 'FILA', 'footwear'),
+  b('fear-of-god-essentials', 'Fear Of God Essentials', 'clothing'),
+  b('gap', 'Gap', 'clothing'),
+  b('golden-goose', 'Golden Goose', 'footwear'),
+  b('golfcross', 'Golfcross', 'clothing'),
+  b('gucci', 'Gucci', 'luxury'),
+  b('harsh-and-cruel', 'Harsh And Cruel', 'clothing'),
+  b('hermes', 'Hermes', 'luxury'),
+  b('hoka-one-one', 'Hoka One One', 'footwear'),
+  b('jeep', 'Jeep', 'clothing'),
+  b('kappa', 'Kappa', 'clothing'),
+  b('kawasaki', 'Kawasaki', 'clothing'),
+  b('lacoste', 'Lacoste', 'clothing'),
+  b('lego', 'Lego', 'collectibles'),
+  b('levis', "Levi's", 'clothing'),
+  b('li-ning', 'Li Ning', 'footwear'),
+  b('longchamp', 'Longchamp', 'luxury'),
+  b('louis-vuitton', 'Louis Vuitton', 'luxury'),
+  b('mlb', 'MLB', 'clothing'),
+  b('maison-margiela', 'Maison Margiela', 'luxury'),
+  b('michael-kors', 'Michael Kors', 'luxury'),
+  b('mihara-yasuhiro', 'Mihara Yasuhiro', 'footwear'),
+  b('mind-error', 'Mind Error', 'clothing'),
+  b('miu-miu', 'Miu Miu', 'luxury'),
+  b('mizuno', 'Mizuno', 'footwear'),
+  b('moon-boot', 'Moon Boot', 'footwear'),
+  b('muva', 'Muva', 'clothing'),
+  b('native-shoes', 'Native Shoes', 'footwear'),
+  b('new-era', 'New Era', 'accessories'),
+  b('nothomme', 'Nothomme', 'clothing'),
+  b('oakley', 'Oakley', 'accessories'),
+  b('ocai', 'Ocai', 'footwear'),
+  b('old-order', 'Old Order', 'clothing'),
+  b('ollieskate', 'Ollieskate', 'footwear'),
+  b('on', 'On', 'footwear'),
+  b('onitsuka-tiger', 'Onitsuka Tiger', 'footwear'),
+  b('osiris', 'Osiris', 'footwear'),
+  b('pandora', 'Pandora', 'accessories'),
+  b('pop-mart', 'Pop Mart', 'collectibles'),
+  b('prada', 'Prada', 'luxury'),
+  b('ralph-lauren', 'Ralph Lauren', 'clothing'),
+  b('reebok', 'Reebok', 'footwear'),
+  b('saint-laurent', 'Saint Laurent', 'luxury'),
+  b('salomon', 'Salomon', 'footwear'),
+  b('saucony', 'Saucony', 'footwear'),
+  b('sesame-street', 'Sesame Street', 'collectibles'),
+  b('skechers', 'Skechers', 'footwear'),
+  b('sprayground', 'Sprayground', 'accessories'),
+  b('stussy', 'Stussy', 'clothing'),
+  b('supreme', 'Supreme', 'clothing'),
+  b('swarovski', 'Swarovski', 'accessories'),
+  b('the-north-face', 'The North Face', 'clothing'),
+  b('the-simpsons', 'The Simpsons', 'collectibles'),
+  b('thrasher', 'Thrasher', 'clothing'),
+  b('tiffany-co', 'Tiffany & Co.', 'luxury'),
+  b('tissot', 'Tissot', 'accessories'),
+  b('travis-scott', 'Travis Scott', 'clothing'),
+  b('ugg', 'Ugg', 'footwear'),
+  b('under-armour', 'Under Armour', 'clothing'),
+  b('uniqlo', 'Uniqlo', 'clothing'),
+  b('victorias-secret', "Victoria's Secret", 'clothing'),
+  b('vivienne-westwood', 'Vivienne Westwood', 'luxury'),
+  b('vlone', 'Vlone', 'clothing'),
+  b('y-3', 'Y-3', 'clothing'),
+  b('yeezy', 'YEEZY', 'footwear'),
+]
+
+export const brandBySlug = (slug: string) => brands.find((x) => x.slug === slug)
+
+/** Shown on the home screen grid. */
+export const featuredBrandSlugs = [
+  'nike',
+  'adidas',
+  'new-balance',
+  'jordan',
+  'asics',
+  'puma',
+  'converse',
+  'vans',
+  'crocs',
+  'a-bathing-ape',
+  'stone-island',
+  'the-north-face',
+  'supreme',
+  'stussy',
+  'salomon',
+]

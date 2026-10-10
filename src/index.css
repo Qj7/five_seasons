@@ -12,9 +12,15 @@
   --text: #111111;
   --muted: #8a8a8a;
   --border: #ebebeb;
-  --blue: #76ba0f;
-  --orange: #76ba0f;
-  --orange-soft: #8fd41a;
+  --surface: var(--bg-soft);
+  --accent: #d42a1e;
+  --accent-soft: #f0533f;
+  --accent-deep: #a8190f;
+  --accent-tint: #fdecea;
+  --flag-red: #d92a1f;
+  --flag-blue: #3b8fea;
+  --flag-yellow: #ffe11a;
+  --flag-green: #146b30;
   --radius: 18px;
   --nav-h: 64px;
   --font: 'DM Sans', system-ui, sans-serif;

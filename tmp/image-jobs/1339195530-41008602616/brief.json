@@ -1,17 +1,67 @@
 {
+  "jobDir": "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616",
+  "regenReason": "Previous AI tiles had wrong Jibbitz: fake text ('A BATHING APE' / truncated 'APE'), wrong charm mix on one shoe, non-authentic placement. User supplied real pair refs — regenerate all 8 colorways.",
+  "badgeCanon": {
+    "source": "user-refs (authoritative) + Shopee originals for camo color only",
+    "pairLayout": {
+      "shoeA_icons": {
+        "charms": [
+          "BAPE Shark Face — white head, red gums, jagged white teeth, black/white eyes; upper-center toe box",
+          "BAPE Tiger Face — yellow/black stylized tiger; lower-outer relative to shark",
+          "BAPE Ape Head — classic brown silhouette with yellow face; lower-inner relative to shark"
+        ],
+        "count": 3,
+        "note": "These three ONLY on this shoe. Clustered on forefoot ventilation holes."
+      },
+      "shoeB_text": {
+        "charms": [
+          "Rounded-rectangle black badge, raised white block letters in exactly THREE stacked lines reading APE / NEVER / APE (verified against real retail photos hypebeast 2025). Never write 'A BATHING APE', never 4+ lines, never mirrored or misspelled letters.",
+          "Baby Milo — small brown cartoon monkey full-body or head; beside the text badge on the outer toe"
+        ],
+        "count": 2
+      }
+    },
+    "catalogSingleShoe": "For EVERY single-shoe output (cutout + front + top + heel) use shoeA_icons only (Shark + Tiger + Ape Head). Do NOT put text badge or Baby Milo on the same shoe. Do NOT put all five charms on one clog."
+  },
+  "sharedNotes": [
+    "Model: BAPE × Crocs Classic All-Terrain Clog — rugged sole, nylon webbing heel strap with camo print + Velcro/buckle adjuster, circular pivot rivet (often silver with ®).",
+    "Camo: authentic BAPE ABC Camo with ape-head silhouettes integrated into blobs. Match EACH SKU's Shopee identity photo colors exactly.",
+    "Footbed: solid color matching the camo base; white crocs wordmark + small printed BAPE ape head at heel when visible (top).",
+    "NEVER use previous public/products/new/bape-*.png AI tiles as identity refs.",
+    "Cutout: chroma magenta #FF00FF background, toe RIGHT, strict side profile, no floor/shadow/halo. Then fit_canvas.py --cutout --key-magenta.",
+    "Gallery: white studio 1536×1024, match classic-white-{front|top|heel} camera; fit_canvas.py --gallery."
+  ],
+  "goldCamera": {
+    "cutoutFramingNote": "/Users/v/projects/lazy_shoes/public/products/new/classic-white.png",
+    "front": "/Users/v/projects/lazy_shoes/public/products/new/gallery/classic-white-front.png",
+    "top": "/Users/v/projects/lazy_shoes/public/products/new/gallery/classic-white-top.png",
+    "heel": "/Users/v/projects/lazy_shoes/public/products/new/gallery/classic-white-heel.png"
+  },
+  "userBadgeRefs": [
+    "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-pair-handheld.jpg",
+    "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-studio-3q.jpg",
+    "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-topdown.jpg"
+  ],
   "skus": [
     {
       "id": "bape-blue",
       "colorName": "Blue",
       "stem": "bape-blue",
+      "camo": "ABC camo in sky/cyan/navy blue + white",
       "identityRefs": [
         "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/02.jpg"
+      ],
+      "badgeRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-pair-handheld.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-topdown.jpg"
       ],
       "angleRefs": {
         "front": [
           "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/02.jpg"
         ],
-        "top": [],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-topdown.jpg"
+        ],
         "heel": []
       }
     },
@@ -19,14 +69,21 @@
       "id": "bape-purple",
       "colorName": "Purple",
       "stem": "bape-purple",
+      "camo": "ABC camo in lavender/violet/magenta purple",
       "identityRefs": [
         "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/07.jpg"
+      ],
+      "badgeRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-pair-handheld.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-topdown.jpg"
       ],
       "angleRefs": {
         "front": [
           "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/07.jpg"
         ],
-        "top": [],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-topdown.jpg"
+        ],
         "heel": []
       }
     },
@@ -34,29 +91,50 @@
       "id": "bape-pink",
       "colorName": "Pink",
       "stem": "bape-pink",
+      "camo": "ABC camo in baby pink / bubblegum / deep red-pink",
       "identityRefs": [
-        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/03.jpg"
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/03.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-pair-handheld.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-studio-3q.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-topdown.jpg"
+      ],
+      "badgeRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-pair-handheld.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-studio-3q.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-topdown.jpg"
       ],
       "angleRefs": {
         "front": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-studio-3q.jpg",
           "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/03.jpg"
         ],
-        "top": [],
-        "heel": []
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-topdown.jpg"
+        ],
+        "heel": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-studio-3q.jpg"
+        ]
       }
     },
     {
       "id": "bape-army-green",
       "colorName": "Army Green",
       "stem": "bape-army-green",
+      "camo": "ABC camo in tan/lime/forest green/chocolate brown",
       "identityRefs": [
         "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/04.jpg"
+      ],
+      "badgeRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-pair-handheld.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-topdown.jpg"
       ],
       "angleRefs": {
         "front": [
           "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/04.jpg"
         ],
-        "top": [],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-topdown.jpg"
+        ],
         "heel": []
       }
     },
@@ -64,60 +142,85 @@
       "id": "bape-black",
       "colorName": "Black",
       "stem": "bape-black",
+      "camo": "ABC camo in black / charcoal / dark grey",
       "identityRefs": [
         "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/05.jpg"
+      ],
+      "badgeRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-pair-handheld.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-topdown.jpg"
       ],
       "angleRefs": {
         "front": [
           "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/05.jpg"
         ],
-        "top": [],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-topdown.jpg"
+        ],
         "heel": []
-      },
-      "notes": "Darkest dedicated pair-on-box shot (black/charcoal ABC camo). Also appears in 00.jpg collage, top-left panel."
+      }
     },
     {
       "id": "bape-dark-grey",
       "colorName": "Dark Grey",
       "stem": "bape-dark-grey",
+      "camo": "ABC camo greyscale dark charcoal / mid grey / white (darker than bape-grey)",
       "identityRefs": [
         "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/08.jpg"
       ],
+      "badgeRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-pair-handheld.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-topdown.jpg"
+      ],
       "angleRefs": {
         "front": [],
-        "top": [],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-topdown.jpg"
+        ],
         "heel": []
-      },
-      "notes": "Warehouse handheld side profile only; no front/top/heel. Also in 00.jpg collage, middle-left panel."
+      }
     },
     {
       "id": "bape-grey",
       "colorName": "Grey",
       "stem": "bape-grey",
+      "camo": "ABC camo light grey / medium grey / off-white (lighter than bape-dark-grey)",
       "identityRefs": [
         "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/06.jpg"
+      ],
+      "badgeRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-pair-handheld.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-topdown.jpg"
       ],
       "angleRefs": {
         "front": [
           "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/06.jpg"
         ],
-        "top": [],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-topdown.jpg"
+        ],
         "heel": []
-      },
-      "notes": "Light grey/white ABC camo, handheld three-quarter. Also in 00.jpg collage, top-right panel."
+      }
     },
     {
       "id": "bape-light-brown",
       "colorName": "Light Brown",
       "stem": "bape-light-brown",
+      "camo": "ABC camo light tan / beige / medium brown / dark brown",
       "identityRefs": [
         "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/09.jpg"
+      ],
+      "badgeRefs": [
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-pair-handheld.jpg",
+        "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-topdown.jpg"
       ],
       "angleRefs": {
         "front": [
           "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/originals/09.jpg"
         ],
-        "top": [],
+        "top": [
+          "/Users/v/projects/lazy_shoes/tmp/image-jobs/1339195530-41008602616/user-refs/pink-topdown.jpg"
+        ],
         "heel": []
       }
     }
