@@ -136,8 +136,8 @@ export function ProfilePage() {
           <UserAvatar size={48} />
         </span>
         <div>
-          <h2>Five Seasons</h2>
-          <p>Crocs · Jibbitz · Collabs</p>
+          <h2>John Doe</h2>
+          <p>{t('Gold-участник · 1 250 баллов')}</p>
         </div>
       </div>
       <ul className="profile-menu">

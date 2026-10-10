@@ -182,15 +182,13 @@
 }
 
 .brand-logo__name {
-  font-family: var(--display);
-  font-weight: 800;
-  font-size: 1.12rem;
+  font-family: 'Outfit', var(--font);
+  font-weight: 700;
+  font-size: 1.32rem;
   line-height: 1;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.08em;
   color: var(--text);
   display: inline-block;
-  transform: scaleY(1.8);
-  transform-origin: center;
 }
 
 .brand-logo--compact {
@@ -198,8 +196,8 @@
 }
 
 .brand-logo--compact .brand-logo__name {
-  font-size: 0.88rem;
-  letter-spacing: 0.12em;
+  font-size: 1rem;
+  letter-spacing: 0.07em;
 }
 
 .page-header {
