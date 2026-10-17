@@ -1,12 +1,16 @@
-import { products, formatPrice } from '../data/products'
+import { formatPrice } from '../data/products'
+import { useCatalog } from '../catalog'
+import { useAuth } from '../auth'
 import { useStore } from '../store'
 import { ProductCard } from './ProductCard'
 import { CrocVisual } from './CrocVisual'
 import { UserAvatar } from './UserAvatar'
+import { AuthForm } from './AuthForm'
 import { useI18n } from '../i18n'
 
 export function FavoritesPage() {
   const { favorites, setTab } = useStore()
+  const { products } = useCatalog()
   const { t } = useI18n()
   const list = products.filter((p) => favorites.has(p.id))
 
@@ -36,6 +40,7 @@ export function FavoritesPage() {
 
 export function CartPage() {
   const { cart, addToCart, removeFromCart, setTab, openProduct } = useStore()
+  const { products } = useCatalog()
   const { t } = useI18n()
   const items = [...cart.entries()]
     .map(([id, qty]) => ({ product: products.find((p) => p.id === id)!, qty }))
@@ -126,6 +131,26 @@ const PROFILE_MENU = ['Мои заказы', 'Адреса доставки', '�
 
 export function ProfilePage() {
   const { t } = useI18n()
+  const { user, isManager, logout } = useAuth()
+  const { openManager } = useStore()
+
+  if (!user) {
+    return (
+      <div className="page">
+        <header className="page-header">
+          <h1>{t('Профиль')}</h1>
+        </header>
+        <p className="profile-lead">
+          {t('Войдите, чтобы сохранять заказы.')}
+        </p>
+        <AuthForm />
+        <p className="profile-note">
+          {t('Five Seasons — официальный ассортимент Classic Clog, BAPE × Crocs, Naruto × Crocs и Jibbitz.')}
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="page">
       <header className="page-header">
@@ -133,18 +158,38 @@ export function ProfilePage() {
       </header>
       <div className="profile-card">
         <span className="profile-card__avatar">
-          <UserAvatar size={48} />
+          <UserAvatar size={48} label={user.name} />
         </span>
         <div>
-          <h2>John Doe</h2>
-          <p>{t('Gold-участник · 1 250 баллов')}</p>
+          <h2>{user.name}</h2>
+          <p>
+            {isManager
+              ? t('Менеджер · {email}', { email: user.email })
+              : t('Покупатель · {email}', { email: user.email })}
+          </p>
         </div>
       </div>
+
+      {isManager ? (
+        <button
+          type="button"
+          className="btn-primary btn-primary--block profile-publish-btn"
+          onClick={openManager}
+        >
+          {t('Выложить товар')}
+        </button>
+      ) : null}
+
       <ul className="profile-menu">
         {PROFILE_MENU.map((item) => (
           <li key={item}>{t(item)}</li>
         ))}
       </ul>
+
+      <button type="button" className="btn-secondary btn-secondary--block" onClick={logout}>
+        {t('Выйти')}
+      </button>
+
       <p className="profile-note">
         {t('Five Seasons — официальный ассортимент Classic Clog, BAPE × Crocs, Naruto × Crocs и Jibbitz.')}
       </p>

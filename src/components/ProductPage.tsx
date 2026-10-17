@@ -1,4 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { A11y, FreeMode, Pagination, Thumbs, Zoom } from 'swiper/modules'
+import { Swiper, SwiperSlide, type SwiperClass } from 'swiper/react'
+import 'swiper/css'
+import 'swiper/css/pagination'
+import 'swiper/css/zoom'
 import { createPortal } from 'react-dom'
 import crocsLogo from '../assets/crocs-logo.png'
 import sizeChartImg from '../assets/size-guide/size-chart.png'
@@ -7,13 +12,15 @@ import sizeGuideStep2 from '../assets/size-guide/step-2.jpg'
 import sizeGuideStep3 from '../assets/size-guide/step-3.jpg'
 import sizeGuideStep4 from '../assets/size-guide/step-4.jpg'
 import {
+  categoryMeta,
+  departmentOf,
   formatPrice,
   galleryOf,
-  products,
   variantsOf,
-  type Category,
   type Product,
 } from '../data/products'
+import { brands } from '../data/brands'
+import { useCatalog } from '../catalog'
 import { useStore } from '../store'
 import { BrandLogo } from './BrandMark'
 import { useI18n } from '../i18n'
@@ -51,31 +58,26 @@ const SIZE_OPTIONS = [
 
 type SizeSystem = 'eu' | 'mw'
 
-const CATEGORY_TAGS: Record<Category, string[]> = {
-  classic: ['Обувь', 'Classic Clog', 'Crocs'],
-  exclusive: ['Обувь', 'Exclusive', 'Crocs'],
-  bayaband: ['Обувь', 'Bayaband', 'Crocs'],
-  bape: ['Обувь', 'BAPE × Crocs', 'Collab'],
-  naruto: ['Обувь', 'Naruto × Crocs', 'Аниме'],
-  characters: ['Обувь', 'Character Set', 'Collab'],
-  jibbitz: ['Аксессуары', 'Jibbitz', 'Украшения'],
-  popular: ['Обувь', 'Хит', 'Crocs'],
-  salehe: ['Обувь', 'Salehe Bembury', 'Collab'],
-  cars: ['Обувь', 'Cars × Crocs', 'Collab'],
-  minecraft: ['Обувь', 'Minecraft × Crocs', 'Collab'],
-  spongebob: ['Обувь', 'SpongeBob × Crocs', 'Collab'],
-  simpsons: ['Обувь', 'The Simpsons × Crocs', 'Collab'],
-  southpark: ['Обувь', 'South Park × Crocs', 'Collab'],
+function categoryTags(product: Product): string[] {
+  const dept = departmentOf(product.category)
+  const meta = categoryMeta(product.category)
+  if (product.modelGroup === 'jibbitz') return ['Аксессуары', 'Jibbitz', 'Украшения']
+  if (product.brand) {
+    const brandName = brands.find((b) => b.slug === product.brand)?.name ?? product.brand
+    return [dept?.label ?? 'Обувь', meta?.label ?? 'Кроссовки и кеды', brandName]
+  }
+  return [dept?.label ?? 'Обувь', meta?.label ?? 'Тапки', 'Crocs']
 }
 
 const FEATURES: Record<string, string> = {
   jibbitz: 'Съёмные, совместимы с Classic Clog, яркие дизайны',
+  sneakers: 'Кожа и сетка, амортизирующая подошва, повседневная посадка',
   default:
     'Лёгкие, амортизируют удары, нескользящие, износостойкие, воздухопроницаемые',
 }
 
 function heroLines(product: Product): { mark: string; lines: string[] } {
-  if (product.category === 'jibbitz') {
+  if (product.modelGroup === 'jibbitz') {
     return { mark: 'JIBBITZ', lines: product.name.replace(/^Jibbitz\s+/i, '').split(/\s+/).slice(0, 4) }
   }
 
@@ -91,6 +93,39 @@ function heroLines(product: Product): { mark: string; lines: string[] } {
   // One word per line — like the NB reference stack
   const lines = rest.split(/\s+/).filter(Boolean).slice(0, 5)
   return { mark, lines: lines.length ? lines : [product.name] }
+}
+
+/** One line, scaled so the product name fills the hero row. */
+function FitTitle({ text }: { text: string }) {
+  const ref = useRef<HTMLHeadingElement>(null)
+
+  useLayoutEffect(() => {
+    const el = ref.current
+    const box = el?.parentElement
+    if (!el || !box) return
+
+    const fit = () => {
+      const available = box.clientWidth
+      if (available <= 0) return
+      const max = 28
+      el.style.fontSize = `${max}px`
+      const width = el.scrollWidth
+      if (width <= 0) return
+      el.style.fontSize = `${Math.min(max, (available / width) * max * 0.985)}px`
+    }
+
+    fit()
+    document.fonts?.ready.then(fit)
+    const ro = new ResizeObserver(fit)
+    ro.observe(box)
+    return () => ro.disconnect()
+  }, [text])
+
+  return (
+    <h1 ref={ref} className="pdp-hero__product-name">
+      {text}
+    </h1>
+  )
 }
 
 const REVIEWS = [
@@ -113,6 +148,7 @@ const REVIEWS = [
 export function ProductPage({ productId }: { productId: string }) {
   const { closeProduct, openProduct, favorites, toggleFavorite, addToCart } =
     useStore()
+  const { products } = useCatalog()
   const { t } = useI18n()
   const product = products.find((p) => p.id === productId)
   const [sizeSystem, setSizeSystem] = useState<SizeSystem>('eu')
@@ -141,8 +177,8 @@ export function ProductPage({ productId }: { productId: string }) {
 
   const liked = product ? favorites.has(product.id) : false
   const variants = useMemo(
-    () => (product ? variantsOf(product) : []),
-    [product],
+    () => (product ? variantsOf(product, products) : []),
+    [product, products],
   )
   const { mark, lines } = useMemo(
     () => (product ? heroLines(product) : { mark: '', lines: [] }),
@@ -164,16 +200,28 @@ export function ProductPage({ productId }: { productId: string }) {
     )
   }
 
-  const tags = CATEGORY_TAGS[product.category] ?? ['Обувь', 'Crocs']
-  const features = FEATURES[product.category] ?? FEATURES.default
+  const tags = categoryTags(product)
+  const features =
+    product.modelGroup === 'jibbitz'
+      ? FEATURES.jibbitz
+      : product.category === 'sneakers'
+        ? FEATURES.sneakers
+        : FEATURES.default
+  const isStudio = product.category !== 'slippers'
+  const isSneaker =
+    product.category === 'sneakers' || product.category === 'custom-sneakers'
   const sku = product.id.replace(/-/g, '').toUpperCase()
   const expressPrice = Math.round(product.price * 1.35)
   const buyPrice = delivery === 'express' ? expressPrice : product.price
-  const isJibbitz = product.category === 'jibbitz'
+  const isJibbitz = product.modelGroup === 'jibbitz'
 
   return (
     <div className="pdp">
-      <section className="pdp-hero">
+      <section
+        className={`pdp-hero${isStudio ? ' pdp-hero--studio' : ''}${
+          isSneaker ? ' pdp-hero--sneaker' : ''
+        }`}
+      >
         <div className="pdp__topbar">
           <button
             type="button"
@@ -188,7 +236,13 @@ export function ProductPage({ productId }: { productId: string }) {
           </p>
         </div>
 
-        <div className="pdp-hero__title" aria-hidden="true">
+        {isStudio && (
+          <div className="pdp-hero__identity">
+            <FitTitle text={product.name} />
+          </div>
+        )}
+
+        {!isStudio && <div className="pdp-hero__title" aria-hidden="true">
           <img
             className="pdp-hero__logo"
             src={crocsLogo}
@@ -204,13 +258,13 @@ export function ProductPage({ productId }: { productId: string }) {
               {line}
             </span>
           ))}
-        </div>
+        </div>}
 
         <div className="pdp-hero__shoe" aria-hidden="true">
           <div className="pdp-hero__shoe-shift">
             <div className="pdp-hero__shoe-spin">
               <img
-                src={`${product.image}?cut=1`}
+                src={isStudio ? product.image : `${product.image}?cut=1`}
                 alt=""
                 draggable={false}
               />
@@ -257,7 +311,17 @@ export function ProductPage({ productId }: { productId: string }) {
           </div>
           <div>
             <h4>{t('Посадка')}</h4>
-            <p>{t(isJibbitz ? 'Универсальная' : 'Унисекс')}</p>
+            <p>
+              {t(
+                product.gender === 'men'
+                  ? 'Мужская'
+                  : product.gender === 'women'
+                    ? 'Женская'
+                    : isJibbitz
+                      ? 'Универсальная'
+                      : 'Унисекс',
+              )}
+            </p>
           </div>
         </div>
 
@@ -440,7 +504,7 @@ export function ProductPage({ productId }: { productId: string }) {
 
 function PhotoCarousel({ images, alt }: { images: string[]; alt: string }) {
   const { t } = useI18n()
-  const scrollerRef = useRef<HTMLDivElement>(null)
+  const [thumbsSwiper, setThumbsSwiper] = useState<SwiperClass | null>(null)
   const [index, setIndex] = useState(0)
   const [failed, setFailed] = useState<Set<string>>(() => new Set())
 
@@ -452,64 +516,86 @@ function PhotoCarousel({ images, alt }: { images: string[]; alt: string }) {
   useEffect(() => {
     setFailed(new Set())
     setIndex(0)
-    scrollerRef.current?.scrollTo({ left: 0 })
   }, [images])
 
-  const onScroll = () => {
-    const el = scrollerRef.current
-    if (!el) return
-    const w = el.clientWidth
-    if (!w) return
-    setIndex(Math.round(el.scrollLeft / w))
-  }
-
-  const goTo = (i: number) => {
-    const el = scrollerRef.current
-    if (!el) return
-    el.scrollTo({ left: i * el.clientWidth, behavior: 'smooth' })
+  const markFailed = (src: string) => {
+    setFailed((prev) => {
+      if (prev.has(src)) return prev
+      const next = new Set(prev)
+      next.add(src)
+      return next
+    })
   }
 
   if (slides.length === 0) return null
 
+  if (slides.length === 1) {
+    return (
+      <div className="pdp-gallery pdp-gallery--single">
+        <img
+          src={slides[0]}
+          alt={alt}
+          draggable={false}
+          onError={() => markFailed(slides[0])}
+        />
+      </div>
+    )
+  }
+
+  const photoLabel = (n: number | string) =>
+    t('Фото {n} из {total}', { n, total: slides.length })
+
   return (
-    <div className="pdp-carousel">
-      <div
-        ref={scrollerRef}
-        className="pdp-carousel__track"
-        onScroll={onScroll}
+    <div className="pdp-gallery">
+      <Swiper
+        className="pdp-gallery__main"
+        modules={[Pagination, Thumbs, Zoom, A11y]}
+        pagination={{ clickable: true }}
+        zoom={{ maxRatio: 3 }}
+        watchOverflow
+        spaceBetween={0}
+        slidesPerView={1}
+        thumbs={{
+          swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
+        }}
+        onSlideChange={(swiper) => setIndex(swiper.activeIndex)}
+        a11y={{
+          prevSlideMessage: t('Назад'),
+          nextSlideMessage: t('Далее'),
+          paginationBulletMessage: photoLabel('{{index}}'),
+        }}
       >
         {slides.map((src, i) => (
-          <div key={src} className="pdp-carousel__slide">
-            <img
-              src={src}
-              alt={i === 0 ? alt : ''}
-              draggable={false}
-              onError={() =>
-                setFailed((prev) => {
-                  if (prev.has(src)) return prev
-                  const next = new Set(prev)
-                  next.add(src)
-                  return next
-                })
-              }
-            />
-          </div>
+          <SwiperSlide key={src}>
+            <div className="swiper-zoom-container">
+              <img
+                src={src}
+                alt={i === 0 ? alt : photoLabel(i + 1)}
+                draggable={false}
+                onError={() => markFailed(src)}
+              />
+            </div>
+          </SwiperSlide>
         ))}
-      </div>
-      {slides.length > 1 && (
-        <div className="pdp-carousel__dots">
-          {slides.map((src, i) => (
-            <button
-              key={src}
-              type="button"
-              className={i === index ? 'is-active' : ''}
-              aria-label={t('Фото {n} из {total}', { n: i + 1, total: slides.length })}
-              aria-current={i === index ? 'true' : undefined}
-              onClick={() => goTo(i)}
-            />
-          ))}
-        </div>
-      )}
+      </Swiper>
+      <p className="pdp-gallery__count" aria-live="polite">
+        {photoLabel(index + 1)}
+      </p>
+      <Swiper
+        className="pdp-gallery__thumbs"
+        modules={[Thumbs, FreeMode, A11y]}
+        onSwiper={setThumbsSwiper}
+        slidesPerView="auto"
+        spaceBetween={8}
+        freeMode
+        watchSlidesProgress
+      >
+        {slides.map((src, i) => (
+          <SwiperSlide key={src} aria-label={photoLabel(i + 1)}>
+            <img src={src} alt="" draggable={false} />
+          </SwiperSlide>
+        ))}
+      </Swiper>
     </div>
   )
 }

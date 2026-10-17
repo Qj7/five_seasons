@@ -1,37 +1,122 @@
+/** Storefront departments — same shape as a clothing shop, not Crocs collab lines. */
 export type Category =
-  | 'classic'
-  | 'exclusive'
-  | 'bayaband'
-  | 'bape'
-  | 'naruto'
-  | 'characters'
-  | 'jibbitz'
-  | 'popular'
-  | 'salehe'
-  | 'cars'
-  | 'minecraft'
-  | 'spongebob'
-  | 'simpsons'
-  | 'southpark'
+  | 'sneakers'
+  | 'boots'
+  | 'custom-sneakers'
+  | 'sport-shoes'
+  | 'slippers'
+  | 'rain-boots'
+  | 'outerwear'
+  | 'tshirts'
+  | 'sweatshirts'
+  | 'hoodies'
+  | 'hats'
+  | 'jeans'
+  | 'bags'
+  | 'watches'
+  | 'glasses'
+  | 'wallets'
+  | 'cardholders'
+
+export type Gender = 'men' | 'women' | 'unisex'
+
+export interface CatalogCategory {
+  id: Category
+  label: string
+  /** Shorter chip on the listing screen */
+  short: string
+}
+
+export interface CatalogDepartment {
+  id: 'shoes' | 'clothing' | 'accessories'
+  label: string
+  menTitle: string
+  womenTitle: string
+  categories: CatalogCategory[]
+}
+
+export const catalogDepartments: CatalogDepartment[] = [
+  {
+    id: 'shoes',
+    label: 'Обувь',
+    menTitle: 'Мужская обувь',
+    womenTitle: 'Женская обувь',
+    categories: [
+      { id: 'sneakers', label: 'Кроссовки и кеды', short: 'Кроссовки' },
+      { id: 'boots', label: 'Ботинки', short: 'Ботинки' },
+      { id: 'custom-sneakers', label: 'Кастомные кроссовки', short: 'Кастомные' },
+      { id: 'sport-shoes', label: 'Обувь для спорта', short: 'Обувь для спорта' },
+      { id: 'slippers', label: 'Тапки', short: 'Тапки' },
+      { id: 'rain-boots', label: 'Сапоги', short: 'Сапоги' },
+    ],
+  },
+  {
+    id: 'clothing',
+    label: 'Одежда',
+    menTitle: 'Мужская одежда',
+    womenTitle: 'Женская одежда',
+    categories: [
+      { id: 'outerwear', label: 'Верхняя одежда', short: 'Верхняя одежда' },
+      { id: 'tshirts', label: 'Футболки', short: 'Футболки' },
+      { id: 'sweatshirts', label: 'Свитшоты', short: 'Свитшоты' },
+      { id: 'hoodies', label: 'Худи', short: 'Худи' },
+      { id: 'hats', label: 'Кепки и шапки', short: 'Кепки и шапки' },
+      { id: 'jeans', label: 'Джинсы', short: 'Джинсы' },
+    ],
+  },
+  {
+    id: 'accessories',
+    label: 'Аксессуары',
+    menTitle: 'Мужские аксессуары',
+    womenTitle: 'Женские аксессуары',
+    categories: [
+      { id: 'bags', label: 'Сумки и рюкзаки', short: 'Сумки и рюкзаки' },
+      { id: 'watches', label: 'Часы', short: 'Часы' },
+      { id: 'glasses', label: 'Очки', short: 'Очки' },
+      { id: 'wallets', label: 'Кошельки', short: 'Кошельки' },
+      { id: 'cardholders', label: 'Карточницы', short: 'Карточницы' },
+    ],
+  },
+]
+
+export const catalogCategories: CatalogCategory[] = catalogDepartments.flatMap(
+  (d) => d.categories,
+)
+
+export function departmentOf(category: Category) {
+  return catalogDepartments.find((d) => d.categories.some((c) => c.id === category))
+}
+
+export function categoryMeta(category: Category) {
+  return catalogCategories.find((c) => c.id === category)
+}
 
 export interface Product {
   id: string
   name: string
   price: number
   category: Category
+  /** men / women / both. Missing means both — current Crocs are unisex. */
+  gender?: Gender
   color: string
   accent: string
   /** English color / variant label for the picker */
   colorName: string
   /** Groups colorways of the same model on PDP */
   modelGroup: string
+  /** Brand slug from the brands list. Missing means Crocs. */
+  brand?: string
   image: string
+  /** Optional PDP carousel; manager-published items usually set this. */
+  gallery?: string[]
   tag?: string
   delivery: string
   returnable?: boolean
   popularRank?: number
   fromPrice?: boolean
   soldOut?: boolean
+  /** Manager who published this SKU (runtime catalog only). */
+  publishedBy?: string
 }
 
 export const formatPrice = (n: number) =>
@@ -43,6 +128,29 @@ const asset = (path: string) =>
 
 const img = (file: string) => asset(`products/new/${file}`)
 const imgLegacy = (file: string) => asset(`products/${file}`)
+
+const shoeImg = (file: string) => asset(`products/sneakers/${file}`)
+
+const shoeGallery = (folder: string, files: string[]) =>
+  files.map((file) => shoeImg(`${folder}/${file}`))
+
+function shoe(
+  partial: Omit<Product, 'delivery' | 'returnable' | 'accent' | 'category' | 'gender'> & {
+    delivery?: string
+    returnable?: boolean
+    accent?: string
+    gender?: Gender
+  },
+): Product {
+  return {
+    delivery: partial.delivery ?? '3 дня',
+    returnable: partial.returnable ?? true,
+    accent: partial.accent ?? '#f4f4f4',
+    gender: partial.gender ?? 'men',
+    ...partial,
+    category: 'sneakers',
+  }
+}
 
 function p(
   partial: Omit<Product, 'delivery' | 'returnable' | 'accent'> & {
@@ -56,16 +164,78 @@ function p(
     returnable: partial.returnable ?? true,
     accent: partial.accent ?? '#e8e8e8',
     ...partial,
+    // Every built-in SKU is a Crocs clog or Jibbitz — they live under slippers.
+    category: 'slippers',
   }
 }
 
-export const products: Product[] = [
+/** Built-in catalog. Runtime catalog merges manager-published SKUs on top. */
+export const baseProducts: Product[] = [
+  shoe({
+    id: 'nb-530-white',
+    name: 'New Balance 530 White Silver Navy',
+    price: 2790000,
+    color: '#f4f4f4',
+    colorName: 'White Silver Navy',
+    modelGroup: 'nb-530',
+    brand: 'new-balance',
+    image: shoeImg('nb-530-white.jpg'),
+    gallery: shoeGallery('nb-530-white', [
+      '01.jpg',
+      '02.jpg',
+      '03.jpg',
+      '04.jpg',
+      '05.jpg',
+    ]),
+    delivery: '1-2 дня',
+  }),
+  shoe({
+    id: 'dunk-cacao',
+    name: 'Nike Dunk Low "Cacao Wow"',
+    price: 3090000,
+    color: '#6b3a2a',
+    colorName: 'Cacao Wow',
+    modelGroup: 'dunk-low',
+    brand: 'nike',
+    image: shoeImg('dunk-cacao.jpg'),
+    gallery: shoeGallery('dunk-cacao', [
+      '03.jpg',
+      '01.jpg',
+      '05.jpg',
+      '04.jpg',
+      '06.jpg',
+      '02.jpg',
+      '07.jpg',
+    ]),
+    delivery: '1-2 дня',
+  }),
+  shoe({
+    id: 'aj1-chicago',
+    name: 'Nike Air Jordan 1 High White Red',
+    price: 4590000,
+    color: '#d0121a',
+    colorName: 'White Red',
+    modelGroup: 'aj1',
+    brand: 'jordan',
+    image: shoeImg('aj1-chicago.jpg'),
+    gallery: shoeGallery('aj1-chicago', [
+      '01.jpg',
+      '02.jpg',
+      '03.jpg',
+      '04.jpg',
+      '05.jpg',
+      '06.jpg',
+      '07.jpg',
+    ]),
+    delivery: '1-2 дня',
+  }),
+
   // —— Classic ——
   p({
     id: 'classic-white',
     name: 'Classic Clog · White',
     price: 1799000,
-    category: 'classic',
+    category: 'slippers',
     color: '#f5f5f5',
     colorName: 'White',
     modelGroup: 'classic',
@@ -77,7 +247,7 @@ export const products: Product[] = [
     id: 'classic-black',
     name: 'Classic Clog · Black',
     price: 1799000,
-    category: 'classic',
+    category: 'slippers',
     color: '#1a1a1a',
     colorName: 'Black',
     modelGroup: 'classic',
@@ -89,7 +259,7 @@ export const products: Product[] = [
     id: 'classic-navy',
     name: 'Classic Clog · Navy',
     price: 1799000,
-    category: 'classic',
+    category: 'slippers',
     color: '#1e3a5f',
     colorName: 'Navy',
     modelGroup: 'classic',
@@ -100,7 +270,7 @@ export const products: Product[] = [
     id: 'classic-grey',
     name: 'Classic Clog · Grey',
     price: 1799000,
-    category: 'classic',
+    category: 'slippers',
     color: '#9e9e9e',
     colorName: 'Grey',
     modelGroup: 'classic',
@@ -114,7 +284,7 @@ export const products: Product[] = [
     id: 'excl-mint',
     name: 'Exclusive Clog · Mint',
     price: 1949000,
-    category: 'exclusive',
+    category: 'slippers',
     color: '#b8e0d2',
     colorName: 'Mint',
     modelGroup: 'exclusive',
@@ -126,7 +296,7 @@ export const products: Product[] = [
     id: 'excl-pink',
     name: 'Exclusive Clog · Pink',
     price: 1949000,
-    category: 'exclusive',
+    category: 'slippers',
     color: '#f5c6d0',
     colorName: 'Pink',
     modelGroup: 'exclusive',
@@ -137,7 +307,7 @@ export const products: Product[] = [
     id: 'excl-beige',
     name: 'Exclusive Clog · Beige',
     price: 1949000,
-    category: 'exclusive',
+    category: 'slippers',
     color: '#d4c4a8',
     colorName: 'Beige',
     modelGroup: 'exclusive',
@@ -148,7 +318,7 @@ export const products: Product[] = [
     id: 'excl-blue',
     name: 'Exclusive Clog · Blue',
     price: 1949000,
-    category: 'exclusive',
+    category: 'slippers',
     color: '#7eb8da',
     colorName: 'Blue',
     modelGroup: 'exclusive',
@@ -159,7 +329,7 @@ export const products: Product[] = [
     id: 'excl-green',
     name: 'Exclusive Clog · Green',
     price: 1949000,
-    category: 'exclusive',
+    category: 'slippers',
     color: '#5a7a4a',
     colorName: 'Green',
     modelGroup: 'exclusive',
@@ -170,7 +340,7 @@ export const products: Product[] = [
     id: 'excl-chocolate',
     name: 'Exclusive Clog · Chocolate',
     price: 1949000,
-    category: 'exclusive',
+    category: 'slippers',
     color: '#5c3a2a',
     colorName: 'Chocolate',
     modelGroup: 'exclusive',
@@ -181,7 +351,7 @@ export const products: Product[] = [
     id: 'excl-plum',
     name: 'Exclusive Clog · Plum',
     price: 1949000,
-    category: 'exclusive',
+    category: 'slippers',
     color: '#6b2d3c',
     colorName: 'Plum',
     modelGroup: 'exclusive',
@@ -192,7 +362,7 @@ export const products: Product[] = [
     id: 'excl-grey',
     name: 'Exclusive Clog · Grey',
     price: 1949000,
-    category: 'exclusive',
+    category: 'slippers',
     color: '#c8c8c8',
     colorName: 'Grey',
     modelGroup: 'exclusive',
@@ -204,7 +374,7 @@ export const products: Product[] = [
     id: 'excl-white',
     name: 'Exclusive Clog · White',
     price: 1949000,
-    category: 'exclusive',
+    category: 'slippers',
     color: '#fafafa',
     colorName: 'White',
     modelGroup: 'exclusive',
@@ -215,7 +385,7 @@ export const products: Product[] = [
     id: 'excl-black',
     name: 'Exclusive Clog · Black',
     price: 1949000,
-    category: 'exclusive',
+    category: 'slippers',
     color: '#111',
     colorName: 'Black',
     modelGroup: 'exclusive',
@@ -226,7 +396,7 @@ export const products: Product[] = [
     id: 'excl-navy',
     name: 'Exclusive Clog · Navy',
     price: 1949000,
-    category: 'exclusive',
+    category: 'slippers',
     color: '#1a3a5c',
     colorName: 'Navy',
     modelGroup: 'exclusive',
@@ -239,7 +409,7 @@ export const products: Product[] = [
     id: 'baya-black',
     name: 'Crocs Bayaband Clog Black',
     price: 2249000,
-    category: 'bayaband',
+    category: 'slippers',
     color: '#1a1a1a',
     colorName: 'Black',
     modelGroup: 'bayaband',
@@ -250,7 +420,7 @@ export const products: Product[] = [
     id: 'baya-white',
     name: 'Crocs Bayaband Clog White',
     price: 2249000,
-    category: 'bayaband',
+    category: 'slippers',
     color: '#f5f5f5',
     colorName: 'White',
     modelGroup: 'bayaband',
@@ -262,7 +432,7 @@ export const products: Product[] = [
     id: 'bape-blue',
     name: 'BAPE × Crocs Classic Clog Blue Camo',
     price: 5699000,
-    category: 'bape',
+    category: 'slippers',
     color: '#1a3a5f',
     colorName: 'Blue',
     modelGroup: 'bape',
@@ -275,7 +445,7 @@ export const products: Product[] = [
     id: 'bape-purple',
     name: 'BAPE × Crocs Classic Clog Purple Camo',
     price: 5699000,
-    category: 'bape',
+    category: 'slippers',
     color: '#6b4a8a',
     colorName: 'Purple',
     modelGroup: 'bape',
@@ -288,7 +458,7 @@ export const products: Product[] = [
     id: 'bape-pink',
     name: 'BAPE × Crocs Classic Clog Pink Camo',
     price: 5699000,
-    category: 'bape',
+    category: 'slippers',
     color: '#e8a0bf',
     colorName: 'Pink',
     modelGroup: 'bape',
@@ -301,7 +471,7 @@ export const products: Product[] = [
     id: 'bape-army',
     name: 'BAPE × Crocs Classic Clog Army Green Camo',
     price: 5699000,
-    category: 'bape',
+    category: 'slippers',
     color: '#2d5a3d',
     colorName: 'Army Green',
     modelGroup: 'bape',
@@ -314,7 +484,7 @@ export const products: Product[] = [
     id: 'bape-black',
     name: 'BAPE × Crocs Classic Clog Black Camo',
     price: 5699000,
-    category: 'bape',
+    category: 'slippers',
     color: '#222',
     colorName: 'Black',
     modelGroup: 'bape',
@@ -326,7 +496,7 @@ export const products: Product[] = [
     id: 'bape-dark-grey',
     name: 'BAPE × Crocs Classic Clog Dark Grey Camo',
     price: 5699000,
-    category: 'bape',
+    category: 'slippers',
     color: '#555',
     colorName: 'Dark Grey',
     modelGroup: 'bape',
@@ -339,7 +509,7 @@ export const products: Product[] = [
     id: 'bape-grey',
     name: 'BAPE × Crocs Classic Clog Grey Camo',
     price: 5699000,
-    category: 'bape',
+    category: 'slippers',
     color: '#c0c0c0',
     colorName: 'Grey',
     modelGroup: 'bape',
@@ -351,7 +521,7 @@ export const products: Product[] = [
     id: 'bape-light-brown',
     name: 'BAPE × Crocs Classic Clog Light Brown Camo',
     price: 5699000,
-    category: 'bape',
+    category: 'slippers',
     color: '#c4a574',
     colorName: 'Light Brown',
     modelGroup: 'bape',
@@ -366,7 +536,7 @@ export const products: Product[] = [
     id: 'naruto-1',
     name: 'Naruto × Crocs Classic Clog Naruto Uzumaki',
     price: 3899000,
-    category: 'naruto',
+    category: 'slippers',
     color: '#f26522',
     colorName: 'Naruto',
     modelGroup: 'naruto',
@@ -379,7 +549,7 @@ export const products: Product[] = [
     id: 'naruto-2',
     name: 'Naruto × Crocs Classic Clog Kakashi Hatake',
     price: 3899000,
-    category: 'naruto',
+    category: 'slippers',
     color: '#5c6b7a',
     colorName: 'Kakashi',
     modelGroup: 'naruto',
@@ -392,7 +562,7 @@ export const products: Product[] = [
     id: 'naruto-3',
     name: 'Naruto × Crocs Classic Clog Sasuke Uchiha',
     price: 3899000,
-    category: 'naruto',
+    category: 'slippers',
     color: '#1e3a5f',
     colorName: 'Sasuke',
     modelGroup: 'naruto',
@@ -405,7 +575,7 @@ export const products: Product[] = [
     id: 'naruto-4',
     name: 'Naruto × Crocs Classic Clog Itachi Uchiha',
     price: 4049000,
-    category: 'naruto',
+    category: 'slippers',
     color: '#2a0a0a',
     colorName: 'Itachi',
     modelGroup: 'naruto',
@@ -418,7 +588,7 @@ export const products: Product[] = [
     id: 'naruto-5',
     name: 'Naruto × Crocs Classic Clog Minato Namikaze',
     price: 3899000,
-    category: 'naruto',
+    category: 'slippers',
     color: '#f4e04d',
     colorName: 'Minato',
     modelGroup: 'naruto',
@@ -430,7 +600,7 @@ export const products: Product[] = [
     id: 'naruto-6',
     name: 'Naruto × Crocs Classic Clog Jiraiya',
     price: 3899000,
-    category: 'naruto',
+    category: 'slippers',
     color: '#c8d5c0',
     colorName: 'Jiraiya',
     modelGroup: 'naruto',
@@ -444,7 +614,7 @@ export const products: Product[] = [
     id: 'char-peanut',
     name: 'Crocs Classic Clog Peanut',
     price: 3599000,
-    category: 'characters',
+    category: 'slippers',
     color: '#f5f5f5',
     colorName: 'Peanut',
     modelGroup: 'characters',
@@ -455,7 +625,7 @@ export const products: Product[] = [
     id: 'char-monster',
     name: 'Crocs Classic Clog Monster',
     price: 3599000,
-    category: 'characters',
+    category: 'slippers',
     color: '#9acd32',
     colorName: 'Monster',
     modelGroup: 'characters',
@@ -467,7 +637,7 @@ export const products: Product[] = [
     id: 'char-batman',
     name: 'Crocs Classic Clog Winged Batman',
     price: 3599000,
-    category: 'characters',
+    category: 'slippers',
     color: '#1a1a2e',
     colorName: 'Winged Batman',
     modelGroup: 'characters',
@@ -478,7 +648,7 @@ export const products: Product[] = [
     id: 'char-starwars',
     name: 'Crocs Classic Clog Star Wars',
     price: 3599000,
-    category: 'characters',
+    category: 'slippers',
     color: '#f5f5f5',
     colorName: 'Star Wars',
     modelGroup: 'characters',
@@ -489,7 +659,7 @@ export const products: Product[] = [
     id: 'char-simpson',
     name: 'Crocs Classic Clog Simpson',
     price: 3599000,
-    category: 'characters',
+    category: 'slippers',
     color: '#ffd100',
     colorName: 'Simpson',
     modelGroup: 'characters',
@@ -500,7 +670,7 @@ export const products: Product[] = [
     id: 'char-mater',
     name: 'Crocs Classic Clog Brown Car',
     price: 3599000,
-    category: 'characters',
+    category: 'slippers',
     color: '#8b7355',
     colorName: 'Brown Car',
     modelGroup: 'characters',
@@ -511,7 +681,7 @@ export const products: Product[] = [
     id: 'char-zenitsu',
     name: 'Crocs Classic Clog Zenitsu',
     price: 3599000,
-    category: 'characters',
+    category: 'slippers',
     color: '#f4e04d',
     colorName: 'Zenitsu',
     modelGroup: 'characters',
@@ -523,7 +693,7 @@ export const products: Product[] = [
     id: 'char-inosuke',
     name: 'Crocs Classic Clog Inosuke',
     price: 3599000,
-    category: 'characters',
+    category: 'slippers',
     color: '#7eb8da',
     colorName: 'Inosuke',
     modelGroup: 'characters',
@@ -534,7 +704,7 @@ export const products: Product[] = [
     id: 'char-nezuko',
     name: 'Crocs Classic Clog Nezuko',
     price: 3599000,
-    category: 'characters',
+    category: 'slippers',
     color: '#e8a0bf',
     colorName: 'Nezuko',
     modelGroup: 'characters',
@@ -545,7 +715,7 @@ export const products: Product[] = [
     id: 'char-spongebob',
     name: 'Crocs Classic Clog Yellow Sponge',
     price: 3599000,
-    category: 'characters',
+    category: 'slippers',
     color: '#ffd100',
     colorName: 'Yellow Sponge',
     modelGroup: 'characters',
@@ -556,7 +726,7 @@ export const products: Product[] = [
     id: 'char-patrick',
     name: 'Crocs Classic Clog Pink Sponge',
     price: 3599000,
-    category: 'characters',
+    category: 'slippers',
     color: '#ffb6c1',
     colorName: 'Pink Sponge',
     modelGroup: 'characters',
@@ -568,7 +738,7 @@ export const products: Product[] = [
     id: 'char-shinobu',
     name: 'Crocs Classic Clog Shinobu',
     price: 3599000,
-    category: 'characters',
+    category: 'slippers',
     color: '#c8b8e8',
     colorName: 'Shinobu',
     modelGroup: 'characters',
@@ -581,7 +751,7 @@ export const products: Product[] = [
     id: 'cars-1',
     name: 'Cars × Crocs Classic Clog Lightning McQueen',
     price: 3599000,
-    category: 'cars',
+    category: 'slippers',
     color: '#e10600',
     colorName: 'McQueen',
     modelGroup: 'cars',
@@ -596,7 +766,7 @@ export const products: Product[] = [
     id: 'salehe-white',
     name: 'Salehe Bembury × Crocs Pollex Clog White',
     price: 4799000,
-    category: 'salehe',
+    category: 'slippers',
     color: '#f5f5f5',
     colorName: 'White',
     modelGroup: 'pollex',
@@ -608,7 +778,7 @@ export const products: Product[] = [
     id: 'salehe-green',
     name: 'Salehe Bembury × Crocs Pollex Clog Green',
     price: 4799000,
-    category: 'salehe',
+    category: 'slippers',
     color: '#b8d43a',
     colorName: 'Green',
     modelGroup: 'pollex',
@@ -621,7 +791,7 @@ export const products: Product[] = [
     id: 'salehe-navy',
     name: 'Salehe Bembury × Crocs Pollex Clog Dark Blue',
     price: 4799000,
-    category: 'salehe',
+    category: 'slippers',
     color: '#1a2a4a',
     colorName: 'Dark Blue',
     modelGroup: 'pollex',
@@ -633,7 +803,7 @@ export const products: Product[] = [
     id: 'salehe-black-grey',
     name: 'Salehe Bembury × Crocs Pollex Clog Black Grey',
     price: 4799000,
-    category: 'salehe',
+    category: 'slippers',
     color: '#3a3a3a',
     colorName: 'Black Grey',
     modelGroup: 'pollex',
@@ -645,7 +815,7 @@ export const products: Product[] = [
     id: 'salehe-purple',
     name: 'Salehe Bembury × Crocs Pollex Clog Purple',
     price: 4799000,
-    category: 'salehe',
+    category: 'slippers',
     color: '#b8a0d0',
     colorName: 'Purple',
     modelGroup: 'pollex',
@@ -657,7 +827,7 @@ export const products: Product[] = [
     id: 'salehe-khaki',
     name: 'Salehe Bembury × Crocs Pollex Clog Khaki',
     price: 4799000,
-    category: 'salehe',
+    category: 'slippers',
     color: '#c4b896',
     colorName: 'Khaki',
     modelGroup: 'pollex',
@@ -671,7 +841,7 @@ export const products: Product[] = [
     id: 'minecraft-green',
     name: 'Minecraft × Crocs Classic Clog Green',
     price: 3749000,
-    category: 'minecraft',
+    category: 'slippers',
     color: '#5a8f3c',
     colorName: 'Green',
     modelGroup: 'minecraft',
@@ -683,7 +853,7 @@ export const products: Product[] = [
     id: 'minecraft-black',
     name: 'Minecraft × Crocs Classic Clog Black',
     price: 3749000,
-    category: 'minecraft',
+    category: 'slippers',
     color: '#1a1a1a',
     colorName: 'Black',
     modelGroup: 'minecraft',
@@ -696,7 +866,7 @@ export const products: Product[] = [
     id: 'spongebob-1',
     name: 'SpongeBob × Crocs Classic Clog Yellow',
     price: 3599000,
-    category: 'spongebob',
+    category: 'slippers',
     color: '#ffd100',
     colorName: 'Yellow',
     modelGroup: 'spongebob',
@@ -709,7 +879,7 @@ export const products: Product[] = [
     id: 'simpsons-1',
     name: "The Simpsons × Crocs Classic Clog Black Yellow",
     price: 3899000,
-    category: 'simpsons',
+    category: 'slippers',
     color: '#ffd100',
     colorName: 'Black Yellow',
     modelGroup: 'simpsons',
@@ -722,7 +892,7 @@ export const products: Product[] = [
     id: 'southpark-1',
     name: 'South Park × Crocs Classic Clog Teal Grey',
     price: 3599000,
-    category: 'southpark',
+    category: 'slippers',
     color: '#2a9d8f',
     colorName: 'Teal Grey',
     modelGroup: 'southpark',
@@ -735,7 +905,7 @@ export const products: Product[] = [
     id: 'jib-1',
     name: 'Jibbitz Fun Pack',
     price: 599000,
-    category: 'jibbitz',
+    category: 'slippers',
     color: '#ff6b6b',
     colorName: 'Fun Pack',
     modelGroup: 'jibbitz',
@@ -747,7 +917,7 @@ export const products: Product[] = [
     id: 'jib-2',
     name: 'Jibbitz Butterfly Set',
     price: 569000,
-    category: 'jibbitz',
+    category: 'slippers',
     color: '#ff85a2',
     colorName: 'Butterfly',
     modelGroup: 'jibbitz',
@@ -759,7 +929,7 @@ export const products: Product[] = [
     id: 'jib-3',
     name: 'Jibbitz Fruit Mix',
     price: 539000,
-    category: 'jibbitz',
+    category: 'slippers',
     color: '#ff6b6b',
     colorName: 'Fruit',
     modelGroup: 'jibbitz',
@@ -769,8 +939,11 @@ export const products: Product[] = [
   }),
 ]
 
-export const variantsOf = (product: Product) =>
-  products.filter((x) => x.modelGroup === product.modelGroup)
+/** @deprecated Prefer useCatalog().products — alias kept for curated static lists. */
+export const products = baseProducts
+
+export const variantsOf = (product: Product, catalog: Product[] = baseProducts) =>
+  catalog.filter((x) => x.modelGroup === product.modelGroup)
 
 function imageStem(image: string) {
   const file = image.split('/').pop()?.split('?')[0] ?? ''
@@ -779,7 +952,17 @@ function imageStem(image: string) {
 
 /** Side profile plus extra studio angles for the PDP carousel. */
 export function galleryOf(product: Product): string[] {
-  if (product.category === 'jibbitz') return [product.image]
+  if (product.gallery?.length) return product.gallery
+  if (product.modelGroup === 'jibbitz' || product.category !== 'slippers') {
+    return [product.image]
+  }
+  if (
+    product.image.startsWith('data:') ||
+    product.image.startsWith('blob:') ||
+    product.id.startsWith('mgr-')
+  ) {
+    return [product.image]
+  }
   const stem = imageStem(product.image)
   return [
     product.image,
@@ -789,36 +972,37 @@ export function galleryOf(product: Product): string[] {
   ]
 }
 
-const collabBrands: Partial<Record<Category, string>> = {
+const collabBrands: Record<string, string> = {
   bape: 'a-bathing-ape',
   simpsons: 'the-simpsons',
 }
 
 /** Brand slugs a product belongs to (collabs count for both brands). */
 export function brandsOf(product: Product): string[] {
-  const collab = collabBrands[product.category]
+  if (product.brand) return [product.brand]
+  const collab = collabBrands[product.modelGroup]
   return collab ? ['crocs', collab] : ['crocs']
 }
 
-export const productsOfBrand = (slug: string) =>
-  products.filter((p) => brandsOf(p).includes(slug))
+export const productsOfBrand = (slug: string, catalog: Product[] = baseProducts) =>
+  catalog.filter((p) => brandsOf(p).includes(slug))
 
-export const top20 = products
+export const top20 = baseProducts
   .filter((p) => p.popularRank)
   .sort((a, b) => (a.popularRank ?? 99) - (b.popularRank ?? 99))
 
 export const bestsellers = [
-  products.find((p) => p.id === 'bape-army')!,
-  products.find((p) => p.id === 'naruto-1')!,
-  products.find((p) => p.id === 'bape-blue')!,
-  products.find((p) => p.id === 'naruto-2')!,
-  products.find((p) => p.id === 'bape-pink')!,
-  products.find((p) => p.id === 'naruto-3')!,
-  products.find((p) => p.id === 'salehe-green')!,
-  products.find((p) => p.id === 'cars-1')!,
+  baseProducts.find((p) => p.id === 'bape-army')!,
+  baseProducts.find((p) => p.id === 'naruto-1')!,
+  baseProducts.find((p) => p.id === 'bape-blue')!,
+  baseProducts.find((p) => p.id === 'naruto-2')!,
+  baseProducts.find((p) => p.id === 'bape-pink')!,
+  baseProducts.find((p) => p.id === 'naruto-3')!,
+  baseProducts.find((p) => p.id === 'salehe-green')!,
+  baseProducts.find((p) => p.id === 'cars-1')!,
 ]
 
-export const narutoSeries = products.filter((p) => p.category === 'naruto')
+export const narutoSeries = baseProducts.filter((p) => p.modelGroup === 'naruto')
 
 export const collabCollections = [
   { id: 'salehe', name: 'Salehe', label: 'Salehe Bembury' },

@@ -1,11 +1,8 @@
-import { useState } from 'react'
+import { useRef, useState, type PointerEvent } from 'react'
 import {
-  bestsellers,
-  collabCollections,
-  collections,
-  narutoSeries,
-  products,
-  top20,
+  catalogDepartments,
+  type Category,
+  type Product,
 } from '../data/products'
 import {
   brandBySlug,
@@ -14,38 +11,37 @@ import {
   type Brand,
   type BrandGroup,
 } from '../data/brands'
+import { useCatalog } from '../catalog'
 import { useStore } from '../store'
 import { ProductCard } from './ProductCard'
-import { CrocVisual } from './CrocVisual'
 import { BrandTile } from './BrandsPage'
 import { BrandLogo, BrandMark } from './BrandMark'
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { useI18n } from '../i18n'
 
-function productById(id: string) {
-  return products.find((p) => p.id === id)
+function productById(catalog: Product[], id: string) {
+  return catalog.find((p) => p.id === id)
 }
 
 const featuredBrands = featuredBrandSlugs
   .map(brandBySlug)
   .filter((b): b is Brand => Boolean(b))
 
-const categoryChips = [
-  { id: 'salehe', name: 'Salehe Bembury', sampleId: 'salehe-green' },
-  { id: 'cars', name: 'Lightning McQueen', sampleId: 'cars-1' },
-  { id: 'characters', name: 'Characters', sampleId: 'char-peanut' },
-  { id: 'minecraft', name: 'Minecraft', sampleId: 'minecraft-green' },
-  { id: 'spongebob', name: 'SpongeBob', sampleId: 'spongebob-1' },
-  { id: 'bape', name: 'BAPE', sampleId: 'bape-pink' },
-  { id: 'naruto', name: 'Naruto', sampleId: 'naruto-1' },
-  { id: 'exclusive', name: 'Exclusive', sampleId: 'excl-mint' },
-  { id: 'classic', name: 'Classic', sampleId: 'classic-white' },
-]
+const categoryImage = (id: Category) =>
+  `${import.meta.env.BASE_URL}catalog/${id}.jpg?v=5`
+
+const newSneakerIds = ['nb-530-white', 'dunk-cacao', 'aj1-chicago']
+const crocsPreviewIds = ['classic-white', 'classic-black']
 
 export function HomePage() {
   const { setTab, setCatalogFilter, search, setSearch, openBrands } = useStore()
+  const { products } = useCatalog()
   const { t } = useI18n()
   const [banner, setBanner] = useState(0)
+  const [dragX, setDragX] = useState(0)
+  const [dragging, setDragging] = useState(false)
+  const swipe = useRef({ x: 0, y: 0, dx: 0, pointer: -1, locked: false })
+  const ignoreClick = useRef(false)
 
   const openCatalog = (filter: string | null) => {
     setSearch('')
@@ -53,26 +49,45 @@ export function HomePage() {
     setTab('catalog')
   }
 
-  const justBought = ['salehe-green', 'cars-1', 'minecraft-green', 'spongebob-1']
-    .map(productById)
-    .filter((p): p is NonNullable<typeof p> => Boolean(p))
+  const pick = (ids: string[]) =>
+    ids
+      .map((id) => productById(products, id))
+      .filter((p): p is Product => Boolean(p))
+
+  const newSneakers = pick(newSneakerIds)
+  const crocsPreview = pick(crocsPreviewIds)
 
   const bannerSlides: {
     eyebrow: string
+    count?: string
     title: string
     desc: string
     cta: string
     group?: BrandGroup
-    logos: string[]
-    theme: 'fire' | 'sand' | 'night'
+    logos?: string[]
+    art?: string
+    theme: 'fire' | 'water' | 'sand' | 'night'
+    go: 'brands' | 'catalog'
+    filter?: string | null
   }[] = [
     {
       eyebrow: 'НОВЫЙ СЕЗОН',
-      title: '99 БРЕНДОВ',
+      count: '99',
+      title: 'БРЕНДОВ',
       desc: 'Обувь, одежда и аксессуары — только оригиналы',
       cta: 'Смотреть бренды',
       logos: ['nike', 'adidas', 'new-balance', 'jordan'],
       theme: 'fire',
+      go: 'brands',
+    },
+    {
+      eyebrow: 'ЯНДЕКС',
+      title: 'СТАНЦИЯ',
+      desc: 'Умная колонка с Алисой — музыка, погода и таймеры',
+      cta: 'В каталог',
+      art: `${import.meta.env.BASE_URL}promo/yandex-station.png?v=1`,
+      theme: 'water',
+      go: 'catalog',
     },
     {
       eyebrow: 'STREETWEAR',
@@ -82,6 +97,7 @@ export function HomePage() {
       group: 'clothing',
       logos: ['stone-island', 'supreme', 'stussy', 'the-north-face'],
       theme: 'sand',
+      go: 'brands',
     },
     {
       eyebrow: 'PREMIUM',
@@ -91,13 +107,61 @@ export function HomePage() {
       group: 'luxury',
       logos: ['prada', 'gucci', 'dior', 'balenciaga'],
       theme: 'night',
+      go: 'brands',
     },
   ]
 
-  const slide = bannerSlides[banner]
-  const slideLogos = slide.logos
-    .map(brandBySlug)
-    .filter((b): b is Brand => Boolean(b))
+  const openSlide = (slide: (typeof bannerSlides)[number]) => {
+    if (ignoreClick.current) {
+      ignoreClick.current = false
+      return
+    }
+    if (slide.go === 'catalog') openCatalog(slide.filter ?? null)
+    else openBrands(slide.group)
+  }
+
+  const onSwipeDown = (e: PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return
+    ignoreClick.current = false
+    swipe.current = { x: e.clientX, y: e.clientY, dx: 0, pointer: e.pointerId, locked: false }
+  }
+
+  const onSwipeMove = (e: PointerEvent<HTMLDivElement>) => {
+    if (swipe.current.pointer !== e.pointerId) return
+    const dx = e.clientX - swipe.current.x
+    const dy = e.clientY - swipe.current.y
+    if (!swipe.current.locked) {
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return
+      if (Math.abs(dy) > Math.abs(dx)) {
+        swipe.current.pointer = -1
+        return
+      }
+      swipe.current.locked = true
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId)
+      } catch {
+        /* The pointer can already be gone if the gesture ends early. */
+      }
+      setDragging(true)
+    }
+    const atStart = banner === 0 && dx > 0
+    const atEnd = banner === bannerSlides.length - 1 && dx < 0
+    const next = atStart || atEnd ? dx * 0.35 : dx
+    swipe.current.dx = next
+    setDragX(next)
+  }
+
+  const onSwipeEnd = (e: PointerEvent<HTMLDivElement>) => {
+    if (swipe.current.pointer !== e.pointerId) return
+    const dx = swipe.current.dx
+    swipe.current.pointer = -1
+    swipe.current.locked = false
+    setDragging(false)
+    setDragX(0)
+    if (Math.abs(dx) > 8) ignoreClick.current = true
+    if (dx <= -48 && banner < bannerSlides.length - 1) setBanner(banner + 1)
+    else if (dx >= 48 && banner > 0) setBanner(banner - 1)
+  }
 
   return (
     <div className="page home">
@@ -122,34 +186,61 @@ export function HomePage() {
         </label>
       </header>
 
-      <section className="hero-banners">
+      <section className="hero-banners" aria-roledescription="carousel">
         <div
-          className={`hero-banner hero-banner--${slide.theme}`}
-          data-slide={banner}
-          onClick={() => openBrands(slide.group)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && openBrands(slide.group)}
+          className={`hero-track${dragging ? ' is-dragging' : ''}`}
+          style={{ transform: `translateX(calc(${-banner * 100}% + ${dragX}px))` }}
+          onPointerDown={onSwipeDown}
+          onPointerMove={onSwipeMove}
+          onPointerUp={onSwipeEnd}
+          onPointerCancel={onSwipeEnd}
         >
-          <BrandMark size={170} className="hero-banner__mark" />
-          <div className="hero-banner__text">
-            <p className="hero-banner__eyebrow">{t(slide.eyebrow)}</p>
-            <h2>{t(slide.title)}</h2>
-            <p className="hero-banner__desc">{t(slide.desc)}</p>
-            <span className="hero-banner__cta">{t(slide.cta)}</span>
-          </div>
-          <div className="hero-banner__logos" aria-hidden>
-            {slideLogos.map((b) => (
-              <span key={b.slug} className="hero-banner__logo">
-                <img src={b.logo} alt="" />
-              </span>
-            ))}
-          </div>
+          {bannerSlides.map((slide) => {
+            const logos = (slide.logos ?? [])
+              .map(brandBySlug)
+              .filter((b): b is Brand => Boolean(b))
+            return (
+              <div
+                key={slide.title}
+                className={`hero-banner hero-banner--${slide.theme}`}
+                onClick={() => openSlide(slide)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') openSlide(slide)
+                }}
+              >
+                <BrandMark size={170} className="hero-banner__mark" />
+                <div className="hero-banner__text">
+                  <p className="hero-banner__eyebrow">{t(slide.eyebrow)}</p>
+                  <h2 className="hero-banner__title">
+                    {slide.count && <span className="hero-banner__count">{slide.count}</span>}
+                    <span>{t(slide.title)}</span>
+                  </h2>
+                  <p className="hero-banner__desc">{t(slide.desc)}</p>
+                  <span className="hero-banner__cta">{t(slide.cta)}</span>
+                </div>
+                {slide.art ? (
+                  <div className="hero-banner__art" aria-hidden>
+                    <img src={slide.art} alt="" />
+                  </div>
+                ) : (
+                  <div className="hero-banner__logos" aria-hidden>
+                    {logos.map((b) => (
+                      <span key={b.slug} className="hero-banner__logo">
+                        <img src={b.logo} alt="" />
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
         <div className="hero-dots">
-          {bannerSlides.map((_, i) => (
+          {bannerSlides.map((slide, i) => (
             <button
-              key={i}
+              key={slide.title}
               type="button"
               className={banner === i ? 'is-active' : ''}
               aria-label={t('Баннер {n}', { n: i + 1 })}
@@ -226,108 +317,58 @@ export function HomePage() {
         </div>
         <div className="promo-discount__art" aria-hidden>
           <img
-            src={`${import.meta.env.BASE_URL}brands/bape-ape.png`}
+            className="promo-discount__shoe"
+            src={`${import.meta.env.BASE_URL}products/sneakers/aj1-chicago-cut.png?v=1`}
             alt=""
-            className="promo-discount__logo promo-discount__logo--ape"
           />
-          {productById('bape-purple') && (
-            <CrocVisual product={productById('bape-purple')!} />
-          )}
         </div>
+      </section>
+
+      <section className="section home-categories" aria-label={t('Категории')}>
+        <div className="section__head">
+          <h2>{t('Категории')}</h2>
+          <button type="button" className="section__all" onClick={() => openCatalog(null)}>
+            {t('Все')} <Chevron />
+          </button>
+        </div>
+        {catalogDepartments.map((dept) => (
+          <div key={dept.id} className="catalog-section">
+            <div className="section__head">
+              <h2>{t(dept.label)}</h2>
+            </div>
+            <div className="catalog-mosaic catalog-mosaic--shop">
+              {dept.categories.map((c) => {
+                const third =
+                  dept.id === 'accessories' &&
+                  (c.id === 'glasses' || c.id === 'wallets' || c.id === 'cardholders')
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    className={`catalog-tile catalog-tile--shop ${third ? 'catalog-tile--third' : 'catalog-tile--pair'}`}
+                    onClick={() => openCatalog(c.id)}
+                  >
+                    <span className="catalog-tile__label">{t(c.label)}</span>
+                    <span className="catalog-tile__media catalog-tile__media--shop" aria-hidden>
+                      <img src={categoryImage(c.id)} alt="" />
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        ))}
       </section>
 
       <section className="section">
         <div className="section__head">
-          <h2>{t('Коллекции')}</h2>
-          <button type="button" className="section__all" onClick={() => openCatalog(null)}>
-            {t('Все')} <Chevron />
-          </button>
-        </div>
-        <div className="brand-row">
-          {collections.map((c) => {
-            const sample = products.find((p) => p.category === c.id)
-            if (!sample) return null
-            return (
-              <button
-                key={c.id}
-                type="button"
-                className="brand-card"
-                onClick={() => openCatalog(c.id)}
-              >
-                <div className="brand-card__logo">
-                  <CrocVisual product={sample} />
-                </div>
-                <span>{c.name}</span>
-              </button>
-            )
-          })}
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="section__head section__head--stack">
-          <div>
-            <h2>{t('Новые коллабы')}</h2>
-            <p className="section__sub">
-              {t('Salehe, Cars, Characters, Minecraft, SpongeBob, Simpsons и South Park')}
-            </p>
-          </div>
-          <button type="button" className="section__all" onClick={() => openCatalog(null)}>
-            {t('Все')} <Chevron />
-          </button>
-        </div>
-        <div className="brand-row">
-          {collabCollections.map((c) => {
-            const sample = products.find((p) => p.category === c.id)
-            if (!sample) return null
-            return (
-              <button
-                key={c.id}
-                type="button"
-                className="brand-card"
-                onClick={() => openCatalog(c.id)}
-              >
-                <div className="brand-card__logo">
-                  <CrocVisual product={sample} />
-                </div>
-                <span>{c.name}</span>
-              </button>
-            )
-          })}
-        </div>
-        <div className="product-grid" style={{ marginTop: 16 }}>
-          {[
-            'salehe-green',
-            'cars-1',
-            'char-peanut',
-            'minecraft-green',
-            'spongebob-1',
-            'simpsons-1',
-            'bape-pink',
-            'naruto-1',
-          ]
-            .map(productById)
-            .filter((p): p is NonNullable<typeof p> => Boolean(p))
-            .map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="section__head section__head--stack">
-          <div>
-            <h2>{t('Naruto × Crocs — вся серия')}</h2>
-            <p className="section__sub">
-              {t('Naruto, Kakashi, Sasuke, Itachi, Minato и Jiraiya')}
-            </p>
-          </div>
-          <button type="button" className="section__all" onClick={() => openCatalog('naruto')}>
+          <h2>{t('Новые кроссовки')}</h2>
+          <button type="button" className="section__all" onClick={() => openCatalog('sneakers')}>
             {t('Все')} <Chevron />
           </button>
         </div>
         <div className="product-grid">
-          {narutoSeries.map((p) => (
+          {newSneakers.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </div>
@@ -335,79 +376,16 @@ export function HomePage() {
 
       <section className="section">
         <div className="section__head">
-          <h2>{t('Бестселлеры')}</h2>
-          <button type="button" className="section__all" onClick={() => openCatalog('popular')}>
+          <h2>{t('Кроксы')}</h2>
+          <button type="button" className="section__all" onClick={() => openCatalog('slippers')}>
             {t('Все')} <Chevron />
           </button>
         </div>
         <div className="product-grid">
-          {bestsellers.slice(0, 4).map((p) => (
+          {crocsPreview.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </div>
-      </section>
-
-      <section className="chips-row" aria-label={t('Категории')}>
-        {categoryChips.map((c) => {
-          const sample = productById(c.sampleId)
-          if (!sample) return null
-          return (
-            <button
-              key={c.id}
-              type="button"
-              className="chip"
-              onClick={() => openCatalog(c.id)}
-            >
-              <span className="chip__img">
-                <CrocVisual product={sample} />
-              </span>
-              <span>{c.name}</span>
-            </button>
-          )
-        })}
-      </section>
-
-      <section className="section">
-        <div className="section__head">
-          <h2>{t('Только что купили')}</h2>
-          <button type="button" className="section__all" onClick={() => openCatalog(null)}>
-            {t('Все')} <Chevron />
-          </button>
-        </div>
-        <div className="product-grid">
-          {justBought.map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="section__head section__head--stack">
-          <div>
-            <h2>{t('Топ 20 популярных')}</h2>
-            <p className="section__sub">{t('В наличии — самовывоз или доставка 1–2 дня')}</p>
-          </div>
-          <button type="button" className="section__all" onClick={() => openCatalog('popular')}>
-            {t('Все')} <Chevron />
-          </button>
-        </div>
-        <div className="product-grid">
-          {top20.slice(0, 6).map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
-      </section>
-
-      <section className="curated">
-        <h2>{t('Актуальные подборки')}</h2>
-        <p>
-          {t(
-            'Salehe Bembury, Lightning McQueen, Characters, Minecraft, SpongeBob, Simpsons и South Park — собрали главные дропы.',
-          )}
-        </p>
-        <button type="button" onClick={() => openCatalog('salehe')}>
-          {t('Открыть коллабы')}
-        </button>
       </section>
     </div>
   )

@@ -7,6 +7,7 @@ import {
   type BrandGroup,
 } from '../data/brands'
 import { productsOfBrand } from '../data/products'
+import { useCatalog } from '../catalog'
 import { useStore } from '../store'
 import { ProductCard } from './ProductCard'
 import { useI18n } from '../i18n'
@@ -105,9 +106,10 @@ export function BrandsPage({ initialGroup = null }: { initialGroup?: BrandGroup 
 
 export function BrandPage({ slug }: { slug: string }) {
   const { closeBrand, setTab } = useStore()
+  const { products } = useCatalog()
   const { t } = useI18n()
   const brand = brandBySlug(slug)
-  const list = useMemo(() => productsOfBrand(slug), [slug])
+  const list = useMemo(() => productsOfBrand(slug, products), [slug, products])
   const groupLabel = brandGroups.find((g) => g.id === brand?.group)?.label
 
   if (!brand) return null

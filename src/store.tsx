@@ -25,6 +25,10 @@ interface StoreCtx {
   selectedProductId: string | null
   openProduct: (id: string) => void
   closeProduct: () => void
+  /** Full-screen manager publish flow (not part of profile). */
+  managerOpen: boolean
+  openManager: () => void
+  closeManager: () => void
   /** Brand screens stack: 'all' / 'all:{group}' is the brands index, otherwise a brand slug. */
   brandStack: string[]
   openBrands: (group?: BrandGroup) => void
@@ -41,16 +45,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [catalogFilter, setCatalogFilter] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null)
+  const [managerOpen, setManagerOpen] = useState(false)
   const [brandStack, setBrandStack] = useState<string[]>([])
 
   const openBrands = useCallback((group?: BrandGroup) => {
     const screen = group ? `all:${group}` : 'all'
     setSelectedProductId(null)
+    setManagerOpen(false)
     setBrandStack((prev) => (prev.at(-1) === screen ? prev : [...prev, screen]))
   }, [])
 
   const openBrand = useCallback((slug: string) => {
     setSelectedProductId(null)
+    setManagerOpen(false)
     setBrandStack((prev) => [...prev, slug])
   }, [])
 
@@ -59,6 +66,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const openProduct = useCallback((id: string) => {
+    setManagerOpen(false)
     setSelectedProductId(id)
   }, [])
 
@@ -66,8 +74,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setSelectedProductId(null)
   }, [])
 
+  const openManager = useCallback(() => {
+    setSelectedProductId(null)
+    setBrandStack([])
+    setManagerOpen(true)
+  }, [])
+
+  const closeManager = useCallback(() => {
+    setManagerOpen(false)
+  }, [])
+
   const handleSetTab = useCallback((t: Tab) => {
     setSelectedProductId(null)
+    setManagerOpen(false)
     setBrandStack([])
     setTab(t)
   }, [])
@@ -119,6 +138,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         selectedProductId,
         openProduct,
         closeProduct,
+        managerOpen,
+        openManager,
+        closeManager,
         brandStack,
         openBrands,
         openBrand,
