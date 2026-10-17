@@ -9,7 +9,7 @@ import {
   type Gender,
 } from '../data/products'
 import { brands, type BrandGroup } from '../data/brands'
-import { SIZE_PALETTE, formatDeliveryDays, normalizeSizeLabel } from '../data/sizes'
+import { SIZE_PALETTE, normalizeSizeLabel } from '../data/sizes'
 import { useStore } from '../store'
 import { useI18n } from '../i18n'
 import { CrocVisual } from './CrocVisual'
@@ -237,6 +237,9 @@ function NewProductForm() {
   const priceNum = Number(String(price).replace(/\s/g, '')) || 0
   const surchargeNum = Number(String(expressSurcharge).replace(/\s/g, '')) || 0
   const expressTotal = priceNum + surchargeNum
+  const formatAmount = (n: number) =>
+    n > 0 ? n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : ''
+  const parseAmount = (raw: string) => Number(raw.replace(/[^\d]/g, '')) || 0
 
   const onCoverChange = (url: string | null) => {
     setError(null)
@@ -354,13 +357,13 @@ function NewProductForm() {
             />
           </label>
           <label className="auth-field" htmlFor={`${formId}-price`}>
-            <span>{t('Цена стандартной доставки (₫)')}</span>
+            <span>{t('Цена')}</span>
             <input
               id={`${formId}-price`}
               inputMode="numeric"
               value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              placeholder="3090000"
+              onChange={(e) => setPrice(e.target.value.replace(/[^\d]/g, ''))}
+              placeholder="3 090 000"
               required
             />
           </label>
@@ -495,54 +498,60 @@ function NewProductForm() {
         {/* 5. Delivery */}
         <fieldset className="manager-form__section">
           <legend>{t('Доставка')}</legend>
-          <p className="manager-form__section-hint">
-            {t('Срок — число (5) или диапазон через тире (3-7). Экспресс: наценка к цене товара.')}
-          </p>
 
           <div className="mgr-delivery-preview">
             <div className="mgr-delivery-preview__express">
               <span className="mgr-delivery-preview__badge">{t('Экспресс')}</span>
-              <strong>{formatPrice(expressTotal || 0)}</strong>
-              <em>{formatDeliveryDays(expressDays, '3–7 дней')}</em>
+              <label className="mgr-delivery-preview__price" htmlFor={`${formId}-ex-price`}>
+                <input
+                  id={`${formId}-ex-price`}
+                  inputMode="numeric"
+                  value={formatAmount(expressTotal)}
+                  onChange={(e) => {
+                    const total = parseAmount(e.target.value)
+                    setExpressSurcharge(String(Math.max(0, total - priceNum)))
+                  }}
+                  placeholder="1 000 000"
+                  aria-label={t('Экспресс: цена')}
+                />
+                <span aria-hidden="true">₫</span>
+              </label>
+              <label className="mgr-delivery-preview__days" htmlFor={`${formId}-ex-days`}>
+                <input
+                  id={`${formId}-ex-days`}
+                  value={expressDays}
+                  onChange={(e) => setExpressDays(e.target.value)}
+                  placeholder="3-7"
+                  aria-label={t('Экспресс: дни')}
+                />
+                <span aria-hidden="true">{t('дней')}</span>
+              </label>
             </div>
             <div className="mgr-delivery-preview__standard">
               <span>{t('Стандартная')}</span>
-              <strong>{formatPrice(priceNum || 0)}</strong>
-              <em>{formatDeliveryDays(standardDays, '25–35 дней')}</em>
+              <label className="mgr-delivery-preview__price" htmlFor={`${formId}-st-price`}>
+                <input
+                  id={`${formId}-st-price`}
+                  inputMode="numeric"
+                  value={formatAmount(priceNum)}
+                  onChange={(e) => setPrice(e.target.value.replace(/[^\d]/g, ''))}
+                  placeholder="0"
+                  aria-label={t('Цена')}
+                />
+                <span aria-hidden="true">₫</span>
+              </label>
+              <label className="mgr-delivery-preview__days" htmlFor={`${formId}-st-days`}>
+                <input
+                  id={`${formId}-st-days`}
+                  value={standardDays}
+                  onChange={(e) => setStandardDays(e.target.value)}
+                  placeholder="25-35"
+                  aria-label={t('Стандартная: дни')}
+                />
+                <span aria-hidden="true">{t('дней')}</span>
+              </label>
             </div>
           </div>
-
-          <div className="manager-form__row">
-            <label className="auth-field" htmlFor={`${formId}-ex-surcharge`}>
-              <span>{t('Экспресс: наценка (₫)')}</span>
-              <input
-                id={`${formId}-ex-surcharge`}
-                inputMode="numeric"
-                value={expressSurcharge}
-                onChange={(e) => setExpressSurcharge(e.target.value)}
-                placeholder="1000000"
-              />
-            </label>
-            <label className="auth-field" htmlFor={`${formId}-ex-days`}>
-              <span>{t('Экспресс: дни')}</span>
-              <input
-                id={`${formId}-ex-days`}
-                value={expressDays}
-                onChange={(e) => setExpressDays(e.target.value)}
-                placeholder="3-7"
-              />
-            </label>
-          </div>
-
-          <label className="auth-field" htmlFor={`${formId}-st-days`}>
-            <span>{t('Стандартная: дни')}</span>
-            <input
-              id={`${formId}-st-days`}
-              value={standardDays}
-              onChange={(e) => setStandardDays(e.target.value)}
-              placeholder="25-35"
-            />
-          </label>
         </fieldset>
 
         {error ? <p className="auth-error">{error}</p> : null}

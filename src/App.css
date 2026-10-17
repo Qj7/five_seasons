@@ -2350,19 +2350,78 @@
   font-weight: 700;
 }
 
-.mgr-delivery-preview strong {
+.mgr-delivery-preview__price,
+.mgr-delivery-preview__days {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin: 0;
+  cursor: text;
+}
+
+.mgr-delivery-preview__price {
   font-size: 1.05rem;
   font-weight: 800;
 }
 
-.mgr-delivery-preview em {
-  font-style: normal;
+.mgr-delivery-preview__days {
   font-size: 0.78rem;
   opacity: 0.85;
 }
 
-.mgr-delivery-preview__standard em {
+.mgr-delivery-preview__standard .mgr-delivery-preview__days {
   color: var(--muted);
+  opacity: 1;
+}
+
+.mgr-delivery-preview__price input,
+.mgr-delivery-preview__days input {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  outline: none;
+  box-shadow: none;
+  appearance: textfield;
+}
+
+.mgr-delivery-preview__price input::-webkit-outer-spin-button,
+.mgr-delivery-preview__price input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.mgr-delivery-preview__express .mgr-delivery-preview__price input,
+.mgr-delivery-preview__express .mgr-delivery-preview__days input {
+  color: #fff;
+}
+
+.mgr-delivery-preview__express .mgr-delivery-preview__price input::placeholder,
+.mgr-delivery-preview__express .mgr-delivery-preview__days input::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.mgr-delivery-preview__standard .mgr-delivery-preview__price input::placeholder,
+.mgr-delivery-preview__standard .mgr-delivery-preview__days input::placeholder {
+  color: var(--muted);
+}
+
+.mgr-delivery-preview__price input:focus,
+.mgr-delivery-preview__days input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.mgr-delivery-preview__days input {
+  flex: 0 1 auto;
+  width: 4.5em;
 }
 
 .gallery-uploader {

@@ -130,9 +130,12 @@ export const en: Record<string, string> = {
   'Вправо': 'Move right',
   'Удалить': 'Remove',
   'Цена стандартной доставки (₫)': 'Standard delivery price (₫)',
+  'Цена': 'Price',
+  'дней': 'days',
   'Срок — число (5) или диапазон через тире (3-7). Экспресс: наценка к цене товара.':
     'Lead time as a number (5) or a range (3-7). Express: surcharge on top of the product price.',
   'Экспресс: наценка (₫)': 'Express: surcharge (₫)',
+  'Экспресс: цена': 'Express: price',
   'Экспресс: дни': 'Express: days',
   'Стандартная: дни': 'Standard: days',
   'Укажите сроки доставки': 'Enter delivery times',
