@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { formatPrice } from '../data/products'
 import { useCatalog } from '../catalog'
 import { useAuth } from '../auth'
+import { useOrders } from '../orders'
 import { useStore } from '../store'
 import { ProductCard } from './ProductCard'
 import { CrocVisual } from './CrocVisual'
@@ -39,9 +41,14 @@ export function FavoritesPage() {
 }
 
 export function CartPage() {
-  const { cart, addToCart, removeFromCart, setTab, openProduct } = useStore()
+  const { cart, addToCart, removeFromCart, clearCart, setTab, openProduct, openOrders } =
+    useStore()
   const { products } = useCatalog()
+  const { user } = useAuth()
+  const { placeOrder } = useOrders()
   const { t } = useI18n()
+  const [checkoutMsg, setCheckoutMsg] = useState<string | null>(null)
+
   const items = [...cart.entries()]
     .map(([id, qty]) => ({ product: products.find((p) => p.id === id)!, qty }))
     .filter((x) => x.product)
@@ -53,6 +60,24 @@ export function CartPage() {
   if (count >= 4) discount = 600000
   else if (count >= 3) discount = 450000
   else if (count >= 2) discount = 300000
+
+  const checkout = () => {
+    if (!user) {
+      setCheckoutMsg(t('Войдите, чтобы оформить заказ'))
+      setTab('profile')
+      return
+    }
+    placeOrder({
+      customerId: user.id,
+      customerName: user.name,
+      customerEmail: user.email,
+      items,
+      discount,
+    })
+    clearCart()
+    setCheckoutMsg(null)
+    openOrders()
+  }
 
   return (
     <div className="page cart-page">
@@ -117,7 +142,8 @@ export function CartPage() {
               <span>{t('Итого')}</span>
               <strong>{formatPrice(total - discount)}</strong>
             </div>
-            <button type="button" className="btn-primary btn-primary--block">
+            {checkoutMsg ? <p className="auth-error">{checkoutMsg}</p> : null}
+            <button type="button" className="btn-primary btn-primary--block" onClick={checkout}>
               {t('Оформить заказ')}
             </button>
           </div>
@@ -127,12 +153,12 @@ export function CartPage() {
   )
 }
 
-const PROFILE_MENU = ['Мои заказы', 'Адреса доставки', 'Баллы и бонусы', 'Поддержка', 'О магазине']
+const PROFILE_MENU = ['Адреса доставки', 'Баллы и бонусы', 'Поддержка', 'О магазине'] as const
 
 export function ProfilePage() {
   const { t } = useI18n()
   const { user, isManager, logout } = useAuth()
-  const { openManager } = useStore()
+  const { openManager, openOrders } = useStore()
 
   if (!user) {
     return (
@@ -174,13 +200,29 @@ export function ProfilePage() {
         <button
           type="button"
           className="btn-primary btn-primary--block profile-publish-btn"
-          onClick={openManager}
+          onClick={() => openManager('hub')}
         >
-          {t('Выложить товар')}
+          {t('Кабинет менеджера')}
         </button>
       ) : null}
 
       <ul className="profile-menu">
+        <li>
+          <button type="button" className="profile-menu__btn" onClick={openOrders}>
+            {t('Мои заказы')}
+          </button>
+        </li>
+        {isManager ? (
+          <li>
+            <button
+              type="button"
+              className="profile-menu__btn"
+              onClick={() => openManager('orders')}
+            >
+              {t('Заказы по моим товарам')}
+            </button>
+          </li>
+        ) : null}
         {PROFILE_MENU.map((item) => (
           <li key={item}>{t(item)}</li>
         ))}

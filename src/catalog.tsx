@@ -9,31 +9,37 @@ import {
 import {
   baseProducts,
   type Category,
+  type Gender,
   type Product,
 } from './data/products'
 
 const STORAGE_KEY = 'five-seasons:published-products'
 
-export type ColorDraft = {
-  colorName: string
-  images: string[]
-}
-
 export type PublishInput = {
   name: string
   price: number
   category: Category
-  gender?: Product['gender']
-  delivery?: string
+  gender: Gender
+  brand?: string
+  colorName?: string
+  colorHex?: string
+  /** Cover / card image */
+  image: string
+  /** PDP gallery (cover is usually first). */
+  gallery: string[]
+  /** EU size labels enabled for this SKU. */
+  sizes: string[]
+  expressDays: string
+  expressSurcharge: number
+  standardDays: string
   tag?: string
-  /** One product card per color; they share a model group on the PDP. */
-  colors: ColorDraft[]
+  returnable?: boolean
 }
 
 interface CatalogCtx {
   products: Product[]
   published: Product[]
-  publishProduct: (input: PublishInput, managerId: string) => Product[]
+  publishProduct: (input: PublishInput, managerId: string) => Product
   removePublished: (id: string) => void
 }
 
@@ -73,31 +79,37 @@ export function CatalogProvider({ children }: { children: ReactNode }) {
 
   const publishProduct = useCallback((input: PublishInput, managerId: string) => {
     const stem = slugify(input.name) || 'product'
-    const modelGroup = `mgr-${stem}`
     const stamp = Date.now().toString(36)
-    const created: Product[] = input.colors.map((color, index) => {
-      const colorName = color.colorName.trim()
-      const images = color.images.filter(Boolean)
-      return {
-        id: `mgr-${stem}-${stamp}-${index}`,
-        name: input.name.trim(),
-        price: input.price,
-        category: input.category,
-        gender: input.gender ?? 'unisex',
-        color: '#e8e8e8',
-        accent: '#e8e8e8',
-        colorName,
-        modelGroup,
-        image: images[0],
-        gallery: images,
-        tag: input.tag?.trim() || undefined,
-        delivery: input.delivery?.trim() || '3 дня',
-        returnable: true,
-        publishedBy: managerId,
-      }
-    })
+    const swatch = input.colorHex?.trim() || '#e8e8e8'
+    const gallery = input.gallery.filter(Boolean)
+    const image = input.image || gallery[0]
+    const standardLabel = input.standardDays.trim() || '25-35'
+    const created: Product = {
+      id: `mgr-${stem}-${stamp}`,
+      name: input.name.trim(),
+      price: input.price,
+      category: input.category,
+      gender: input.gender,
+      brand: input.brand?.trim() || undefined,
+      color: swatch,
+      accent: swatch,
+      colorName: input.colorName?.trim() || 'Default',
+      modelGroup: `mgr-${stem}`,
+      image,
+      gallery: gallery.length ? gallery : [image],
+      tag: input.tag?.trim() || undefined,
+      sizes: input.sizes.length ? input.sizes : undefined,
+      expressDays: input.expressDays.trim() || '3-7',
+      expressSurcharge: Math.max(0, input.expressSurcharge),
+      standardDays: standardLabel,
+      delivery: standardLabel.includes('–') || standardLabel.includes('-')
+        ? `${standardLabel.replace(/[-−–—]/g, '–')} дней`
+        : `${standardLabel} дней`,
+      returnable: input.returnable ?? true,
+      publishedBy: managerId,
+    }
     setPublished((prev) => {
-      const next = [...created, ...prev]
+      const next = [created, ...prev]
       savePublished(next)
       return next
     })

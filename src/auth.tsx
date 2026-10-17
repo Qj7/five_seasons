@@ -23,28 +23,21 @@ interface StoredAccount extends User {
 const SESSION_KEY = 'five-seasons:session'
 const CUSTOMERS_KEY = 'five-seasons:customers'
 
-/** Seeded manager accounts — they can publish products. */
+/** Seeded manager accounts — they can publish products (GitHub Pages + local). */
 export const MANAGER_ACCOUNTS: StoredAccount[] = [
+  {
+    id: 'mgr-nikita',
+    email: 'nikita@fiveseasons.vn',
+    name: 'Никита',
+    role: 'manager',
+    password: 'NikitaMgr2024',
+  },
   {
     id: 'mgr-anna',
     email: 'anna@fiveseasons.vn',
     name: 'Анна',
     role: 'manager',
     password: 'AnnaMgr2024',
-  },
-  {
-    id: 'mgr-dmitry',
-    email: 'dmitry@fiveseasons.vn',
-    name: 'Дмитрий',
-    role: 'manager',
-    password: 'DmitryMgr2024',
-  },
-  {
-    id: 'mgr-lena',
-    email: 'lena@fiveseasons.vn',
-    name: 'Лена',
-    role: 'manager',
-    password: 'LenaMgr2024',
   },
 ]
 

@@ -12,6 +12,7 @@
   "dependencies": {
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "react-dropzone": "^20.1.4",
     "swiper": "^14.3.0"
   },
   "devDependencies": {

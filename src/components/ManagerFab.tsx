@@ -16,8 +16,8 @@ export function ManagerFab() {
     <button
       type="button"
       className="manager-fab"
-      onClick={openManager}
-      aria-label={t('Новый товар')}
+      onClick={() => openManager('hub')}
+      aria-label={t('Кабинет менеджера')}
     >
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
         <path
@@ -27,7 +27,7 @@ export function ManagerFab() {
           strokeLinecap="round"
         />
       </svg>
-      <span>{t('Товар')}</span>
+      <span>{t('Кабинет')}</span>
     </button>
   )
 }

@@ -111,6 +111,17 @@ export interface Product {
   gallery?: string[]
   tag?: string
   delivery: string
+  /**
+   * Available EU sizes for this SKU (singles like "42" or ranges like "37–38").
+   * Missing → default Crocs-style grid on PDP.
+   */
+  sizes?: string[]
+  /** Days for express delivery — number ("5") or range ("3-7"). */
+  expressDays?: string
+  /** Extra ₫ added to `price` when buyer picks express. */
+  expressSurcharge?: number
+  /** Days for standard delivery — number or range ("25-35"). */
+  standardDays?: string
   returnable?: boolean
   popularRank?: number
   fromPrice?: boolean

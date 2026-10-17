@@ -20,6 +20,7 @@ import {
   type Product,
 } from '../data/products'
 import { brands } from '../data/brands'
+import { formatDeliveryDays, resolveSizeOptions } from '../data/sizes'
 import { useCatalog } from '../catalog'
 import { useStore } from '../store'
 import { BrandLogo } from './BrandMark'
@@ -42,18 +43,6 @@ const SIZE_GUIDE_STEPS = [
     image: sizeGuideStep4,
     caption: '4. Подберите кроксы согласно размерной сетке',
   },
-] as const
-
-/** EU (col 1) ↔ M/W (col 5) — paired by foot length from the size chart */
-const SIZE_OPTIONS = [
-  { eu: '36–37', mw: 'M4/W6' },
-  { eu: '37–38', mw: 'M5/W7' },
-  { eu: '38–39', mw: 'M6/W8' },
-  { eu: '39–40', mw: 'M7/W9' },
-  { eu: '41–42', mw: 'M8/W10' },
-  { eu: '42–43', mw: 'M9/W11' },
-  { eu: '43–44', mw: 'M10/W12' },
-  { eu: '45–46', mw: 'M11/W13' },
 ] as const
 
 type SizeSystem = 'eu' | 'mw'
@@ -164,6 +153,8 @@ export function ProductPage({ productId }: { productId: string }) {
   useEffect(() => {
     const main = document.querySelector('.app-main')
     main?.scrollTo({ top: 0 })
+    setSizeIndex(0)
+    setDelivery('standard')
   }, [productId])
 
   useEffect(() => {
@@ -211,8 +202,17 @@ export function ProductPage({ productId }: { productId: string }) {
   const isSneaker =
     product.category === 'sneakers' || product.category === 'custom-sneakers'
   const sku = product.id.replace(/-/g, '').toUpperCase()
-  const expressPrice = Math.round(product.price * 1.35)
+  const sizeOptions = resolveSizeOptions(product.sizes)
+  const expressPrice =
+    product.expressSurcharge != null
+      ? product.price + product.expressSurcharge
+      : Math.round(product.price * 1.35)
   const buyPrice = delivery === 'express' ? expressPrice : product.price
+  const expressEta = formatDeliveryDays(
+    product.expressDays,
+    t('от 3 до 7 дней'),
+  )
+  const standardEta = formatDeliveryDays(product.standardDays, t('25–35 дней'))
   const isJibbitz = product.modelGroup === 'jibbitz'
 
   return (
@@ -355,7 +355,7 @@ export function ProductPage({ productId }: { productId: string }) {
             <div className="pdp-sizes__row">
               <span className="pdp-sizes__label">EU:</span>
               <div className="pdp-sizes__track">
-                {SIZE_OPTIONS.map((s, i) => (
+                {sizeOptions.map((s, i) => (
                   <button
                     key={s.eu}
                     type="button"
@@ -372,9 +372,9 @@ export function ProductPage({ productId }: { productId: string }) {
             <div className="pdp-sizes__row">
               <span className="pdp-sizes__label">M/W:</span>
               <div className="pdp-sizes__track">
-                {SIZE_OPTIONS.map((s, i) => (
+                {sizeOptions.map((s, i) => (
                   <button
-                    key={s.mw}
+                    key={`${s.eu}-${s.mw}`}
                     type="button"
                     className={
                       sizeSystem === 'mw' && sizeIndex === i ? 'is-active' : ''
@@ -409,7 +409,7 @@ export function ProductPage({ productId }: { productId: string }) {
           >
             <span className="pdp-delivery__badge">{t('Экспресс')}</span>
             <span className="pdp-delivery__price">{formatPrice(expressPrice)}</span>
-            <span className="pdp-delivery__eta">{t('от 3 до 7 дней')}</span>
+            <span className="pdp-delivery__eta">{expressEta}</span>
           </button>
           <button
             type="button"
@@ -420,7 +420,7 @@ export function ProductPage({ productId }: { productId: string }) {
           >
             <strong className="pdp-delivery__name">{t('Стандартная')}</strong>
             <span className="pdp-delivery__price">{formatPrice(product.price)}</span>
-            <span className="pdp-delivery__eta">{t('25–35 дней')}</span>
+            <span className="pdp-delivery__eta">{standardEta}</span>
           </button>
         </div>
       </section>

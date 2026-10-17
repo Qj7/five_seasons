@@ -9,6 +9,9 @@ import type { BrandGroup } from './data/brands'
 
 export type Tab = 'home' | 'catalog' | 'favorites' | 'cart' | 'profile'
 
+/** Manager cabinet screens — each manager has their own listings/orders. */
+export type ManagerScreen = 'hub' | 'new' | 'orders' | 'listings'
+
 interface StoreCtx {
   tab: Tab
   setTab: (t: Tab) => void
@@ -17,6 +20,7 @@ interface StoreCtx {
   cart: Map<string, number>
   addToCart: (id: string) => void
   removeFromCart: (id: string) => void
+  clearCart: () => void
   cartCount: number
   catalogFilter: string | null
   setCatalogFilter: (f: string | null) => void
@@ -25,11 +29,15 @@ interface StoreCtx {
   selectedProductId: string | null
   openProduct: (id: string) => void
   closeProduct: () => void
-  /** Full-screen manager publish flow (not part of profile). */
   managerOpen: boolean
-  openManager: () => void
+  managerScreen: ManagerScreen
+  openManager: (screen?: ManagerScreen) => void
+  setManagerScreen: (screen: ManagerScreen) => void
   closeManager: () => void
-  /** Brand screens stack: 'all' / 'all:{group}' is the brands index, otherwise a brand slug. */
+  /** Customer / shared orders list (profile → Мои заказы). */
+  ordersOpen: boolean
+  openOrders: () => void
+  closeOrders: () => void
   brandStack: string[]
   openBrands: (group?: BrandGroup) => void
   openBrand: (slug: string) => void
@@ -46,18 +54,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [search, setSearch] = useState('')
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null)
   const [managerOpen, setManagerOpen] = useState(false)
+  const [managerScreen, setManagerScreen] = useState<ManagerScreen>('hub')
+  const [ordersOpen, setOrdersOpen] = useState(false)
   const [brandStack, setBrandStack] = useState<string[]>([])
 
   const openBrands = useCallback((group?: BrandGroup) => {
     const screen = group ? `all:${group}` : 'all'
     setSelectedProductId(null)
     setManagerOpen(false)
+    setOrdersOpen(false)
     setBrandStack((prev) => (prev.at(-1) === screen ? prev : [...prev, screen]))
   }, [])
 
   const openBrand = useCallback((slug: string) => {
     setSelectedProductId(null)
     setManagerOpen(false)
+    setOrdersOpen(false)
     setBrandStack((prev) => [...prev, slug])
   }, [])
 
@@ -67,6 +79,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const openProduct = useCallback((id: string) => {
     setManagerOpen(false)
+    setOrdersOpen(false)
     setSelectedProductId(id)
   }, [])
 
@@ -74,19 +87,34 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setSelectedProductId(null)
   }, [])
 
-  const openManager = useCallback(() => {
+  const openManager = useCallback((screen: ManagerScreen = 'hub') => {
     setSelectedProductId(null)
     setBrandStack([])
+    setOrdersOpen(false)
+    setManagerScreen(screen)
     setManagerOpen(true)
   }, [])
 
   const closeManager = useCallback(() => {
     setManagerOpen(false)
+    setManagerScreen('hub')
+  }, [])
+
+  const openOrders = useCallback(() => {
+    setSelectedProductId(null)
+    setBrandStack([])
+    setManagerOpen(false)
+    setOrdersOpen(true)
+  }, [])
+
+  const closeOrders = useCallback(() => {
+    setOrdersOpen(false)
   }, [])
 
   const handleSetTab = useCallback((t: Tab) => {
     setSelectedProductId(null)
     setManagerOpen(false)
+    setOrdersOpen(false)
     setBrandStack([])
     setTab(t)
   }, [])
@@ -118,6 +146,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
+  const clearCart = useCallback(() => {
+    setCart(new Map())
+  }, [])
+
   const cartCount = [...cart.values()].reduce((a, b) => a + b, 0)
 
   return (
@@ -130,6 +162,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         cart,
         addToCart,
         removeFromCart,
+        clearCart,
         cartCount,
         catalogFilter,
         setCatalogFilter,
@@ -139,8 +172,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         openProduct,
         closeProduct,
         managerOpen,
+        managerScreen,
         openManager,
+        setManagerScreen,
         closeManager,
+        ordersOpen,
+        openOrders,
+        closeOrders,
         brandStack,
         openBrands,
         openBrand,
