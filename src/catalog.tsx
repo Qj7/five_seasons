@@ -2,6 +2,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -12,8 +13,13 @@ import {
   type Gender,
   type Product,
 } from './data/products'
-
-const STORAGE_KEY = 'five-seasons:published-products'
+import {
+  fetchSharedPublished,
+  loadLocalPublished,
+  mergePublished,
+  saveLocalPublished,
+  syncSharedPublished,
+} from './sharedCatalog'
 
 export type PublishInput = {
   name: string
@@ -42,24 +48,11 @@ export type PublishInput = {
 interface CatalogCtx {
   products: Product[]
   published: Product[]
+  /** True while the shared storefront catalog is loading. */
+  catalogReady: boolean
   publishProduct: (input: PublishInput, managerId: string) => Product
   updatePublished: (id: string, input: PublishInput) => Product | null
   removePublished: (id: string) => void
-}
-
-function loadPublished(): Product[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return []
-    const parsed = JSON.parse(raw) as Product[]
-    return Array.isArray(parsed) ? parsed : []
-  } catch {
-    return []
-  }
-}
-
-function savePublished(list: Product[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list))
 }
 
 function slugify(value: string) {
@@ -104,10 +97,43 @@ function buildFields(input: PublishInput) {
   }
 }
 
+function persist(list: Product[]) {
+  saveLocalPublished(list)
+  void syncSharedPublished(list)
+}
+
 const Ctx = createContext<CatalogCtx | null>(null)
 
 export function CatalogProvider({ children }: { children: ReactNode }) {
-  const [published, setPublished] = useState<Product[]>(() => loadPublished())
+  const [published, setPublished] = useState<Product[]>(() => loadLocalPublished())
+  const [catalogReady, setCatalogReady] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      const shared = await fetchSharedPublished()
+      if (cancelled) return
+      setPublished((local) => {
+        const merged = mergePublished(shared, local)
+        saveLocalPublished(merged)
+        return merged
+      })
+      setCatalogReady(true)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  // Other tabs / windows on this origin pick up publishes immediately.
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== 'five-seasons:published-products') return
+      setPublished(loadLocalPublished())
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [])
 
   const products = useMemo(() => {
     const byId = new Map(baseProducts.map((p) => [p.id, p]))
@@ -127,7 +153,7 @@ export function CatalogProvider({ children }: { children: ReactNode }) {
     }
     setPublished((prev) => {
       const next = [created, ...prev]
-      savePublished(next)
+      persist(next)
       return next
     })
     return created
@@ -147,7 +173,7 @@ export function CatalogProvider({ children }: { children: ReactNode }) {
       if (idx < 0) return prev
       const next = [...prev]
       next[idx] = updated
-      savePublished(next)
+      persist(next)
       return next
     })
     return updated
@@ -156,7 +182,7 @@ export function CatalogProvider({ children }: { children: ReactNode }) {
   const removePublished = useCallback((id: string) => {
     setPublished((prev) => {
       const next = prev.filter((p) => p.id !== id)
-      savePublished(next)
+      persist(next)
       return next
     })
   }, [])
@@ -165,11 +191,12 @@ export function CatalogProvider({ children }: { children: ReactNode }) {
     () => ({
       products,
       published,
+      catalogReady,
       publishProduct,
       updatePublished,
       removePublished,
     }),
-    [products, published, publishProduct, updatePublished, removePublished],
+    [products, published, catalogReady, publishProduct, updatePublished, removePublished],
   )
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>

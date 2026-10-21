@@ -187,6 +187,27 @@ export function CatalogPage() {
         </>
       ) : (
         <>
+          <div className="gender-tabs" role="tablist" aria-label={t('Пол')}>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={audience === 'men'}
+              className={`gender-tabs__btn ${audience === 'men' ? 'is-active' : ''}`}
+              onClick={() => setAudience('men')}
+            >
+              {t('Мужчинам')}
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={audience === 'women'}
+              className={`gender-tabs__btn ${audience === 'women' ? 'is-active' : ''}`}
+              onClick={() => setAudience('women')}
+            >
+              {t('Женщинам')}
+            </button>
+          </div>
+
           {department && (
             <div className="filter-row catalog-subcats">
               {department.categories.map((c) => (

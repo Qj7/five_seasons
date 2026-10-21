@@ -108,7 +108,15 @@ export function HomePage() {
       .map((id) => productById(products, id))
       .filter((p): p is Product => Boolean(p))
 
-  const newSneakers = pick(newSneakerIds)
+  const publishedSneakers = products.filter(
+    (p) => p.publishedBy && p.category === 'sneakers',
+  )
+  const newSneakers = [
+    ...publishedSneakers,
+    ...pick(newSneakerIds).filter(
+      (p) => !publishedSneakers.some((m) => m.id === p.id),
+    ),
+  ].slice(0, 6)
   const crocsPreview = pick(crocsPreviewIds)
 
   const openSlide = (slide: BannerSlide) => {

@@ -360,7 +360,7 @@ function NewProductForm() {
   const [name, setName] = useState('')
   const [price, setPrice] = useState('')
   const [category, setCategory] = useState<Category>('sneakers')
-  const [gender, setGender] = useState<Gender>('men')
+  const [gender, setGender] = useState<Gender>('unisex')
   const [brand, setBrand] = useState('nike')
   const [colorName, setColorName] = useState('')
   const [features, setFeatures] = useState('')
@@ -387,7 +387,7 @@ function NewProductForm() {
       setName(s.name)
       setPrice(s.price)
       setCategory(s.category)
-      setGender(s.gender === 'unisex' ? 'men' : s.gender)
+      setGender(s.gender ?? 'unisex')
       setBrand(s.brand || brandsForCategory(s.category)[0]?.slug || '')
       setFeatures(s.features)
       setColorName(s.colorName)
@@ -405,7 +405,7 @@ function NewProductForm() {
       setName(s.name)
       setPrice(s.price)
       setCategory(s.category)
-      setGender(s.gender === 'unisex' ? 'men' : s.gender)
+      setGender(s.gender ?? 'unisex')
       setBrand(s.brand || brandsForCategory(s.category)[0]?.slug || '')
       setFeatures(s.features)
       setColorName('')
@@ -421,7 +421,7 @@ function NewProductForm() {
     setName('')
     setPrice('')
     setCategory('sneakers')
-    setGender('men')
+    setGender('unisex')
     setBrand('nike')
     setFeatures('')
     setColorName('')
@@ -877,6 +877,14 @@ function NewProductForm() {
           <div className="mgr-gender">
             <span className="mgr-gender__label">{t('Посадка')}</span>
             <div className="mgr-gender__toggle">
+              <button
+                type="button"
+                className={gender === 'unisex' ? 'is-active' : ''}
+                onClick={() => setGender('unisex')}
+                disabled={mode === 'addColor'}
+              >
+                {t('Унисекс')}
+              </button>
               <button
                 type="button"
                 className={gender === 'men' ? 'is-active' : ''}

@@ -32,6 +32,10 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          # Optional: fine-grained PAT so live manager publishes commit to public/shared-published.json
+          VITE_CATALOG_TOKEN: ${{ secrets.CATALOG_WRITE_TOKEN }}
+          VITE_CATALOG_REPO: Qj7/five_seasons
 
       - name: Verify production build
         run: |
