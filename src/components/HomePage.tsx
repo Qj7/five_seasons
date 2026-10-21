@@ -118,7 +118,9 @@ export function HomePage() {
 
   const onBannerClick = (swiper: SwiperClass) => {
     if (!swiper.allowClick) return
-    const slide = bannerSlides[swiper.clickedIndex]
+    const i = swiper.clickedIndex
+    if (typeof i !== 'number') return
+    const slide = bannerSlides[i]
     if (slide) openSlide(slide)
   }
 
