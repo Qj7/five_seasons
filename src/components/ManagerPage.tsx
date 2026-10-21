@@ -1,15 +1,22 @@
 import { useEffect, useId, useMemo, useState, type FormEvent } from 'react'
 import { useAuth } from '../auth'
-import { useCatalog } from '../catalog'
+import { useCatalog, type PublishInput } from '../catalog'
 import {
   catalogDepartments,
   departmentOf,
   formatPrice,
+  variantsOf,
   type Category,
   type Gender,
+  type Product,
 } from '../data/products'
 import { brands, type BrandGroup } from '../data/brands'
-import { SIZE_PALETTE, normalizeSizeLabel } from '../data/sizes'
+import {
+  defaultSizesFor,
+  normalizeSizeLabel,
+  sizePaletteFor,
+  sizeSectionLabel,
+} from '../data/sizes'
 import { useStore } from '../store'
 import { useI18n } from '../i18n'
 import { CrocVisual } from './CrocVisual'
@@ -43,10 +50,73 @@ function BackChevron() {
   )
 }
 
+function formatAmount(n: number) {
+  return n > 0 ? n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : ''
+}
+
+function parseAmount(raw: string) {
+  return Number(raw.replace(/[^\d]/g, '')) || 0
+}
+
+function newExtraKey() {
+  return `c-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
+}
+
+type ExtraColor = {
+  key: string
+  colorName: string
+  coverImage: string | null
+  gallery: string[]
+}
+
+function emptyExtra(): ExtraColor {
+  return { key: newExtraKey(), colorName: '', coverImage: null, gallery: [] }
+}
+
+function ListingActions({ product }: { product: Product }) {
+  const { removePublished } = useCatalog()
+  const { openManagerEdit, openManagerAddColor, openProduct } = useStore()
+  const { t } = useI18n()
+
+  return (
+    <div className="manager-list__actions">
+      <button
+        type="button"
+        className="manager-list__action"
+        onClick={() => openManagerEdit(product.id)}
+      >
+        {t('Изменить')}
+      </button>
+      <button
+        type="button"
+        className="manager-list__action"
+        onClick={() => openManagerAddColor(product.id)}
+      >
+        {t('Добавить цвет')}
+      </button>
+      <button
+        type="button"
+        className="manager-list__action"
+        onClick={() => openProduct(product.id)}
+      >
+        {t('Открыть')}
+      </button>
+      <button
+        type="button"
+        className="manager-list__remove"
+        onClick={() => removePublished(product.id)}
+      >
+        {t('Снять')}
+      </button>
+    </div>
+  )
+}
+
 function ManagerHub() {
   const { user } = useAuth()
-  const { published, removePublished } = useCatalog()
-  const { setManagerScreen, openProduct, closeManager } = useStore()
+  const { published } = useCatalog()
+  const { openManagerNew, setManagerScreen, openManagerEdit, closeManager } =
+    useStore()
   const { t } = useI18n()
   const mine = published.filter((p) => p.publishedBy === user?.id)
 
@@ -72,7 +142,7 @@ function ManagerHub() {
         <button
           type="button"
           className="manager-hub__card manager-hub__card--primary"
-          onClick={() => setManagerScreen('new')}
+          onClick={openManagerNew}
         >
           <strong>{t('Новый товар')}</strong>
           <span>{t('Обложка, размеры, галерея, доставка')}</span>
@@ -100,27 +170,23 @@ function ManagerHub() {
           <h2>{t('Недавние')}</h2>
           <ul>
             {mine.slice(0, 4).map((p) => (
-              <li key={p.id} className="manager-list__item">
+              <li key={p.id} className="manager-list__item manager-list__item--stack">
                 <button
                   type="button"
                   className="manager-list__open"
-                  onClick={() => openProduct(p.id)}
+                  onClick={() => openManagerEdit(p.id)}
                 >
                   <span className="manager-list__thumb">
                     <CrocVisual product={p} />
                   </span>
                   <span>
                     <strong>{p.name}</strong>
-                    <em>{formatPrice(p.price)}</em>
+                    <em>
+                      {p.colorName} · {formatPrice(p.price)}
+                    </em>
                   </span>
                 </button>
-                <button
-                  type="button"
-                  className="manager-list__remove"
-                  onClick={() => removePublished(p.id)}
-                >
-                  {t('Снять')}
-                </button>
+                <ListingActions product={p} />
               </li>
             ))}
           </ul>
@@ -132,8 +198,8 @@ function ManagerHub() {
 
 function ManagerListings() {
   const { user } = useAuth()
-  const { published, removePublished } = useCatalog()
-  const { setManagerScreen, openProduct } = useStore()
+  const { published } = useCatalog()
+  const { setManagerScreen, openManagerNew, openManagerEdit } = useStore()
   const { t } = useI18n()
   const mine = published.filter((p) => p.publishedBy === user?.id)
 
@@ -154,11 +220,7 @@ function ManagerListings() {
       {mine.length === 0 ? (
         <div className="empty-state">
           <p>{t('Пока ничего не опубликовано')}</p>
-          <button
-            type="button"
-            className="btn-primary"
-            onClick={() => setManagerScreen('new')}
-          >
+          <button type="button" className="btn-primary" onClick={openManagerNew}>
             {t('Новый товар')}
           </button>
         </div>
@@ -166,11 +228,11 @@ function ManagerListings() {
         <section className="manager-list">
           <ul>
             {mine.map((p) => (
-              <li key={p.id} className="manager-list__item">
+              <li key={p.id} className="manager-list__item manager-list__item--stack">
                 <button
                   type="button"
                   className="manager-list__open"
-                  onClick={() => openProduct(p.id)}
+                  onClick={() => openManagerEdit(p.id)}
                 >
                   <span className="manager-list__thumb">
                     <CrocVisual product={p} />
@@ -182,13 +244,7 @@ function ManagerListings() {
                     </em>
                   </span>
                 </button>
-                <button
-                  type="button"
-                  className="manager-list__remove"
-                  onClick={() => removePublished(p.id)}
-                >
-                  {t('Снять')}
-                </button>
+                <ListingActions product={p} />
               </li>
             ))}
           </ul>
@@ -198,12 +254,108 @@ function ManagerListings() {
   )
 }
 
-function NewProductForm() {
-  const { user } = useAuth()
-  const { publishProduct } = useCatalog()
-  const { setManagerScreen, openProduct } = useStore()
+function productToFormState(p: Product) {
+  return {
+    name: p.name,
+    price: String(p.price),
+    category: p.category,
+    gender: (p.gender ?? 'unisex') as Gender,
+    brand: p.brand ?? '',
+    features: p.features ?? '',
+    colorName: p.colorName === 'Default' ? '' : p.colorName,
+    coverImage: p.image || null,
+    gallery: p.gallery?.length ? [...p.gallery] : p.image ? [p.image] : [],
+    sizes: p.sizes?.length ? [...p.sizes] : defaultSizesFor(p.category),
+    expressTotal: String(p.price + (p.expressSurcharge ?? 0)),
+    expressDays: p.expressDays ?? '3-7',
+    standardDays: p.standardDays ?? '25-35',
+    modelGroup: p.modelGroup,
+  }
+}
+
+/** One extra colorway block: own cover + name + gallery (= own PDP object). */
+function ExtraColorBlock({
+  index,
+  value,
+  onChange,
+  onRemove,
+  onError,
+}: {
+  index: number
+  value: ExtraColor
+  onChange: (next: ExtraColor) => void
+  onRemove: () => void
+  onError: (message: string) => void
+}) {
   const { t } = useI18n()
   const formId = useId()
+
+  return (
+    <fieldset className="manager-form__section mgr-extra-color">
+      <legend>
+        {t('Цвет {n}', { n: index + 2 })}
+        <button
+          type="button"
+          className="mgr-extra-color__remove"
+          onClick={onRemove}
+        >
+          {t('Убрать цвет')}
+        </button>
+      </legend>
+      <p className="manager-form__section-hint">
+        {t('Отдельная карточка со своими фото — как цвета у Crocs.')}
+      </p>
+      <CoverImageField
+        value={value.coverImage}
+        onChange={(url) => onChange({ ...value, coverImage: url })}
+        onError={onError}
+        caption={value.colorName}
+      />
+      <label className="auth-field" htmlFor={`${formId}-cname`}>
+        <span>{t('Название цвета')}</span>
+        <input
+          id={`${formId}-cname`}
+          value={value.colorName}
+          onChange={(e) => onChange({ ...value, colorName: e.target.value })}
+          placeholder="Black"
+        />
+      </label>
+      <div>
+        <span className="mgr-extra-color__gallery-label">{t('Галерея')}</span>
+        <GalleryUploader
+          images={value.gallery}
+          onChange={(gallery) => onChange({ ...value, gallery })}
+          onError={onError}
+        />
+      </div>
+    </fieldset>
+  )
+}
+
+function NewProductForm() {
+  const { user } = useAuth()
+  const { products, publishProduct, updatePublished } = useCatalog()
+  const {
+    setManagerScreen,
+    openProduct,
+    managerEditId,
+    managerColorSourceId,
+  } = useStore()
+  const { t } = useI18n()
+  const formId = useId()
+
+  const editing = managerEditId
+    ? products.find((p) => p.id === managerEditId)
+    : null
+  const colorSource = managerColorSourceId
+    ? products.find((p) => p.id === managerColorSourceId)
+    : null
+
+  const mode: 'create' | 'edit' | 'addColor' = editing
+    ? 'edit'
+    : colorSource
+      ? 'addColor'
+      : 'create'
 
   const [name, setName] = useState('')
   const [price, setPrice] = useState('')
@@ -211,22 +363,81 @@ function NewProductForm() {
   const [gender, setGender] = useState<Gender>('men')
   const [brand, setBrand] = useState('nike')
   const [colorName, setColorName] = useState('')
+  const [features, setFeatures] = useState('')
   const [coverImage, setCoverImage] = useState<string | null>(null)
   const [gallery, setGallery] = useState<string[]>([])
-  const [sizes, setSizes] = useState<string[]>([
-    '36–37',
-    '37–38',
-    '38–39',
-    '39–40',
-    '41–42',
-  ])
+  const [sizes, setSizes] = useState<string[]>(() => defaultSizesFor('sneakers'))
   const [customSize, setCustomSize] = useState('')
-  const [expressSurcharge, setExpressSurcharge] = useState('1000000')
+  const [expressTotal, setExpressTotal] = useState('')
   const [expressDays, setExpressDays] = useState('3-7')
   const [standardDays, setStandardDays] = useState('25-35')
+  const [modelGroup, setModelGroup] = useState<string | null>(null)
+  const [moreColors, setMoreColors] = useState(false)
+  const [extras, setExtras] = useState<ExtraColor[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [doneProducts, setDoneProducts] = useState<Product[] | null>(null)
+
+  useEffect(() => {
+    setDoneProducts(null)
+    setError(null)
+    setMoreColors(false)
+    setExtras([])
+    if (mode === 'edit' && editing) {
+      const s = productToFormState(editing)
+      setName(s.name)
+      setPrice(s.price)
+      setCategory(s.category)
+      setGender(s.gender === 'unisex' ? 'men' : s.gender)
+      setBrand(s.brand || brandsForCategory(s.category)[0]?.slug || '')
+      setFeatures(s.features)
+      setColorName(s.colorName)
+      setCoverImage(s.coverImage)
+      setGallery(s.gallery)
+      setSizes(s.sizes)
+      setExpressTotal(s.expressTotal)
+      setExpressDays(s.expressDays)
+      setStandardDays(s.standardDays)
+      setModelGroup(s.modelGroup)
+      return
+    }
+    if (mode === 'addColor' && colorSource) {
+      const s = productToFormState(colorSource)
+      setName(s.name)
+      setPrice(s.price)
+      setCategory(s.category)
+      setGender(s.gender === 'unisex' ? 'men' : s.gender)
+      setBrand(s.brand || brandsForCategory(s.category)[0]?.slug || '')
+      setFeatures(s.features)
+      setColorName('')
+      setCoverImage(null)
+      setGallery([])
+      setSizes(s.sizes)
+      setExpressTotal(s.expressTotal)
+      setExpressDays(s.expressDays)
+      setStandardDays(s.standardDays)
+      setModelGroup(s.modelGroup)
+      return
+    }
+    setName('')
+    setPrice('')
+    setCategory('sneakers')
+    setGender('men')
+    setBrand('nike')
+    setFeatures('')
+    setColorName('')
+    setCoverImage(null)
+    setGallery([])
+    setSizes(defaultSizesFor('sneakers'))
+    setExpressTotal('')
+    setExpressDays('3-7')
+    setStandardDays('25-35')
+    setModelGroup(null)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, managerEditId, managerColorSourceId])
 
   const brandOptions = useMemo(() => brandsForCategory(category), [category])
+  const sizePalette = useMemo(() => sizePaletteFor(category), [category])
+  const sizesLegend = sizeSectionLabel(category)
 
   useEffect(() => {
     if (!brandOptions.some((b) => b.slug === brand)) {
@@ -234,22 +445,19 @@ function NewProductForm() {
     }
   }, [brandOptions, brand])
 
-  const priceNum = Number(String(price).replace(/\s/g, '')) || 0
-  const surchargeNum = Number(String(expressSurcharge).replace(/\s/g, '')) || 0
-  const expressTotal = priceNum + surchargeNum
-  const formatAmount = (n: number) =>
-    n > 0 ? n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : ''
-  const parseAmount = (raw: string) => Number(raw.replace(/[^\d]/g, '')) || 0
+  const priceNum = parseAmount(price)
+  const expressTotalNum = parseAmount(expressTotal)
+  const surchargeNum = Math.max(0, expressTotalNum - priceNum)
 
-  const onCoverChange = (url: string | null) => {
-    setError(null)
-    const prev = coverImage
-    setCoverImage(url)
-    setGallery((g) => {
-      const withoutPrev = prev ? g.filter((x) => x !== prev) : g
-      if (!url) return withoutPrev
-      return [url, ...withoutPrev.filter((x) => x !== url)]
-    })
+  const colorways = useMemo(() => {
+    const group = modelGroup || editing?.modelGroup || colorSource?.modelGroup
+    if (!group) return [] as Product[]
+    return variantsOf({ modelGroup: group } as Product, products)
+  }, [modelGroup, editing, colorSource, products])
+
+  const onCategoryChange = (next: Category) => {
+    setCategory(next)
+    setSizes(defaultSizesFor(next))
   }
 
   const toggleSize = (eu: string) => {
@@ -267,61 +475,287 @@ function NewProductForm() {
     const key = normalizeSizeLabel(raw)
     if (!key) return
     setSizes((prev) =>
-      prev.some((s) => normalizeSizeLabel(s) === key) ? prev : [...prev, key],
+      prev.some((s) => normalizeSizeLabel(s) === key) ? prev : [...prev, raw.trim()],
     )
     setCustomSize('')
   }
+
+  const enableMoreColors = (on: boolean) => {
+    setMoreColors(on)
+    if (on && extras.length === 0) setExtras([emptyExtra()])
+    if (!on) setExtras([])
+  }
+
+  const addExtraColor = () => {
+    setMoreColors(true)
+    setExtras((prev) => [...prev, emptyExtra()])
+  }
+
+  const updateExtra = (key: string, next: ExtraColor) => {
+    setExtras((prev) => prev.map((c) => (c.key === key ? next : c)))
+  }
+
+  const removeExtra = (key: string) => {
+    setExtras((prev) => {
+      const next = prev.filter((c) => c.key !== key)
+      if (next.length === 0) setMoreColors(false)
+      return next
+    })
+  }
+
+  const validateShared = (): string | null => {
+    if (!name.trim()) return t('Укажите название')
+    if (!Number.isFinite(priceNum) || priceNum <= 0) return t('Укажите корректную цену')
+    if (!Number.isFinite(expressTotalNum) || expressTotalNum <= 0) {
+      return t('Укажите цену экспресс-доставки')
+    }
+    if (expressTotalNum < priceNum) return t('Экспресс не может быть дешевле цены')
+    if (!brand) return t('Выберите бренд')
+    if (sizes.length === 0) return t('Выберите хотя бы один размер')
+    if (!expressDays.trim() || !standardDays.trim()) return t('Укажите сроки доставки')
+    return null
+  }
+
+  const validateColor = (
+    label: string,
+    cover: string | null,
+    gals: string[],
+    cName: string,
+    requireName: boolean,
+  ): string | null => {
+    if (!cover && gals.length === 0) {
+      return t('Добавьте фото для цвета «{color}»', { color: label })
+    }
+    if (requireName && !cName.trim()) return t('Укажите название цвета')
+    return null
+  }
+
+  const sharedFields = (): Omit<
+    PublishInput,
+    'colorName' | 'colorHex' | 'image' | 'gallery' | 'modelGroup'
+  > => ({
+    name,
+    price: priceNum,
+    category,
+    gender,
+    brand,
+    features: features.trim() || undefined,
+    sizes,
+    expressDays,
+    expressSurcharge: surchargeNum,
+    standardDays,
+  })
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
     if (!user) return
     setError(null)
 
-    if (!name.trim()) {
-      setError(t('Укажите название'))
-      return
-    }
-    if (!Number.isFinite(priceNum) || priceNum <= 0) {
-      setError(t('Укажите корректную цену'))
-      return
-    }
-    if (!brand) {
-      setError(t('Выберите бренд'))
-      return
-    }
-    if (!coverImage && gallery.length === 0) {
-      setError(t('Добавьте фото товара'))
-      return
-    }
-    if (sizes.length === 0) {
-      setError(t('Выберите хотя бы один размер'))
-      return
-    }
-    if (!expressDays.trim() || !standardDays.trim()) {
-      setError(t('Укажите сроки доставки'))
+    const sharedErr = validateShared()
+    if (sharedErr) {
+      setError(sharedErr)
       return
     }
 
-    const image = coverImage || gallery[0]
-    const created = publishProduct(
-      {
-        name,
-        price: priceNum,
-        category,
-        gender,
-        brand,
+    const primaryErr = validateColor(
+      colorName.trim() || t('основной'),
+      coverImage,
+      gallery,
+      colorName,
+      mode === 'addColor' || moreColors,
+    )
+    if (primaryErr) {
+      setError(primaryErr)
+      return
+    }
+
+    if (moreColors) {
+      for (let i = 0; i < extras.length; i++) {
+        const ex = extras[i]
+        const err = validateColor(
+          ex.colorName.trim() || String(i + 2),
+          ex.coverImage,
+          ex.gallery,
+          ex.colorName,
+          true,
+        )
+        if (err) {
+          setError(err)
+          return
+        }
+      }
+    }
+
+    const shared = sharedFields()
+    const primaryImage = coverImage || gallery[0]
+
+    if (mode === 'edit' && editing) {
+      const updated = updatePublished(editing.id, {
+        ...shared,
         colorName: colorName || undefined,
-        image,
-        gallery: gallery.length ? gallery : [image],
-        sizes,
-        expressDays,
-        expressSurcharge: Math.max(0, surchargeNum),
-        standardDays,
+        image: primaryImage,
+        gallery,
+        modelGroup: modelGroup || editing.modelGroup,
+      })
+      if (!updated) return
+
+      const createdExtras: Product[] = []
+      if (moreColors) {
+        for (const ex of extras) {
+          const img = ex.coverImage || ex.gallery[0]
+          createdExtras.push(
+            publishProduct(
+              {
+                ...shared,
+                colorName: ex.colorName.trim(),
+                image: img,
+                gallery: ex.gallery,
+                modelGroup: updated.modelGroup,
+              },
+              user.id,
+            ),
+          )
+        }
+      }
+      setDoneProducts([updated, ...createdExtras])
+      setModelGroup(updated.modelGroup)
+      return
+    }
+
+    if (mode === 'addColor') {
+      const created = publishProduct(
+        {
+          ...shared,
+          colorName: colorName.trim() || undefined,
+          image: primaryImage,
+          gallery,
+          modelGroup: modelGroup || undefined,
+        },
+        user.id,
+      )
+      setDoneProducts([created])
+      setModelGroup(created.modelGroup)
+      return
+    }
+
+    // create — primary + optional extras, one modelGroup
+    const first = publishProduct(
+      {
+        ...shared,
+        colorName: colorName.trim() || undefined,
+        image: primaryImage,
+        gallery,
       },
       user.id,
     )
-    openProduct(created.id)
+    const created: Product[] = [first]
+    if (moreColors) {
+      for (const ex of extras) {
+        const img = ex.coverImage || ex.gallery[0]
+        created.push(
+          publishProduct(
+            {
+              ...shared,
+              colorName: ex.colorName.trim(),
+              image: img,
+              gallery: ex.gallery,
+              modelGroup: first.modelGroup,
+            },
+            user.id,
+          ),
+        )
+      }
+    }
+    setDoneProducts(created)
+    setModelGroup(first.modelGroup)
   }
+
+  const title =
+    mode === 'edit'
+      ? t('Редактирование')
+      : mode === 'addColor'
+        ? t('Новый цвет')
+        : t('Новый товар')
+
+  const submitLabel =
+    mode === 'edit'
+      ? t('Сохранить изменения')
+      : mode === 'addColor'
+        ? t('Опубликовать цвет')
+        : moreColors && extras.length > 0
+          ? t('Опубликовать ({n})', { n: 1 + extras.length })
+          : t('Опубликовать товар')
+
+  if (doneProducts?.length) {
+    const primary = doneProducts[0]
+    const group = variantsOf(primary, products)
+    return (
+      <div className="page manager-page">
+        <header className="page-header page-header--with-back">
+          <button
+            type="button"
+            className="catalog-back"
+            onClick={() => setManagerScreen('hub')}
+            aria-label={t('Назад')}
+          >
+            <BackChevron />
+          </button>
+          <h1>{title}</h1>
+        </header>
+
+        <div className="mgr-done">
+          <p className="mgr-done__msg">
+            {doneProducts.length > 1
+              ? t('Опубликовано цветов: {n}', { n: doneProducts.length })
+              : t('Товар «{name}» опубликован', { name: primary.name })}
+          </p>
+
+          <div className="mgr-colorways">
+            <h4 className="mgr-colorways__label">{t('Цвета на странице товара')}</h4>
+            <div className="mgr-colorways__list">
+              {(group.length ? group : doneProducts).map((v) => (
+                <button
+                  key={v.id}
+                  type="button"
+                  className="mgr-colorways__swatch"
+                  onClick={() => openProduct(v.id)}
+                >
+                  <img src={v.image} alt="" draggable={false} />
+                  <span>{v.colorName}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mgr-done__actions">
+            <button
+              type="button"
+              className="btn-primary btn-primary--block"
+              onClick={() => openProduct(primary.id)}
+            >
+              {t('Открыть товар')}
+            </button>
+            <button
+              type="button"
+              className="mgr-done__secondary"
+              onClick={() => setManagerScreen('listings')}
+            >
+              {t('Мои товары')}
+            </button>
+            <button
+              type="button"
+              className="mgr-done__secondary"
+              onClick={() => setManagerScreen('hub')}
+            >
+              {t('В кабинет')}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const showMultiColors = mode === 'create' || mode === 'edit'
 
   return (
     <div className="page manager-page">
@@ -334,17 +768,45 @@ function NewProductForm() {
         >
           <BackChevron />
         </button>
-        <h1>{t('Новый товар')}</h1>
+        <h1>{title}</h1>
       </header>
+
+      {mode === 'addColor' ? (
+        <p className="manager-form__section-hint manager-page__lead">
+          {t('Новый цвет той же модели — свои обложка и галерея.')}
+        </p>
+      ) : null}
+
+      {colorways.length > 0 ? (
+        <div className="mgr-colorways mgr-colorways--form">
+          <h4 className="mgr-colorways__label">{t('Уже в каталоге')}</h4>
+          <div className="mgr-colorways__list">
+            {colorways.map((v) => (
+              <div
+                key={v.id}
+                className={`mgr-colorways__swatch${
+                  editing && v.id === editing.id ? ' is-active' : ''
+                }`}
+              >
+                <img src={v.image} alt="" draggable={false} />
+                <span>{v.colorName}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       <form className="auth-form manager-form" onSubmit={onSubmit} noValidate>
         <fieldset className="manager-form__section">
           <legend>{t('Обложка')}</legend>
           <CoverImageField
             value={coverImage}
-            onChange={onCoverChange}
+            onChange={(url) => {
+              setError(null)
+              setCoverImage(url)
+            }}
             onError={setError}
-            caption={name}
+            caption={colorName || name}
           />
           <label className="auth-field" htmlFor={`${formId}-name`}>
             <span>{t('Название')}</span>
@@ -352,24 +814,27 @@ function NewProductForm() {
               id={`${formId}-name`}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder={'Nike Dunk Low "Cacao Wow"'}
+              placeholder={'Nike Dunk Low'}
               required
+              disabled={mode === 'addColor'}
             />
           </label>
-          <label className="auth-field" htmlFor={`${formId}-price`}>
-            <span>{t('Цена')}</span>
-            <input
-              id={`${formId}-price`}
-              inputMode="numeric"
-              value={price}
-              onChange={(e) => setPrice(e.target.value.replace(/[^\d]/g, ''))}
-              placeholder="3 090 000"
-              required
-            />
-          </label>
+          {moreColors || mode === 'addColor' ? (
+            <label className="auth-field" htmlFor={`${formId}-color`}>
+              <span>{t('Название цвета')}</span>
+              <input
+                id={`${formId}-color`}
+                value={colorName}
+                onChange={(e) => setColorName(e.target.value)}
+                placeholder="White"
+              />
+              <span className="manager-form__section-hint">
+                {t('Устанавливается, когда у товара больше одного цвета')}
+              </span>
+            </label>
+          ) : null}
         </fieldset>
 
-        {/* 2. Category / brand / gender */}
         <fieldset className="manager-form__section">
           <legend>{t('Категория и бренд')}</legend>
           <label className="auth-field" htmlFor={`${formId}-category`}>
@@ -377,7 +842,8 @@ function NewProductForm() {
             <select
               id={`${formId}-category`}
               value={category}
-              onChange={(e) => setCategory(e.target.value as Category)}
+              onChange={(e) => onCategoryChange(e.target.value as Category)}
+              disabled={mode === 'addColor'}
             >
               {catalogDepartments.map((dept) => (
                 <optgroup key={dept.id} label={t(dept.label)}>
@@ -398,6 +864,7 @@ function NewProductForm() {
               value={brand}
               onChange={(e) => setBrand(e.target.value)}
               required
+              disabled={mode === 'addColor'}
             >
               {brandOptions.map((b) => (
                 <option key={b.slug} value={b.slug}>
@@ -414,6 +881,7 @@ function NewProductForm() {
                 type="button"
                 className={gender === 'men' ? 'is-active' : ''}
                 onClick={() => setGender('men')}
+                disabled={mode === 'addColor'}
               >
                 {t('Мужская')}
               </button>
@@ -421,73 +889,70 @@ function NewProductForm() {
                 type="button"
                 className={gender === 'women' ? 'is-active' : ''}
                 onClick={() => setGender('women')}
+                disabled={mode === 'addColor'}
               >
                 {t('Женская')}
               </button>
             </div>
           </div>
 
-          <label className="auth-field" htmlFor={`${formId}-color`}>
-            <span>{t('Название цвета')}</span>
-            <input
-              id={`${formId}-color`}
-              value={colorName}
-              onChange={(e) => setColorName(e.target.value)}
-              placeholder="Cacao Wow"
+          <label className="auth-field" htmlFor={`${formId}-features`}>
+            <span>{t('Особенности')}</span>
+            <textarea
+              id={`${formId}-features`}
+              value={features}
+              onChange={(e) => setFeatures(e.target.value)}
+              placeholder={t(
+                'Лёгкие, амортизируют удары, нескользящие…',
+              )}
+              rows={3}
+              disabled={mode === 'addColor'}
             />
           </label>
         </fieldset>
 
-        {/* 3. Sizes */}
         <fieldset className="manager-form__section">
-          <legend>{t('Размеры EU')}</legend>
-          <p className="manager-form__section-hint">
-            {t('Можно выбрать диапазоны (37–38) и целые числа (42, 45…). Отметьте доступные.')}
-          </p>
+          <legend>{t(sizesLegend)}</legend>
           <div className="mgr-sizes">
-            {SIZE_PALETTE.map((s) => {
-              const on = sizes.some((x) => normalizeSizeLabel(x) === normalizeSizeLabel(s.eu))
+            {sizePalette.map((s) => {
+              const on = sizes.some(
+                (x) => normalizeSizeLabel(x) === normalizeSizeLabel(s.eu),
+              )
               return (
                 <button
                   key={s.eu}
                   type="button"
                   className={`mgr-sizes__chip${on ? ' is-active' : ''}`}
                   onClick={() => toggleSize(s.eu)}
+                  disabled={mode === 'addColor'}
                 >
                   {s.eu}
                 </button>
               )
             })}
           </div>
-          <div className="mgr-sizes__custom">
-            <input
-              value={customSize}
-              onChange={(e) => setCustomSize(e.target.value)}
-              placeholder={t('Свой размер, напр. 51 или 48–49')}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault()
-                  addCustomSize()
-                }
-              }}
-            />
-            <button type="button" onClick={addCustomSize}>
-              {t('Добавить')}
-            </button>
-          </div>
-          {sizes.length > 0 ? (
-            <p className="manager-form__section-hint">
-              {t('Выбрано: {list}', { list: sizes.join(', ') })}
-            </p>
+          {mode !== 'addColor' ? (
+            <div className="mgr-sizes__custom">
+              <input
+                value={customSize}
+                onChange={(e) => setCustomSize(e.target.value)}
+                placeholder={t('Свой размер')}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    addCustomSize()
+                  }
+                }}
+              />
+              <button type="button" onClick={addCustomSize}>
+                {t('Добавить')}
+              </button>
+            </div>
           ) : null}
         </fieldset>
 
-        {/* 4. Gallery */}
         <fieldset className="manager-form__section">
           <legend>{t('Галерея')}</legend>
-          <p className="manager-form__section-hint">
-            {t('Несколько фото с превью. Первое — обложка, порядок можно менять стрелками.')}
-          </p>
           <GalleryUploader
             images={gallery}
             onChange={setGallery}
@@ -495,58 +960,101 @@ function NewProductForm() {
           />
         </fieldset>
 
-        {/* 5. Delivery */}
         <fieldset className="manager-form__section">
-          <legend>{t('Доставка')}</legend>
+          <legend>{t('Цены и доставка')}</legend>
+
+          <label className="auth-field" htmlFor={`${formId}-price`}>
+            <span>{t('Цена')}</span>
+            <input
+              id={`${formId}-price`}
+              inputMode="numeric"
+              value={formatAmount(priceNum) || price}
+              onChange={(e) => {
+                const next = e.target.value.replace(/[^\d]/g, '')
+                setPrice(next)
+                const p = Number(next) || 0
+                const ex = parseAmount(expressTotal)
+                if (!expressTotal || ex < p) {
+                  setExpressTotal(p > 0 ? String(p + 1_000_000) : '')
+                }
+              }}
+              placeholder="3 090 000"
+              required
+              disabled={mode === 'addColor'}
+            />
+          </label>
 
           <div className="mgr-delivery-preview">
             <div className="mgr-delivery-preview__express">
               <span className="mgr-delivery-preview__badge">{t('Экспресс')}</span>
-              <label className="mgr-delivery-preview__price" htmlFor={`${formId}-ex-price`}>
+              <label
+                className="mgr-delivery-preview__price"
+                htmlFor={`${formId}-ex-price`}
+              >
                 <input
                   id={`${formId}-ex-price`}
                   inputMode="numeric"
-                  value={formatAmount(expressTotal)}
-                  onChange={(e) => {
-                    const total = parseAmount(e.target.value)
-                    setExpressSurcharge(String(Math.max(0, total - priceNum)))
-                  }}
-                  placeholder="1 000 000"
-                  aria-label={t('Экспресс: цена')}
+                  value={formatAmount(expressTotalNum) || expressTotal}
+                  onChange={(e) =>
+                    setExpressTotal(e.target.value.replace(/[^\d]/g, ''))
+                  }
+                  placeholder="4 090 000"
+                  aria-label={t('Экспресс доставка')}
+                  disabled={mode === 'addColor'}
                 />
                 <span aria-hidden="true">₫</span>
               </label>
-              <label className="mgr-delivery-preview__days" htmlFor={`${formId}-ex-days`}>
+              <label
+                className="mgr-delivery-preview__days"
+                htmlFor={`${formId}-ex-days`}
+              >
                 <input
                   id={`${formId}-ex-days`}
                   value={expressDays}
                   onChange={(e) => setExpressDays(e.target.value)}
                   placeholder="3-7"
                   aria-label={t('Экспресс: дни')}
+                  disabled={mode === 'addColor'}
                 />
                 <span aria-hidden="true">{t('дней')}</span>
               </label>
             </div>
             <div className="mgr-delivery-preview__standard">
               <span>{t('Стандартная')}</span>
-              <label className="mgr-delivery-preview__price" htmlFor={`${formId}-st-price`}>
+              <label
+                className="mgr-delivery-preview__price"
+                htmlFor={`${formId}-st-price`}
+              >
                 <input
                   id={`${formId}-st-price`}
                   inputMode="numeric"
-                  value={formatAmount(priceNum)}
-                  onChange={(e) => setPrice(e.target.value.replace(/[^\d]/g, ''))}
+                  value={formatAmount(priceNum) || price}
+                  onChange={(e) => {
+                    const next = e.target.value.replace(/[^\d]/g, '')
+                    setPrice(next)
+                    const p = Number(next) || 0
+                    const ex = parseAmount(expressTotal)
+                    if (!expressTotal || ex < p) {
+                      setExpressTotal(p > 0 ? String(p + 1_000_000) : '')
+                    }
+                  }}
                   placeholder="0"
-                  aria-label={t('Цена')}
+                  aria-label={t('Стандартная доставка')}
+                  disabled={mode === 'addColor'}
                 />
                 <span aria-hidden="true">₫</span>
               </label>
-              <label className="mgr-delivery-preview__days" htmlFor={`${formId}-st-days`}>
+              <label
+                className="mgr-delivery-preview__days"
+                htmlFor={`${formId}-st-days`}
+              >
                 <input
                   id={`${formId}-st-days`}
                   value={standardDays}
                   onChange={(e) => setStandardDays(e.target.value)}
                   placeholder="25-35"
                   aria-label={t('Стандартная: дни')}
+                  disabled={mode === 'addColor'}
                 />
                 <span aria-hidden="true">{t('дней')}</span>
               </label>
@@ -554,10 +1062,46 @@ function NewProductForm() {
           </div>
         </fieldset>
 
+        {showMultiColors ? (
+          <fieldset className="manager-form__section mgr-more-colors">
+            <label className="mgr-more-colors__check">
+              <input
+                type="checkbox"
+                checked={moreColors}
+                onChange={(e) => enableMoreColors(e.target.checked)}
+              />
+              <span>{t('Другие цвета')}</span>
+            </label>
+
+            {moreColors
+              ? extras.map((ex, i) => (
+                  <ExtraColorBlock
+                    key={ex.key}
+                    index={i}
+                    value={ex}
+                    onChange={(next) => updateExtra(ex.key, next)}
+                    onRemove={() => removeExtra(ex.key)}
+                    onError={setError}
+                  />
+                ))
+              : null}
+
+            {moreColors ? (
+              <button
+                type="button"
+                className="mgr-more-colors__add"
+                onClick={addExtraColor}
+              >
+                {t('Добавить ещё цвет')}
+              </button>
+            ) : null}
+          </fieldset>
+        ) : null}
+
         {error ? <p className="auth-error">{error}</p> : null}
 
         <button type="submit" className="btn-primary btn-primary--block">
-          {t('Опубликовать товар')}
+          {submitLabel}
         </button>
       </form>
     </div>
@@ -571,7 +1115,7 @@ export function ManagerPage() {
 
   if (!user || !isManager) {
     return (
-      <div className="page">
+      <div className="page manager-page">
         <header className="page-header page-header--with-back">
           <button
             type="button"
@@ -585,7 +1129,9 @@ export function ManagerPage() {
         </header>
         <div className="empty-state">
           <p>{t('Нужны права менеджера')}</p>
-          <span>{t('Войдите под аккаунтом менеджера во вкладке Профиль.')}</span>
+          <p className="manager-form__section-hint">
+            {t('Войдите под аккаунтом менеджера во вкладке Профиль.')}
+          </p>
           <button
             type="button"
             className="btn-primary"
@@ -602,7 +1148,12 @@ export function ManagerPage() {
   }
 
   if (managerScreen === 'orders') {
-    return <OrdersPage managerId={user.id} onBack={() => setManagerScreen('hub')} />
+    return (
+      <OrdersPage
+        managerId={user.id}
+        onBack={() => setManagerScreen('hub')}
+      />
+    )
   }
   if (managerScreen === 'new') return <NewProductForm />
   if (managerScreen === 'listings') return <ManagerListings />

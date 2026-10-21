@@ -1,4 +1,7 @@
-import { useRef, useState, type PointerEvent } from 'react'
+import { A11y, Mousewheel, Pagination } from 'swiper/modules'
+import { Swiper, SwiperSlide, type SwiperClass } from 'swiper/react'
+import 'swiper/css'
+import 'swiper/css/pagination'
 import {
   catalogDepartments,
   type Category,
@@ -33,15 +36,66 @@ const categoryImage = (id: Category) =>
 const newSneakerIds = ['nb-530-white', 'dunk-cacao', 'aj1-chicago']
 const crocsPreviewIds = ['classic-white', 'classic-black']
 
+type BannerSlide = {
+  eyebrow: string
+  count?: string
+  title: string
+  desc: string
+  cta: string
+  group?: BrandGroup
+  logos?: string[]
+  art?: string
+  theme: 'fire' | 'water' | 'sand' | 'night'
+  go: 'brands' | 'catalog'
+  filter?: string | null
+}
+
+const bannerSlides: BannerSlide[] = [
+  {
+    eyebrow: 'НОВЫЙ СЕЗОН',
+    count: '99',
+    title: 'БРЕНДОВ',
+    desc: 'Обувь, одежда и аксессуары — только оригиналы',
+    cta: 'Смотреть бренды',
+    logos: ['nike', 'adidas', 'new-balance', 'jordan'],
+    theme: 'fire',
+    go: 'brands',
+  },
+  {
+    eyebrow: 'ЯНДЕКС',
+    title: 'СТАНЦИЯ',
+    desc: 'Умная колонка с Алисой — музыка, погода и таймеры',
+    cta: 'В каталог',
+    art: `${import.meta.env.BASE_URL}promo/yandex-station.png?v=1`,
+    theme: 'water',
+    go: 'catalog',
+  },
+  {
+    eyebrow: 'STREETWEAR',
+    title: 'ОДЕЖДА',
+    desc: 'Stone Island, Supreme, Stüssy и The North Face',
+    cta: 'Выбрать одежду',
+    group: 'clothing',
+    logos: ['stone-island', 'supreme', 'stussy', 'the-north-face'],
+    theme: 'sand',
+    go: 'brands',
+  },
+  {
+    eyebrow: 'PREMIUM',
+    title: 'ЛЮКС',
+    desc: 'Prada, Gucci, Dior и Balenciaga — с доставкой',
+    cta: 'Смотреть люкс',
+    group: 'luxury',
+    logos: ['prada', 'gucci', 'dior', 'balenciaga'],
+    theme: 'night',
+    go: 'brands',
+  },
+]
+
 export function HomePage() {
   const { setTab, setCatalogFilter, search, setSearch, openBrands } = useStore()
   const { products } = useCatalog()
   const { t } = useI18n()
-  const [banner, setBanner] = useState(0)
-  const [dragX, setDragX] = useState(0)
-  const [dragging, setDragging] = useState(false)
-  const swipe = useRef({ x: 0, y: 0, dx: 0, pointer: -1, locked: false })
-  const ignoreClick = useRef(false)
 
   const openCatalog = (filter: string | null) => {
     setSearch('')
@@ -57,110 +111,15 @@ export function HomePage() {
   const newSneakers = pick(newSneakerIds)
   const crocsPreview = pick(crocsPreviewIds)
 
-  const bannerSlides: {
-    eyebrow: string
-    count?: string
-    title: string
-    desc: string
-    cta: string
-    group?: BrandGroup
-    logos?: string[]
-    art?: string
-    theme: 'fire' | 'water' | 'sand' | 'night'
-    go: 'brands' | 'catalog'
-    filter?: string | null
-  }[] = [
-    {
-      eyebrow: 'НОВЫЙ СЕЗОН',
-      count: '99',
-      title: 'БРЕНДОВ',
-      desc: 'Обувь, одежда и аксессуары — только оригиналы',
-      cta: 'Смотреть бренды',
-      logos: ['nike', 'adidas', 'new-balance', 'jordan'],
-      theme: 'fire',
-      go: 'brands',
-    },
-    {
-      eyebrow: 'ЯНДЕКС',
-      title: 'СТАНЦИЯ',
-      desc: 'Умная колонка с Алисой — музыка, погода и таймеры',
-      cta: 'В каталог',
-      art: `${import.meta.env.BASE_URL}promo/yandex-station.png?v=1`,
-      theme: 'water',
-      go: 'catalog',
-    },
-    {
-      eyebrow: 'STREETWEAR',
-      title: 'ОДЕЖДА',
-      desc: 'Stone Island, Supreme, Stüssy и The North Face',
-      cta: 'Выбрать одежду',
-      group: 'clothing',
-      logos: ['stone-island', 'supreme', 'stussy', 'the-north-face'],
-      theme: 'sand',
-      go: 'brands',
-    },
-    {
-      eyebrow: 'PREMIUM',
-      title: 'ЛЮКС',
-      desc: 'Prada, Gucci, Dior и Balenciaga — с доставкой',
-      cta: 'Смотреть люкс',
-      group: 'luxury',
-      logos: ['prada', 'gucci', 'dior', 'balenciaga'],
-      theme: 'night',
-      go: 'brands',
-    },
-  ]
-
-  const openSlide = (slide: (typeof bannerSlides)[number]) => {
-    if (ignoreClick.current) {
-      ignoreClick.current = false
-      return
-    }
+  const openSlide = (slide: BannerSlide) => {
     if (slide.go === 'catalog') openCatalog(slide.filter ?? null)
     else openBrands(slide.group)
   }
 
-  const onSwipeDown = (e: PointerEvent<HTMLDivElement>) => {
-    if (e.pointerType === 'mouse' && e.button !== 0) return
-    ignoreClick.current = false
-    swipe.current = { x: e.clientX, y: e.clientY, dx: 0, pointer: e.pointerId, locked: false }
-  }
-
-  const onSwipeMove = (e: PointerEvent<HTMLDivElement>) => {
-    if (swipe.current.pointer !== e.pointerId) return
-    const dx = e.clientX - swipe.current.x
-    const dy = e.clientY - swipe.current.y
-    if (!swipe.current.locked) {
-      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return
-      if (Math.abs(dy) > Math.abs(dx)) {
-        swipe.current.pointer = -1
-        return
-      }
-      swipe.current.locked = true
-      try {
-        e.currentTarget.setPointerCapture(e.pointerId)
-      } catch {
-        /* The pointer can already be gone if the gesture ends early. */
-      }
-      setDragging(true)
-    }
-    const atStart = banner === 0 && dx > 0
-    const atEnd = banner === bannerSlides.length - 1 && dx < 0
-    const next = atStart || atEnd ? dx * 0.35 : dx
-    swipe.current.dx = next
-    setDragX(next)
-  }
-
-  const onSwipeEnd = (e: PointerEvent<HTMLDivElement>) => {
-    if (swipe.current.pointer !== e.pointerId) return
-    const dx = swipe.current.dx
-    swipe.current.pointer = -1
-    swipe.current.locked = false
-    setDragging(false)
-    setDragX(0)
-    if (Math.abs(dx) > 8) ignoreClick.current = true
-    if (dx <= -48 && banner < bannerSlides.length - 1) setBanner(banner + 1)
-    else if (dx >= 48 && banner > 0) setBanner(banner - 1)
+  const onBannerClick = (swiper: SwiperClass) => {
+    if (!swiper.allowClick) return
+    const slide = bannerSlides[swiper.clickedIndex]
+    if (slide) openSlide(slide)
   }
 
   return (
@@ -187,67 +146,73 @@ export function HomePage() {
       </header>
 
       <section className="hero-banners" aria-roledescription="carousel">
-        <div
-          className={`hero-track${dragging ? ' is-dragging' : ''}`}
-          style={{ transform: `translateX(calc(${-banner * 100}% + ${dragX}px))` }}
-          onPointerDown={onSwipeDown}
-          onPointerMove={onSwipeMove}
-          onPointerUp={onSwipeEnd}
-          onPointerCancel={onSwipeEnd}
+        <Swiper
+          className="hero-track"
+          modules={[Pagination, Mousewheel, A11y]}
+          slidesPerView={1}
+          spaceBetween={0}
+          speed={350}
+          threshold={5}
+          resistanceRatio={0.65}
+          nested
+          simulateTouch
+          grabCursor
+          mousewheel={{
+            enabled: true,
+            forceToAxis: true,
+            sensitivity: 1,
+            releaseOnEdges: true,
+          }}
+          pagination={{ clickable: true }}
+          onClick={onBannerClick}
+          a11y={{
+            prevSlideMessage: t('Назад'),
+            nextSlideMessage: t('Далее'),
+            paginationBulletMessage: t('Баннер {n}', { n: '{{index}}' }),
+          }}
         >
           {bannerSlides.map((slide) => {
             const logos = (slide.logos ?? [])
               .map(brandBySlug)
               .filter((b): b is Brand => Boolean(b))
             return (
-              <div
-                key={slide.title}
-                className={`hero-banner hero-banner--${slide.theme}`}
-                onClick={() => openSlide(slide)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') openSlide(slide)
-                }}
-              >
-                <BrandMark size={170} className="hero-banner__mark" />
-                <div className="hero-banner__text">
-                  <p className="hero-banner__eyebrow">{t(slide.eyebrow)}</p>
-                  <h2 className="hero-banner__title">
-                    {slide.count && <span className="hero-banner__count">{slide.count}</span>}
-                    <span>{t(slide.title)}</span>
-                  </h2>
-                  <p className="hero-banner__desc">{t(slide.desc)}</p>
-                  <span className="hero-banner__cta">{t(slide.cta)}</span>
+              <SwiperSlide key={slide.title}>
+                <div
+                  className={`hero-banner hero-banner--${slide.theme}`}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') openSlide(slide)
+                  }}
+                >
+                  <BrandMark size={170} className="hero-banner__mark" />
+                  <div className="hero-banner__text">
+                    <p className="hero-banner__eyebrow">{t(slide.eyebrow)}</p>
+                    <h2 className="hero-banner__title">
+                      {slide.count && <span className="hero-banner__count">{slide.count}</span>}
+                      <span>{t(slide.title)}</span>
+                    </h2>
+                    <p className="hero-banner__desc">{t(slide.desc)}</p>
+                    <span className="hero-banner__cta">{t(slide.cta)}</span>
+                  </div>
+                  {slide.art ? (
+                    <div className="hero-banner__art" aria-hidden>
+                      <img src={slide.art} alt="" draggable={false} />
+                    </div>
+                  ) : (
+                    <div className="hero-banner__logos" aria-hidden>
+                      {logos.map((b) => (
+                        <span key={b.slug} className="hero-banner__logo">
+                          <img src={b.logo} alt="" draggable={false} />
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                {slide.art ? (
-                  <div className="hero-banner__art" aria-hidden>
-                    <img src={slide.art} alt="" />
-                  </div>
-                ) : (
-                  <div className="hero-banner__logos" aria-hidden>
-                    {logos.map((b) => (
-                      <span key={b.slug} className="hero-banner__logo">
-                        <img src={b.logo} alt="" />
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
+              </SwiperSlide>
             )
           })}
-        </div>
-        <div className="hero-dots">
-          {bannerSlides.map((slide, i) => (
-            <button
-              key={slide.title}
-              type="button"
-              className={banner === i ? 'is-active' : ''}
-              aria-label={t('Баннер {n}', { n: i + 1 })}
-              onClick={() => setBanner(i)}
-            />
-          ))}
-        </div>
+        </Swiper>
       </section>
 
       <section className="section home-brands">

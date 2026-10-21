@@ -1,8 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { A11y, FreeMode, Pagination, Thumbs, Zoom } from 'swiper/modules'
+import { A11y, FreeMode, Mousewheel, Thumbs, Zoom } from 'swiper/modules'
 import { Swiper, SwiperSlide, type SwiperClass } from 'swiper/react'
 import 'swiper/css'
-import 'swiper/css/pagination'
 import 'swiper/css/zoom'
 import { createPortal } from 'react-dom'
 import crocsLogo from '../assets/crocs-logo.png'
@@ -20,7 +19,11 @@ import {
   type Product,
 } from '../data/products'
 import { brands } from '../data/brands'
-import { formatDeliveryDays, resolveSizeOptions } from '../data/sizes'
+import {
+  formatDeliveryDays,
+  resolveSizeOptions,
+  sizeSystemFor,
+} from '../data/sizes'
 import { useCatalog } from '../catalog'
 import { useStore } from '../store'
 import { BrandLogo } from './BrandMark'
@@ -193,16 +196,24 @@ export function ProductPage({ productId }: { productId: string }) {
 
   const tags = categoryTags(product)
   const features =
-    product.modelGroup === 'jibbitz'
+    product.features?.trim() ||
+    (product.modelGroup === 'jibbitz'
       ? FEATURES.jibbitz
       : product.category === 'sneakers'
         ? FEATURES.sneakers
-        : FEATURES.default
+        : FEATURES.default)
   const isStudio = product.category !== 'slippers'
   const isSneaker =
     product.category === 'sneakers' || product.category === 'custom-sneakers'
   const sku = product.id.replace(/-/g, '').toUpperCase()
   const sizeOptions = resolveSizeOptions(product.sizes)
+  const catalogSizeSystem = sizeSystemFor(product.category)
+  const sizeLabel =
+    catalogSizeSystem === 'eu'
+      ? 'EU:'
+      : catalogSizeSystem === 'waist'
+        ? 'W:'
+        : ''
   const expressPrice =
     product.expressSurcharge != null
       ? product.price + product.expressSurcharge
@@ -353,7 +364,9 @@ export function ProductPage({ productId }: { productId: string }) {
         {!isJibbitz && (
           <div className="pdp-sizes">
             <div className="pdp-sizes__row">
-              <span className="pdp-sizes__label">EU:</span>
+              {sizeLabel ? (
+                <span className="pdp-sizes__label">{sizeLabel}</span>
+              ) : null}
               <div className="pdp-sizes__track">
                 {sizeOptions.map((s, i) => (
                   <button
@@ -505,7 +518,6 @@ export function ProductPage({ productId }: { productId: string }) {
 function PhotoCarousel({ images, alt }: { images: string[]; alt: string }) {
   const { t } = useI18n()
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperClass | null>(null)
-  const [index, setIndex] = useState(0)
   const [failed, setFailed] = useState<Set<string>>(() => new Set())
 
   const slides = useMemo(
@@ -515,7 +527,6 @@ function PhotoCarousel({ images, alt }: { images: string[]; alt: string }) {
 
   useEffect(() => {
     setFailed(new Set())
-    setIndex(0)
   }, [images])
 
   const markFailed = (src: string) => {
@@ -549,20 +560,29 @@ function PhotoCarousel({ images, alt }: { images: string[]; alt: string }) {
     <div className="pdp-gallery">
       <Swiper
         className="pdp-gallery__main"
-        modules={[Pagination, Thumbs, Zoom, A11y]}
-        pagination={{ clickable: true }}
+        modules={[Thumbs, Zoom, Mousewheel, A11y]}
         zoom={{ maxRatio: 3 }}
         watchOverflow
         spaceBetween={0}
         slidesPerView={1}
+        speed={320}
+        threshold={5}
+        resistanceRatio={0.65}
+        nested
+        simulateTouch
+        touchReleaseOnEdges
+        mousewheel={{
+          enabled: true,
+          forceToAxis: true,
+          sensitivity: 1,
+          releaseOnEdges: true,
+        }}
         thumbs={{
           swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
         }}
-        onSlideChange={(swiper) => setIndex(swiper.activeIndex)}
         a11y={{
           prevSlideMessage: t('Назад'),
           nextSlideMessage: t('Далее'),
-          paginationBulletMessage: photoLabel('{{index}}'),
         }}
       >
         {slides.map((src, i) => (
@@ -578,9 +598,6 @@ function PhotoCarousel({ images, alt }: { images: string[]; alt: string }) {
           </SwiperSlide>
         ))}
       </Swiper>
-      <p className="pdp-gallery__count" aria-live="polite">
-        {photoLabel(index + 1)}
-      </p>
       <Swiper
         className="pdp-gallery__thumbs"
         modules={[Thumbs, FreeMode, A11y]}

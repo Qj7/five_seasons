@@ -23,15 +23,18 @@ export type PublishInput = {
   brand?: string
   colorName?: string
   colorHex?: string
+  /** Reuse when adding another colorway of an existing model. */
+  modelGroup?: string
   /** Cover / card image */
   image: string
-  /** PDP gallery (cover is usually first). */
+  /** PDP gallery (separate from cover). */
   gallery: string[]
-  /** EU size labels enabled for this SKU. */
+  /** Size labels enabled for this SKU. */
   sizes: string[]
   expressDays: string
   expressSurcharge: number
   standardDays: string
+  features?: string
   tag?: string
   returnable?: boolean
 }
@@ -40,6 +43,7 @@ interface CatalogCtx {
   products: Product[]
   published: Product[]
   publishProduct: (input: PublishInput, managerId: string) => Product
+  updatePublished: (id: string, input: PublishInput) => Product | null
   removePublished: (id: string) => void
 }
 
@@ -66,6 +70,40 @@ function slugify(value: string) {
     .slice(0, 40)
 }
 
+function deliveryLabel(standardDays: string) {
+  const standardLabel = standardDays.trim() || '25-35'
+  return standardLabel.includes('–') || standardLabel.includes('-')
+    ? `${standardLabel.replace(/[-−–—]/g, '–')} дней`
+    : `${standardLabel} дней`
+}
+
+function buildFields(input: PublishInput) {
+  const swatch = input.colorHex?.trim() || '#e8e8e8'
+  const gallery = input.gallery.filter(Boolean)
+  const image = input.image || gallery[0]
+  const standardLabel = input.standardDays.trim() || '25-35'
+  return {
+    name: input.name.trim(),
+    price: input.price,
+    category: input.category,
+    gender: input.gender,
+    brand: input.brand?.trim() || undefined,
+    color: swatch,
+    accent: swatch,
+    colorName: input.colorName?.trim() || 'Default',
+    image,
+    gallery: gallery.length ? gallery : [image],
+    tag: input.tag?.trim() || undefined,
+    features: input.features?.trim() || undefined,
+    sizes: input.sizes.length ? input.sizes : undefined,
+    expressDays: input.expressDays.trim() || '3-7',
+    expressSurcharge: Math.max(0, input.expressSurcharge),
+    standardDays: standardLabel,
+    delivery: deliveryLabel(standardLabel),
+    returnable: input.returnable ?? true,
+  }
+}
+
 const Ctx = createContext<CatalogCtx | null>(null)
 
 export function CatalogProvider({ children }: { children: ReactNode }) {
@@ -80,32 +118,11 @@ export function CatalogProvider({ children }: { children: ReactNode }) {
   const publishProduct = useCallback((input: PublishInput, managerId: string) => {
     const stem = slugify(input.name) || 'product'
     const stamp = Date.now().toString(36)
-    const swatch = input.colorHex?.trim() || '#e8e8e8'
-    const gallery = input.gallery.filter(Boolean)
-    const image = input.image || gallery[0]
-    const standardLabel = input.standardDays.trim() || '25-35'
+    const fields = buildFields(input)
     const created: Product = {
       id: `mgr-${stem}-${stamp}`,
-      name: input.name.trim(),
-      price: input.price,
-      category: input.category,
-      gender: input.gender,
-      brand: input.brand?.trim() || undefined,
-      color: swatch,
-      accent: swatch,
-      colorName: input.colorName?.trim() || 'Default',
-      modelGroup: `mgr-${stem}`,
-      image,
-      gallery: gallery.length ? gallery : [image],
-      tag: input.tag?.trim() || undefined,
-      sizes: input.sizes.length ? input.sizes : undefined,
-      expressDays: input.expressDays.trim() || '3-7',
-      expressSurcharge: Math.max(0, input.expressSurcharge),
-      standardDays: standardLabel,
-      delivery: standardLabel.includes('–') || standardLabel.includes('-')
-        ? `${standardLabel.replace(/[-−–—]/g, '–')} дней`
-        : `${standardLabel} дней`,
-      returnable: input.returnable ?? true,
+      ...fields,
+      modelGroup: input.modelGroup?.trim() || `mgr-${stem}`,
       publishedBy: managerId,
     }
     setPublished((prev) => {
@@ -116,6 +133,26 @@ export function CatalogProvider({ children }: { children: ReactNode }) {
     return created
   }, [])
 
+  const updatePublished = useCallback((id: string, input: PublishInput) => {
+    const current = published.find((p) => p.id === id)
+    if (!current) return null
+    const fields = buildFields(input)
+    const updated: Product = {
+      ...current,
+      ...fields,
+      modelGroup: input.modelGroup?.trim() || current.modelGroup,
+    }
+    setPublished((prev) => {
+      const idx = prev.findIndex((p) => p.id === id)
+      if (idx < 0) return prev
+      const next = [...prev]
+      next[idx] = updated
+      savePublished(next)
+      return next
+    })
+    return updated
+  }, [published])
+
   const removePublished = useCallback((id: string) => {
     setPublished((prev) => {
       const next = prev.filter((p) => p.id !== id)
@@ -125,8 +162,14 @@ export function CatalogProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const value = useMemo(
-    () => ({ products, published, publishProduct, removePublished }),
-    [products, published, publishProduct, removePublished],
+    () => ({
+      products,
+      published,
+      publishProduct,
+      updatePublished,
+      removePublished,
+    }),
+    [products, published, publishProduct, updatePublished, removePublished],
   )
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>

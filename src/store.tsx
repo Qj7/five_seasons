@@ -31,7 +31,14 @@ interface StoreCtx {
   closeProduct: () => void
   managerOpen: boolean
   managerScreen: ManagerScreen
+  /** When set, product form edits this published SKU. */
+  managerEditId: string | null
+  /** When set, product form adds another colorway of this SKU’s model. */
+  managerColorSourceId: string | null
   openManager: (screen?: ManagerScreen) => void
+  openManagerNew: () => void
+  openManagerEdit: (productId: string) => void
+  openManagerAddColor: (sourceProductId: string) => void
   setManagerScreen: (screen: ManagerScreen) => void
   closeManager: () => void
   /** Customer / shared orders list (profile → Мои заказы). */
@@ -55,8 +62,17 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null)
   const [managerOpen, setManagerOpen] = useState(false)
   const [managerScreen, setManagerScreen] = useState<ManagerScreen>('hub')
+  const [managerEditId, setManagerEditId] = useState<string | null>(null)
+  const [managerColorSourceId, setManagerColorSourceId] = useState<string | null>(
+    null,
+  )
   const [ordersOpen, setOrdersOpen] = useState(false)
   const [brandStack, setBrandStack] = useState<string[]>([])
+
+  const clearManagerForm = useCallback(() => {
+    setManagerEditId(null)
+    setManagerColorSourceId(null)
+  }, [])
 
   const openBrands = useCallback((group?: BrandGroup) => {
     const screen = group ? `all:${group}` : 'all'
@@ -91,14 +107,57 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setSelectedProductId(null)
     setBrandStack([])
     setOrdersOpen(false)
+    if (screen !== 'new') {
+      setManagerEditId(null)
+      setManagerColorSourceId(null)
+    }
     setManagerScreen(screen)
+    setManagerOpen(true)
+  }, [])
+
+  const openManagerNew = useCallback(() => {
+    setSelectedProductId(null)
+    setBrandStack([])
+    setOrdersOpen(false)
+    setManagerEditId(null)
+    setManagerColorSourceId(null)
+    setManagerScreen('new')
+    setManagerOpen(true)
+  }, [])
+
+  const openManagerEdit = useCallback((productId: string) => {
+    setSelectedProductId(null)
+    setBrandStack([])
+    setOrdersOpen(false)
+    setManagerEditId(productId)
+    setManagerColorSourceId(null)
+    setManagerScreen('new')
+    setManagerOpen(true)
+  }, [])
+
+  const openManagerAddColor = useCallback((sourceProductId: string) => {
+    setSelectedProductId(null)
+    setBrandStack([])
+    setOrdersOpen(false)
+    setManagerEditId(null)
+    setManagerColorSourceId(sourceProductId)
+    setManagerScreen('new')
     setManagerOpen(true)
   }, [])
 
   const closeManager = useCallback(() => {
     setManagerOpen(false)
     setManagerScreen('hub')
-  }, [])
+    clearManagerForm()
+  }, [clearManagerForm])
+
+  const handleSetManagerScreen = useCallback(
+    (screen: ManagerScreen) => {
+      if (screen !== 'new') clearManagerForm()
+      setManagerScreen(screen)
+    },
+    [clearManagerForm],
+  )
 
   const openOrders = useCallback(() => {
     setSelectedProductId(null)
@@ -173,8 +232,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         closeProduct,
         managerOpen,
         managerScreen,
+        managerEditId,
+        managerColorSourceId,
         openManager,
-        setManagerScreen,
+        openManagerNew,
+        openManagerEdit,
+        openManagerAddColor,
+        setManagerScreen: handleSetManagerScreen,
         closeManager,
         ordersOpen,
         openOrders,

@@ -110,6 +110,8 @@ export interface Product {
   /** Optional PDP carousel; manager-published items usually set this. */
   gallery?: string[]
   tag?: string
+  /** PDP “Особенности” line; manager-published SKUs set this. */
+  features?: string
   delivery: string
   /**
    * Available EU sizes for this SKU (singles like "42" or ranges like "37–38").
