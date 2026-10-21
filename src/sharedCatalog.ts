@@ -1,4 +1,4 @@
-import type { Product } from './data/products'
+import { baseProducts, type Product } from './data/products'
 
 export const LOCAL_STORAGE_KEY = 'five-seasons:published-products'
 export const SHARED_CATALOG_PATH = 'shared-published.json'
@@ -22,7 +22,15 @@ export function loadLocalPublished(): Product[] {
 }
 
 export function saveLocalPublished(list: Product[]) {
+  if (!list.length) {
+    localStorage.removeItem(LOCAL_STORAGE_KEY)
+    return
+  }
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(list))
+}
+
+export function clearLocalPublished() {
+  localStorage.removeItem(LOCAL_STORAGE_KEY)
 }
 
 export async function fetchSharedPublished(): Promise<Product[]> {
@@ -36,28 +44,20 @@ export async function fetchSharedPublished(): Promise<Product[]> {
   }
 }
 
-/** Merge shared + local by id. Local wins so in-progress edits stay on this device. */
-export function mergePublished(shared: Product[], local: Product[]): Product[] {
-  const byId = new Map<string, Product>()
-  for (const p of shared) byId.set(p.id, p)
-  for (const p of local) byId.set(p.id, p)
-  return [...byId.values()].sort((a, b) => {
-    const tb = b.id.startsWith('mgr-') ? 1 : 0
-    const ta = a.id.startsWith('mgr-') ? 1 : 0
-    if (tb !== ta) return tb - ta
-    return b.id.localeCompare(a.id)
-  })
+/** SKU already listed in the shop (built-in or shared storefront catalog). */
+export function storeHasSku(store: Product[], sku: string) {
+  if (store.some((p) => p.id === sku)) return true
+  return baseProducts.some((p) => p.id === sku)
 }
 
 export type SyncResult = { ok: true } | { ok: false; reason: string }
 
 /**
- * Push the full published list to the shared storefront catalog.
- * Dev: Vite middleware writes public/shared-published.json (visible after refresh to others on same origin file).
- * Prod: GitHub Contents API when VITE_CATALOG_TOKEN is set; otherwise no-op (localStorage still works).
+ * Push the shared storefront catalog.
+ * Dev: Vite middleware writes public/shared-published.json.
+ * Prod: GitHub Contents API when VITE_CATALOG_TOKEN is set.
  */
 export async function syncSharedPublished(list: Product[]): Promise<SyncResult> {
-  // Prefer local Vite middleware in development — writes the JSON into the repo.
   if (import.meta.env.DEV) {
     try {
       const res = await fetch(SYNC_API_PATH, {
@@ -77,7 +77,7 @@ export async function syncSharedPublished(list: Product[]): Promise<SyncResult> 
   if (!token) {
     return {
       ok: false,
-      reason: 'no VITE_CATALOG_TOKEN — product saved on this device only',
+      reason: 'no VITE_CATALOG_TOKEN — cannot write shared catalog',
     }
   }
 
@@ -119,4 +119,55 @@ export async function syncSharedPublished(list: Product[]): Promise<SyncResult> 
   } catch (err) {
     return { ok: false, reason: err instanceof Error ? err.message : 'GitHub sync failed' }
   }
+}
+
+export type FlushResult = {
+  /** Shared storefront catalog after flush. */
+  store: Product[]
+  /** Pending SKUs that still need a successful sync (kept in localStorage). */
+  pending: Product[]
+  /** True when localStorage was cleared. */
+  cleared: boolean
+  syncError?: string
+}
+
+/**
+ * Drain manager localStorage into the shop catalog:
+ * for each pending SKU, if it is not already in the store → add it;
+ * on successful write, clear localStorage.
+ */
+export async function flushLocalStorageToStore(
+  shared: Product[],
+): Promise<FlushResult> {
+  const pending = loadLocalPublished()
+  if (!pending.length) {
+    return { store: shared, pending: [], cleared: true }
+  }
+
+  const toList = pending.filter((p) => !storeHasSku(shared, p.id))
+  const alreadyListed = pending.filter((p) => storeHasSku(shared, p.id))
+
+  // Everything already in the shop — just drop the local staging copy.
+  if (!toList.length) {
+    clearLocalPublished()
+    return { store: shared, pending: [], cleared: true }
+  }
+
+  const nextStore = [...toList, ...shared]
+  const sync = await syncSharedPublished(nextStore)
+  if (!sync.ok) {
+    // Keep only SKUs that still need listing; drop duplicates already in store.
+    saveLocalPublished(toList)
+    return {
+      store: shared,
+      pending: toList,
+      cleared: false,
+      syncError: sync.reason,
+    }
+  }
+
+  clearLocalPublished()
+  // alreadyListed were skipped intentionally — they are gone with the clear.
+  void alreadyListed
+  return { store: nextStore, pending: [], cleared: true }
 }

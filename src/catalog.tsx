@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -14,9 +15,10 @@ import {
   type Product,
 } from './data/products'
 import {
+  clearLocalPublished,
   fetchSharedPublished,
+  flushLocalStorageToStore,
   loadLocalPublished,
-  mergePublished,
   saveLocalPublished,
   syncSharedPublished,
 } from './sharedCatalog'
@@ -47,9 +49,11 @@ export type PublishInput = {
 
 interface CatalogCtx {
   products: Product[]
+  /** Storefront manager SKUs (shared catalog + unflushed local staging). */
   published: Product[]
-  /** True while the shared storefront catalog is loading. */
   catalogReady: boolean
+  /** True while draining localStorage into the shared shop catalog. */
+  syncing: boolean
   publishProduct: (input: PublishInput, managerId: string) => Product
   updatePublished: (id: string, input: PublishInput) => Product | null
   removePublished: (id: string) => void
@@ -97,43 +101,66 @@ function buildFields(input: PublishInput) {
   }
 }
 
-function persist(list: Product[]) {
-  saveLocalPublished(list)
-  void syncSharedPublished(list)
+function mergeById(store: Product[], pending: Product[]) {
+  const byId = new Map(store.map((p) => [p.id, p]))
+  for (const p of pending) {
+    if (!byId.has(p.id)) byId.set(p.id, p)
+  }
+  return [...byId.values()]
 }
 
 const Ctx = createContext<CatalogCtx | null>(null)
 
 export function CatalogProvider({ children }: { children: ReactNode }) {
-  const [published, setPublished] = useState<Product[]>(() => loadLocalPublished())
+  const [store, setStore] = useState<Product[]>([])
+  const [pending, setPending] = useState<Product[]>(() => loadLocalPublished())
   const [catalogReady, setCatalogReady] = useState(false)
+  const [syncing, setSyncing] = useState(false)
+  const storeRef = useRef(store)
+  storeRef.current = store
+
+  const runFlush = useCallback(async (shared: Product[]) => {
+    setSyncing(true)
+    try {
+      const result = await flushLocalStorageToStore(shared)
+      setStore(result.store)
+      setPending(result.pending)
+      return result
+    } finally {
+      setSyncing(false)
+    }
+  }, [])
 
   useEffect(() => {
     let cancelled = false
     ;(async () => {
       const shared = await fetchSharedPublished()
       if (cancelled) return
-      setPublished((local) => {
-        const merged = mergePublished(shared, local)
-        saveLocalPublished(merged)
-        return merged
-      })
+      await runFlush(shared)
+      if (cancelled) return
       setCatalogReady(true)
     })()
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [runFlush])
 
-  // Other tabs / windows on this origin pick up publishes immediately.
+  // Other tabs may stage publishes into localStorage — pick up and flush.
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key !== 'five-seasons:published-products') return
-      setPublished(loadLocalPublished())
+      const nextPending = loadLocalPublished()
+      setPending(nextPending)
+      if (nextPending.length) void runFlush(storeRef.current)
     }
     window.addEventListener('storage', onStorage)
     return () => window.removeEventListener('storage', onStorage)
-  }, [])
+  }, [runFlush])
+
+  const published = useMemo(
+    () => mergeById(store, pending),
+    [store, pending],
+  )
 
   const products = useMemo(() => {
     const byId = new Map(baseProducts.map((p) => [p.id, p]))
@@ -151,16 +178,20 @@ export function CatalogProvider({ children }: { children: ReactNode }) {
       modelGroup: input.modelGroup?.trim() || `mgr-${stem}`,
       publishedBy: managerId,
     }
-    setPublished((prev) => {
-      const next = [created, ...prev]
-      persist(next)
-      return next
-    })
+
+    // Stage in manager localStorage, then drain into the shop by SKU.
+    const staged = [created, ...loadLocalPublished().filter((p) => p.id !== created.id)]
+    saveLocalPublished(staged)
+    setPending(staged)
+    void runFlush(storeRef.current)
+
     return created
-  }, [])
+  }, [runFlush])
 
   const updatePublished = useCallback((id: string, input: PublishInput) => {
-    const current = published.find((p) => p.id === id)
+    const current =
+      storeRef.current.find((p) => p.id === id) ??
+      loadLocalPublished().find((p) => p.id === id)
     if (!current) return null
     const fields = buildFields(input)
     const updated: Product = {
@@ -168,23 +199,31 @@ export function CatalogProvider({ children }: { children: ReactNode }) {
       ...fields,
       modelGroup: input.modelGroup?.trim() || current.modelGroup,
     }
-    setPublished((prev) => {
-      const idx = prev.findIndex((p) => p.id === id)
-      if (idx < 0) return prev
-      const next = [...prev]
-      next[idx] = updated
-      persist(next)
-      return next
-    })
+
+    // Prefer updating the shared store copy; fall back to pending staging.
+    const inStore = storeRef.current.some((p) => p.id === id)
+    if (inStore) {
+      const nextStore = storeRef.current.map((p) => (p.id === id ? updated : p))
+      setStore(nextStore)
+      void syncSharedPublished(nextStore)
+      return updated
+    }
+
+    const nextPending = loadLocalPublished().map((p) => (p.id === id ? updated : p))
+    saveLocalPublished(nextPending)
+    setPending(nextPending)
+    void runFlush(storeRef.current)
     return updated
-  }, [published])
+  }, [runFlush])
 
   const removePublished = useCallback((id: string) => {
-    setPublished((prev) => {
-      const next = prev.filter((p) => p.id !== id)
-      persist(next)
-      return next
-    })
+    const nextStore = storeRef.current.filter((p) => p.id !== id)
+    const nextPending = loadLocalPublished().filter((p) => p.id !== id)
+    setStore(nextStore)
+    setPending(nextPending)
+    if (nextPending.length) saveLocalPublished(nextPending)
+    else clearLocalPublished()
+    void syncSharedPublished(nextStore)
   }, [])
 
   const value = useMemo(
@@ -192,11 +231,20 @@ export function CatalogProvider({ children }: { children: ReactNode }) {
       products,
       published,
       catalogReady,
+      syncing,
       publishProduct,
       updatePublished,
       removePublished,
     }),
-    [products, published, catalogReady, publishProduct, updatePublished, removePublished],
+    [
+      products,
+      published,
+      catalogReady,
+      syncing,
+      publishProduct,
+      updatePublished,
+      removePublished,
+    ],
   )
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>

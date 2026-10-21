@@ -17,7 +17,13 @@ npm run dev
 
 Вкладка **Профиль** — вход и регистрация. Менеджеры публикуют товар на отдельном экране (**+ Товар** на главной/в каталоге или пункт «Выложить товар» в профиле).
 
-Публикации пишутся в общий файл `public/shared-published.json` (его видят все покупатели после деплоя) и дублируются в `localStorage` браузера менеджера. В `npm run dev` сохранение идёт сразу на диск через `/api/shared-catalog`. На GitHub Pages для авто-синка в репозиторий нужен секрет `CATALOG_WRITE_TOKEN` (fine-grained PAT с правом `contents:write` на этот репо) — он прокидывается в сборку как `VITE_CATALOG_TOKEN`.
+Механизм публикации:
+
+1. Менеджер сохраняет SKU в свой `localStorage` (staging).
+2. При старте приложения и после каждой публикации код смотрит staging: для каждого SKU, которого ещё нет в магазине (`shared-published.json` / `baseProducts`), выкладывает его в общий каталог.
+3. После успешной выкладки `localStorage` очищается.
+
+Общий файл витрины — `public/shared-published.json`. В `npm run dev` запись идёт на диск через `/api/shared-catalog`. На GitHub Pages для записи в репозиторий нужен секрет `CATALOG_WRITE_TOKEN` (fine-grained PAT, `contents:write`) — в сборку как `VITE_CATALOG_TOKEN`.
 
 | Имя | Email | Пароль |
 |-----|-------|--------|
