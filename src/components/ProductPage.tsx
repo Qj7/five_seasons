@@ -148,6 +148,11 @@ export function ProductPage({ productId }: { productId: string }) {
   const [sizeIndex, setSizeIndex] = useState(1)
   const [delivery, setDelivery] = useState<'standard' | 'express'>('standard')
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const selectSize = (system: SizeSystem, index: number) => {
     setSizeSystem(system)
@@ -485,7 +490,8 @@ export function ProductPage({ productId }: { productId: string }) {
 
       <div className="pdp-spacer" aria-hidden />
 
-      {createPortal(
+      {mounted &&
+        createPortal(
         product.soldOut ? (
           <div className="pdp-buybar pdp-buybar--sticky pdp-buybar--sold-out">
             <span className="pdp-buybar__sold-out">Sold out</span>
@@ -514,7 +520,8 @@ export function ProductPage({ productId }: { productId: string }) {
         document.querySelector('.app-shell') ?? document.body,
       )}
 
-      {sizeGuideOpen &&
+      {mounted &&
+        sizeGuideOpen &&
         createPortal(
           <SizeGuideSheet onClose={() => setSizeGuideOpen(false)} />,
           document.querySelector('.app-shell') ?? document.body,
@@ -700,6 +707,7 @@ function CheckIcon() {
 }
 
 function productShareUrl(product: Product) {
+  if (typeof window === 'undefined') return `/product/${product.id}`
   const url = new URL(window.location.href)
   url.searchParams.set('product', product.id)
   return url.toString()
@@ -715,8 +723,12 @@ function ShareButton({ product }: { product: Product }) {
   const [copied, setCopied] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
 
-  const url = productShareUrl(product)
+  const [url, setUrl] = useState(`/product/${product.id}`)
   const text = productShareText(product)
+
+  useEffect(() => {
+    setUrl(productShareUrl(product))
+  }, [product])
   const encodedUrl = encodeURIComponent(url)
   const encodedText = encodeURIComponent(text)
 

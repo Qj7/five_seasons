@@ -1,7 +1,11 @@
+import fs from 'node:fs'
+import { loadEnvFile } from 'node:process'
 import { PrismaClient } from '@prisma/client'
 import { PrismaNeonHttp } from '@prisma/adapter-neon'
 import bcrypt from 'bcryptjs'
-import { baseProducts, type Product } from '../src/data/products'
+import { baseProducts, type Product } from '../src/data/products.ts'
+
+if (fs.existsSync('.env')) loadEnvFile('.env')
 
 const url = process.env.DATABASE_URL
 if (!url) {
@@ -42,8 +46,8 @@ function toRow(p: Product) {
     popularRank: p.popularRank ?? null,
     fromPrice: p.fromPrice ?? false,
     soldOut: p.soldOut ?? false,
-    publishedBy: null,
-    source: 'base',
+    publishedBy: p.publishedBy ?? null,
+    source: p.publishedBy ? 'manager' : 'base',
   }
 }
 

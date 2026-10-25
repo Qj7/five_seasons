@@ -191,6 +191,9 @@ function p(
   }
 }
 
+/** Seeded manager account that published the restored listings. */
+const NIKITA_ID = 'cmvnb3ex50000vqcoh6c9zmij'
+
 /** Built-in catalog. Runtime catalog merges manager-published SKUs on top. */
 export const baseProducts: Product[] = [
   shoe({
@@ -251,6 +254,57 @@ export const baseProducts: Product[] = [
     ]),
     delivery: '1-2 дня',
   }),
+  shoe({
+    id: 'force-58-phantom',
+    name: "Nike Air Force 58 SB 'Phantom Blue Jay'",
+    price: 4300000,
+    gender: 'unisex',
+    color: '#e6e0d4',
+    accent: '#1d4ed8',
+    colorName: 'Default',
+    modelGroup: 'force-58-phantom',
+    brand: 'nike',
+    image: shoeImg('force-58-phantom.jpg'),
+    gallery: [shoeImg('force-58-phantom.jpg')],
+    delivery: '1-2 дня',
+    sizes: ['39', '40', '41', '42', '43', '44', '45'],
+    publishedBy: NIKITA_ID,
+  }),
+  shoe({
+    id: 'force-58-photon',
+    name: "Nike SB Force 58 'Photon Dust'",
+    price: 3200000,
+    gender: 'unisex',
+    color: '#d9d9d6',
+    accent: '#111111',
+    colorName: 'Photon Dust',
+    modelGroup: 'force-58-photon',
+    brand: 'nike',
+    image: shoeImg('force-58-photon.jpg'),
+    gallery: [shoeImg('force-58-photon.jpg')],
+    delivery: '1-2 дня',
+    sizes: ['39', '40', '41', '42', '43', '44', '45'],
+    publishedBy: NIKITA_ID,
+  }),
+  {
+    id: 'arcteryx-goretex',
+    name: 'Arcteryx windbreaker Goretex',
+    price: 2090000,
+    category: 'outerwear',
+    gender: 'unisex',
+    color: '#f4f4f4',
+    accent: '#111111',
+    colorName: 'Default',
+    modelGroup: 'arcteryx-goretex',
+    brand: 'arcteryx',
+    image: asset('products/outerwear/arcteryx-goretex.jpg'),
+    gallery: [asset('products/outerwear/arcteryx-goretex.jpg')],
+    delivery: '1-2 дня',
+    sizes: ['S', 'M', 'L', 'XL'],
+    features: 'Ветровка Gore-Tex',
+    returnable: true,
+    publishedBy: NIKITA_ID,
+  },
 
   // —— Classic ——
   p({

@@ -13,7 +13,7 @@
     "lint": "oxlint",
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
-    "db:seed": "node prisma/seed.ts"
+    "db:seed": "node --experimental-strip-types prisma/seed.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
