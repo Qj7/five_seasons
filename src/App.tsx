@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect } from 'react'
 import { StoreProvider, useStore } from './store'
 import { LangProvider } from './i18n'
@@ -14,7 +16,6 @@ import { ManagerPage } from './components/ManagerPage'
 import { ManagerFab } from './components/ManagerFab'
 import { OrdersPage } from './components/OrdersPage'
 import type { BrandGroup } from './data/brands'
-import './App.css'
 
 function Screens() {
   const { tab, selectedProductId, brandStack, managerOpen, ordersOpen, closeOrders } =
@@ -57,13 +58,13 @@ function Screens() {
   )
 }
 
-export default function App() {
+export default function App({ initialPath }: { initialPath?: string }) {
   return (
     <LangProvider>
       <AuthProvider>
         <CatalogProvider>
           <OrdersProvider>
-            <StoreProvider>
+            <StoreProvider initialPath={initialPath}>
               <Screens />
             </StoreProvider>
           </OrdersProvider>

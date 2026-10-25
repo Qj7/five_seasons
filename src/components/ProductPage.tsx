@@ -4,16 +4,17 @@ import { Swiper, SwiperSlide, type SwiperClass } from 'swiper/react'
 import 'swiper/css'
 import 'swiper/css/zoom'
 import { createPortal } from 'react-dom'
-import crocsLogo from '../assets/crocs-logo.png'
-import sizeChartImg from '../assets/size-guide/size-chart.png'
-import sizeGuideStep1 from '../assets/size-guide/step-1.jpg'
-import sizeGuideStep2 from '../assets/size-guide/step-2.jpg'
-import sizeGuideStep3 from '../assets/size-guide/step-3.jpg'
-import sizeGuideStep4 from '../assets/size-guide/step-4.jpg'
+const crocsLogo = '/assets/crocs-logo.png'
+const sizeChartImg = '/assets/size-guide/size-chart.png'
+const sizeGuideStep1 = '/assets/size-guide/step-1.jpg'
+const sizeGuideStep2 = '/assets/size-guide/step-2.jpg'
+const sizeGuideStep3 = '/assets/size-guide/step-3.jpg'
+const sizeGuideStep4 = '/assets/size-guide/step-4.jpg'
 import {
   categoryMeta,
   departmentOf,
   formatPrice,
+  unitPrice,
   galleryOf,
   variantsOf,
   type Product,
@@ -138,7 +139,7 @@ const REVIEWS = [
 ]
 
 export function ProductPage({ productId }: { productId: string }) {
-  const { closeProduct, openProduct, favorites, toggleFavorite, addToCart } =
+  const { closeProduct, openProduct, favorites, toggleFavorite, addToCart, setTab } =
     useStore()
   const { products } = useCatalog()
   const { t } = useI18n()
@@ -214,17 +215,21 @@ export function ProductPage({ productId }: { productId: string }) {
       : catalogSizeSystem === 'waist'
         ? 'W:'
         : ''
-  const expressPrice =
-    product.expressSurcharge != null
-      ? product.price + product.expressSurcharge
-      : Math.round(product.price * 1.35)
-  const buyPrice = delivery === 'express' ? expressPrice : product.price
+  const expressPrice = unitPrice(product, 'express')
+  const buyPrice = unitPrice(product, delivery)
+  const isJibbitz = product.modelGroup === 'jibbitz'
+  const selectedSize = sizeOptions[Math.min(sizeIndex, Math.max(sizeOptions.length - 1, 0))]
+  const sizeValue = isJibbitz
+    ? ''
+    : sizeSystem === 'mw' && selectedSize?.mw && selectedSize.mw !== '—'
+      ? selectedSize.mw
+      : selectedSize?.eu ?? ''
+  const putInCart = () => addToCart(product.id, { size: sizeValue, delivery })
   const expressEta = formatDeliveryDays(
     product.expressDays,
     t('от 3 до 7 дней'),
   )
   const standardEta = formatDeliveryDays(product.standardDays, t('25–35 дней'))
-  const isJibbitz = product.modelGroup === 'jibbitz'
 
   return (
     <div className="pdp">
@@ -490,14 +495,17 @@ export function ProductPage({ productId }: { productId: string }) {
             <button
               type="button"
               className="pdp-buybar__cart"
-              onClick={() => addToCart(product.id)}
+              onClick={putInCart}
             >
               {t('В корзину')}
             </button>
             <button
               type="button"
               className="pdp-buybar__buy"
-              onClick={() => addToCart(product.id)}
+              onClick={() => {
+                putInCart()
+                setTab('cart')
+              }}
             >
               {t('Купить {price}', { price: formatPrice(buyPrice) })}
             </button>

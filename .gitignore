@@ -4,8 +4,13 @@ node_modules/
 # Build
 dist/
 dist-ssr/
-assets/
+/assets/
 .nojekyll
+
+# Next.js / Vercel
+.next/
+next-env.d.ts
+.vercel/
 
 # Vite
 *.local

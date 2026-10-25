@@ -135,9 +135,18 @@ export interface Product {
 export const formatPrice = (n: number) =>
   n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₫'
 
-/** Public asset path that respects Vite `base` (needed for GitHub Pages). */
-const asset = (path: string) =>
-  `${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`
+/** Unit price for a cart line. Express adds the SKU surcharge, or +35% when unset. */
+export function unitPrice(
+  product: { price: number; expressSurcharge?: number },
+  delivery: 'standard' | 'express',
+) {
+  if (delivery !== 'express') return product.price
+  if (product.expressSurcharge != null) return product.price + product.expressSurcharge
+  return Math.round(product.price * 1.35)
+}
+
+/** Public asset path (served from the site root on Vercel). */
+const asset = (path: string) => `/${path.replace(/^\//, '')}`
 
 const img = (file: string) => asset(`products/new/${file}`)
 const imgLegacy = (file: string) => asset(`products/${file}`)

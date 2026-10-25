@@ -1,0 +1,3 @@
+/* Aggregates the existing design system so Next serves the same styles. */
+@import '../src/index.css';
+@import '../src/App.css';

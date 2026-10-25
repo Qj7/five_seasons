@@ -1,16 +1,12 @@
 import { baseProducts, type Product } from './data/products'
 
 export const LOCAL_STORAGE_KEY = 'five-seasons:published-products'
-export const SHARED_CATALOG_PATH = 'shared-published.json'
 
-/** Dev middleware + optional production GitHub sync. */
-export const SYNC_API_PATH = '/api/shared-catalog'
-
-function sharedCatalogUrl() {
-  return `${import.meta.env.BASE_URL}${SHARED_CATALOG_PATH}?t=${Date.now()}`
-}
+/** Server endpoint backing the shared storefront catalog (Prisma / fallback). */
+export const CATALOG_API = '/api/catalog'
 
 export function loadLocalPublished(): Product[] {
+  if (typeof window === 'undefined') return []
   try {
     const raw = localStorage.getItem(LOCAL_STORAGE_KEY)
     if (!raw) return []
@@ -35,7 +31,7 @@ export function clearLocalPublished() {
 
 export async function fetchSharedPublished(): Promise<Product[]> {
   try {
-    const res = await fetch(sharedCatalogUrl(), { cache: 'no-store' })
+    const res = await fetch(`${CATALOG_API}?t=${Date.now()}`, { cache: 'no-store' })
     if (!res.ok) return []
     const parsed = (await res.json()) as Product[]
     return Array.isArray(parsed) ? parsed : []
@@ -52,72 +48,21 @@ export function storeHasSku(store: Product[], sku: string) {
 
 export type SyncResult = { ok: true } | { ok: false; reason: string }
 
-/**
- * Push the shared storefront catalog.
- * Dev: Vite middleware writes public/shared-published.json.
- * Prod: GitHub Contents API when VITE_CATALOG_TOKEN is set.
- */
+/** Persist the shared storefront catalog via the API (DB on Vercel, file in dev). */
 export async function syncSharedPublished(list: Product[]): Promise<SyncResult> {
-  if (import.meta.env.DEV) {
-    try {
-      const res = await fetch(SYNC_API_PATH, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(list),
-      })
-      if (res.ok) return { ok: true }
-      return { ok: false, reason: `dev sync HTTP ${res.status}` }
-    } catch (err) {
-      return { ok: false, reason: err instanceof Error ? err.message : 'dev sync failed' }
-    }
-  }
-
-  const token = import.meta.env.VITE_CATALOG_TOKEN as string | undefined
-  const repo = (import.meta.env.VITE_CATALOG_REPO as string | undefined) || 'Qj7/five_seasons'
-  if (!token) {
+  try {
+    const res = await fetch(CATALOG_API, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(list),
+    })
+    if (res.ok) return { ok: true }
+    return { ok: false, reason: `catalog sync HTTP ${res.status}` }
+  } catch (err) {
     return {
       ok: false,
-      reason: 'no VITE_CATALOG_TOKEN — cannot write shared catalog',
+      reason: err instanceof Error ? err.message : 'catalog sync failed',
     }
-  }
-
-  try {
-    const path = `public/${SHARED_CATALOG_PATH}`
-    const api = `https://api.github.com/repos/${repo}/contents/${path}`
-    const existing = await fetch(api, {
-      headers: {
-        Accept: 'application/vnd.github+json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    const sha =
-      existing.status === 200
-        ? ((await existing.json()) as { sha?: string }).sha
-        : undefined
-
-    const content = btoa(
-      unescape(encodeURIComponent(JSON.stringify(list, null, 2) + '\n')),
-    )
-    const put = await fetch(api, {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/vnd.github+json',
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        message: 'chore: sync manager-published catalog',
-        content,
-        sha,
-      }),
-    })
-    if (!put.ok) {
-      const body = await put.text()
-      return { ok: false, reason: `GitHub ${put.status}: ${body.slice(0, 180)}` }
-    }
-    return { ok: true }
-  } catch (err) {
-    return { ok: false, reason: err instanceof Error ? err.message : 'GitHub sync failed' }
   }
 }
 
@@ -145,7 +90,6 @@ export async function flushLocalStorageToStore(
   }
 
   const toList = pending.filter((p) => !storeHasSku(shared, p.id))
-  const alreadyListed = pending.filter((p) => storeHasSku(shared, p.id))
 
   // Everything already in the shop — just drop the local staging copy.
   if (!toList.length) {
@@ -156,7 +100,6 @@ export async function flushLocalStorageToStore(
   const nextStore = [...toList, ...shared]
   const sync = await syncSharedPublished(nextStore)
   if (!sync.ok) {
-    // Keep only SKUs that still need listing; drop duplicates already in store.
     saveLocalPublished(toList)
     return {
       store: shared,
@@ -167,7 +110,5 @@ export async function flushLocalStorageToStore(
   }
 
   clearLocalPublished()
-  // alreadyListed were skipped intentionally — they are gone with the clear.
-  void alreadyListed
   return { store: nextStore, pending: [], cleared: true }
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { formatPrice } from '../data/products'
+import { formatPrice, unitPrice, type Product } from '../data/products'
+import { resolveSizeOptions, sizeSystemFor } from '../data/sizes'
 import { useCatalog } from '../catalog'
 import { useAuth } from '../auth'
 import { useOrders } from '../orders'
@@ -40,38 +41,68 @@ export function FavoritesPage() {
   )
 }
 
+function needsSize(product: Product) {
+  return product.modelGroup !== 'jibbitz' && sizeSystemFor(product.category) !== 'onesize'
+}
+
 export function CartPage() {
-  const { cart, addToCart, removeFromCart, clearCart, setTab, openProduct, openOrders } =
-    useStore()
+  const {
+    cart,
+    addToCart,
+    removeFromCart,
+    updateCartLine,
+    clearCart,
+    setTab,
+    openProduct,
+    openOrders,
+  } = useStore()
   const { products } = useCatalog()
   const { user } = useAuth()
   const { placeOrder } = useOrders()
   const { t } = useI18n()
   const [checkoutMsg, setCheckoutMsg] = useState<string | null>(null)
 
-  const items = [...cart.entries()]
-    .map(([id, qty]) => ({ product: products.find((p) => p.id === id)!, qty }))
-    .filter((x) => x.product)
+  const items = cart
+    .map((line) => ({
+      line,
+      product: products.find((p) => p.id === line.productId),
+    }))
+    .filter((row): row is { line: (typeof cart)[number]; product: Product } =>
+      Boolean(row.product),
+    )
 
-  const total = items.reduce((s, i) => s + i.product.price * i.qty, 0)
-  const count = items.reduce((s, i) => s + i.qty, 0)
+  const total = items.reduce(
+    (sum, row) => sum + unitPrice(row.product, row.line.delivery) * row.line.qty,
+    0,
+  )
+  const count = items.reduce((sum, row) => sum + row.line.qty, 0)
 
   let discount = 0
   if (count >= 4) discount = 600000
   else if (count >= 3) discount = 450000
   else if (count >= 2) discount = 300000
 
-  const checkout = () => {
+  const checkout = async () => {
     if (!user) {
       setCheckoutMsg(t('Войдите, чтобы оформить заказ'))
       setTab('profile')
       return
     }
-    placeOrder({
+    if (items.some((row) => needsSize(row.product) && !row.line.size)) {
+      setCheckoutMsg(t('Выберите размер для каждой позиции'))
+      return
+    }
+    await placeOrder({
       customerId: user.id,
       customerName: user.name,
       customerEmail: user.email,
-      items,
+      items: items.map((row) => ({
+        product: row.product,
+        qty: row.line.qty,
+        size: row.line.size || undefined,
+        delivery: row.line.delivery,
+        price: unitPrice(row.product, row.line.delivery),
+      })),
       discount,
     })
     clearCart()
@@ -101,9 +132,9 @@ export function CartPage() {
             </div>
           )}
           <ul className="cart-list">
-            {items.map(({ product, qty }) => (
+            {items.map(({ product, line }) => (
               <li
-                key={product.id}
+                key={`${product.id}-${line.size}-${line.delivery}`}
                 className="cart-item"
                 role="button"
                 tabIndex={0}
@@ -120,16 +151,54 @@ export function CartPage() {
                 </div>
                 <div className="cart-item__info">
                   <h3>{product.name}</h3>
-                  <p>{formatPrice(product.price)}</p>
+                  {needsSize(product) ? (
+                    <label
+                      className="cart-item__meta"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {t('Размер')}
+                      <select
+                        value={line.size}
+                        onChange={(e) => updateCartLine(line, { size: e.target.value })}
+                      >
+                        <option value="">{t('Выберите размер')}</option>
+                        {resolveSizeOptions(product.sizes).map((size) => (
+                          <option key={size.eu} value={size.eu}>
+                            {size.eu}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  ) : null}
+                  {line.delivery === 'express' ? (
+                    <span className="cart-item__meta">{t('Экспресс')}</span>
+                  ) : null}
+                  <p>{formatPrice(unitPrice(product, line.delivery))}</p>
                   <div
                     className="cart-item__qty"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <button type="button" onClick={() => removeFromCart(product.id)}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        removeFromCart(product.id, {
+                          size: line.size,
+                          delivery: line.delivery,
+                        })
+                      }
+                    >
                       −
                     </button>
-                    <span>{qty}</span>
-                    <button type="button" onClick={() => addToCart(product.id)}>
+                    <span>{line.qty}</span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        addToCart(product.id, {
+                          size: line.size,
+                          delivery: line.delivery,
+                        })
+                      }
+                    >
                       +
                     </button>
                   </div>

@@ -12,6 +12,7 @@ function translate(lang: Lang, text: string, vars?: Vars) {
 }
 
 function initialLang(): Lang {
+  if (typeof window === 'undefined') return 'ru'
   const saved = localStorage.getItem(STORAGE_KEY)
   return saved === 'en' || saved === 'ru' ? saved : 'ru'
 }

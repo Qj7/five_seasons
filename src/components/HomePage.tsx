@@ -30,8 +30,7 @@ const featuredBrands = featuredBrandSlugs
   .map(brandBySlug)
   .filter((b): b is Brand => Boolean(b))
 
-const categoryImage = (id: Category) =>
-  `${import.meta.env.BASE_URL}catalog/${id}.jpg?v=5`
+const categoryImage = (id: Category) => `/catalog/${id}.jpg?v=5`
 
 const newSneakerIds = ['nb-530-white', 'dunk-cacao', 'aj1-chicago']
 const crocsPreviewIds = ['classic-white', 'classic-black']
@@ -66,7 +65,7 @@ const bannerSlides: BannerSlide[] = [
     title: 'СТАНЦИЯ',
     desc: 'Умная колонка с Алисой — музыка, погода и таймеры',
     cta: 'В каталог',
-    art: `${import.meta.env.BASE_URL}promo/yandex-station.png?v=1`,
+    art: `/promo/yandex-station.png?v=1`,
     theme: 'water',
     go: 'catalog',
   },
@@ -293,7 +292,7 @@ export function HomePage() {
         <div className="promo-discount__art" aria-hidden>
           <img
             className="promo-discount__shoe"
-            src={`${import.meta.env.BASE_URL}products/sneakers/aj1-chicago-cut.png?v=1`}
+            src={`/products/sneakers/aj1-chicago-cut.png?v=1`}
             alt=""
           />
         </div>

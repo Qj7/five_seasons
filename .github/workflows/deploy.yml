@@ -1,21 +1,15 @@
-# Publish Vite build to the gh-pages branch for GitHub Pages.
-# main stays source-only; production assets never land on main.
-name: Deploy to GitHub Pages
+# Production deploys from Vercel (Next.js). This workflow only checks that
+# the same build Vercel runs still passes on main.
+name: CI
 
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
-permissions:
-  contents: write
-
-concurrency:
-  group: pages-gh-pages
-  cancel-in-progress: true
-
 jobs:
-  build-and-publish:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,23 +26,3 @@ jobs:
 
       - name: Build
         run: npm run build
-        env:
-          # Optional: fine-grained PAT so live manager publishes commit to public/shared-published.json
-          VITE_CATALOG_TOKEN: ${{ secrets.CATALOG_WRITE_TOKEN }}
-          VITE_CATALOG_REPO: Qj7/five_seasons
-
-      - name: Verify production build
-        run: |
-          test -f dist/index.html
-          grep -q '/five_seasons/assets/' dist/index.html
-          ! grep -q 'src/main.tsx' dist/index.html
-          test -d dist/products
-          test -d dist/assets
-
-      - name: Publish to gh-pages branch
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          publish_branch: gh-pages
-          commit_message: "deploy: publish production build to Pages"

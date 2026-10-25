@@ -72,6 +72,8 @@ export const en: Record<string, string> = {
   'Скидка в корзине: −{amount}': 'Cart discount: −{amount}',
   'Итого': 'Total',
   'Оформить заказ': 'Checkout',
+  'Выберите размер': 'Choose a size',
+  'Выберите размер для каждой позиции': 'Choose a size for every item',
   'Gold-участник · 1 250 баллов': 'Gold member · 1,250 points',
   'Мои заказы': 'My orders',
   'Адреса доставки': 'Delivery addresses',

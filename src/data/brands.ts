@@ -24,7 +24,7 @@ const b = (slug: string, name: string, group: BrandGroup): Brand => ({
   slug,
   name,
   group,
-  logo: `${import.meta.env.BASE_URL}brands/logos/${slug}.webp`,
+  logo: `/brands/logos/${slug}.webp`,
 })
 
 /** Popular brands, in storefront order (top 10 first, then A–Z). */

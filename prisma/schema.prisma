@@ -1,0 +1,141 @@
+// Five Seasons — data model for the Vercel + Prisma migration.
+// datasource: Vercel Postgres / Neon (DATABASE_URL).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// Catalog SKU. `source` distinguishes the built-in seed from manager uploads.
+model Product {
+  id               String   @id
+  name             String
+  price            Int
+  category         String
+  gender           String?
+  color            String
+  accent           String
+  colorName        String
+  modelGroup       String
+  brand            String?
+  image            String
+  gallery          String[]
+  tag              String?
+  features         String?
+  delivery         String
+  sizes            String[]
+  expressDays      String?
+  expressSurcharge Int?
+  standardDays     String?
+  returnable       Boolean  @default(true)
+  popularRank      Int?
+  fromPrice        Boolean  @default(false)
+  soldOut          Boolean  @default(false)
+  publishedBy      String?
+  source           String   @default("manager") // "base" | "manager"
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([category])
+  @@index([source])
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  name          String
+  role          String         @default("customer") // "customer" | "manager" | "admin"
+  password      String // bcrypt hash
+  createdAt     DateTime       @default(now())
+  sessions      Session[]
+  orders        Order[]
+  favorites     Favorite[]
+  cartItems     CartItem[]
+  notifications Notification[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([userId])
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  customerId      String
+  customer        User        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerName    String
+  customerEmail   String
+  total           Int
+  discount        Int         @default(0)
+  status          String      @default("new") // new | processing | shipped | done | cancelled
+  deliveryMethod  String? // standard | express
+  deliveryAddress String?
+  paymentMethod   String? // filled in the payment phase
+  paymentStatus   String      @default("unpaid") // unpaid | paid | refunded
+  createdAt       DateTime    @default(now())
+  items           OrderItem[]
+
+  @@index([customerId])
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  orderId     String
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String
+  name        String
+  price       Int
+  qty         Int
+  image       String
+  size        String?
+  delivery    String?
+  publishedBy String?
+
+  @@index([orderId])
+  @@index([publishedBy])
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model CartItem {
+  id        String @id @default(cuid())
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  qty       Int    @default(1)
+  size      String @default("")
+  /// standard | express
+  delivery  String @default("standard")
+
+  @@unique([userId, productId, size, delivery])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String // order_status | promo | system
+  title     String
+  body      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}

@@ -1,13 +1,16 @@
+'use client'
+
 import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from 'react'
 
-export type Role = 'customer' | 'manager'
+export type Role = 'customer' | 'manager' | 'admin'
 
 export interface User {
   id: string
@@ -81,61 +84,152 @@ function findAccount(email: string): StoredAccount | undefined {
   )
 }
 
+export type AuthResult = { ok: true } | { ok: false; error: string }
+
 interface AuthCtx {
   user: User | null
+  /** False until the first /api/auth/me check finishes (SSR-safe). */
+  authReady: boolean
   isManager: boolean
-  login: (email: string, password: string) => { ok: true } | { ok: false; error: string }
-  register: (
-    name: string,
-    email: string,
-    password: string,
-  ) => { ok: true } | { ok: false; error: string }
+  login: (email: string, password: string) => Promise<AuthResult>
+  register: (name: string, email: string, password: string) => Promise<AuthResult>
   logout: () => void
 }
 
 const Ctx = createContext<AuthCtx | null>(null)
 
+/** Local (no-DB) fallback login so dev + GitHub Pages still work. */
+function localLogin(email: string, password: string): AuthResult {
+  const account = findAccount(email)
+  if (!account || account.password !== password) {
+    return { ok: false, error: 'Неверный email или пароль' }
+  }
+  const publicUser = toPublic(account)
+  localStorage.setItem(SESSION_KEY, JSON.stringify(publicUser))
+  return { ok: true }
+}
+
+function localRegister(name: string, email: string, password: string): AuthResult {
+  const trimmedName = name.trim()
+  const normalized = email.trim().toLowerCase()
+  if (!trimmedName) return { ok: false, error: 'Укажите имя' }
+  if (!normalized.includes('@')) return { ok: false, error: 'Некорректный email' }
+  if (password.length < 6) {
+    return { ok: false, error: 'Пароль должен быть не короче 6 символов' }
+  }
+  if (findAccount(normalized)) {
+    return { ok: false, error: 'Аккаунт с таким email уже есть' }
+  }
+  const account: StoredAccount = {
+    id: `user-${Date.now()}`,
+    email: normalized,
+    name: trimmedName,
+    role: 'customer',
+    password,
+  }
+  saveCustomers([...loadCustomers(), account])
+  localStorage.setItem(SESSION_KEY, JSON.stringify(toPublic(account)))
+  return { ok: true }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => loadSession())
+  const [user, setUser] = useState<User | null>(null)
+  const [authReady, setAuthReady] = useState(false)
+  const [serverAuth, setServerAuth] = useState(false)
 
-  const login = useCallback((email: string, password: string) => {
-    const account = findAccount(email)
-    if (!account || account.password !== password) {
-      return { ok: false as const, error: 'Неверный email или пароль' }
+  // Reconcile with the server; fall back to the local session when there's no DB.
+  useEffect(() => {
+    const local = loadSession()
+    let active = true
+    ;(async () => {
+      try {
+        const res = await fetch('/api/auth/me')
+        const data = (await res.json().catch(() => null)) as
+          | { user: User | null; serverAuth: boolean }
+          | null
+        if (!active) return
+        if (data?.serverAuth) {
+          setServerAuth(true)
+          setUser(data.user ?? null)
+        } else {
+          setServerAuth(false)
+          setUser(local)
+        }
+      } catch {
+        if (active) setUser(local)
+      } finally {
+        if (active) setAuthReady(true)
+      }
+    })()
+    return () => {
+      active = false
     }
-    const publicUser = toPublic(account)
-    localStorage.setItem(SESSION_KEY, JSON.stringify(publicUser))
-    setUser(publicUser)
-    return { ok: true as const }
   }, [])
 
-  const register = useCallback((name: string, email: string, password: string) => {
-    const trimmedName = name.trim()
-    const normalized = email.trim().toLowerCase()
-    if (!trimmedName) return { ok: false as const, error: 'Укажите имя' }
-    if (!normalized.includes('@')) return { ok: false as const, error: 'Некорректный email' }
-    if (password.length < 6) {
-      return { ok: false as const, error: 'Пароль должен быть не короче 6 символов' }
-    }
-    if (findAccount(normalized)) {
-      return { ok: false as const, error: 'Аккаунт с таким email уже есть' }
-    }
-    const account: StoredAccount = {
-      id: `user-${Date.now()}`,
-      email: normalized,
-      name: trimmedName,
-      role: 'customer',
-      password,
-    }
-    const next = [...loadCustomers(), account]
-    saveCustomers(next)
-    const publicUser = toPublic(account)
-    localStorage.setItem(SESSION_KEY, JSON.stringify(publicUser))
-    setUser(publicUser)
-    return { ok: true as const }
-  }, [])
+  const login = useCallback(
+    async (email: string, password: string): Promise<AuthResult> => {
+      if (serverAuth) {
+        try {
+          const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+          })
+          const data = (await res.json().catch(() => ({}))) as {
+            user?: User
+            error?: string
+          }
+          if (res.ok && data.user) {
+            setUser(data.user)
+            return { ok: true }
+          }
+          if (res.status !== 503) {
+            return { ok: false, error: data.error ?? 'Неверный email или пароль' }
+          }
+        } catch {
+          /* fall through to local */
+        }
+      }
+      const result = localLogin(email, password)
+      if (result.ok) setUser(loadSession())
+      return result
+    },
+    [serverAuth],
+  )
+
+  const register = useCallback(
+    async (name: string, email: string, password: string): Promise<AuthResult> => {
+      if (serverAuth) {
+        try {
+          const res = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password }),
+          })
+          const data = (await res.json().catch(() => ({}))) as {
+            user?: User
+            error?: string
+          }
+          if (res.ok && data.user) {
+            setUser(data.user)
+            return { ok: true }
+          }
+          if (res.status !== 503) {
+            return { ok: false, error: data.error ?? 'Не удалось создать аккаунт' }
+          }
+        } catch {
+          /* fall through to local */
+        }
+      }
+      const result = localRegister(name, email, password)
+      if (result.ok) setUser(loadSession())
+      return result
+    },
+    [serverAuth],
+  )
 
   const logout = useCallback(() => {
+    void fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
     localStorage.removeItem(SESSION_KEY)
     setUser(null)
   }, [])
@@ -143,12 +237,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = useMemo<AuthCtx>(
     () => ({
       user,
-      isManager: user?.role === 'manager',
+      authReady,
+      isManager: user?.role === 'manager' || user?.role === 'admin',
       login,
       register,
       logout,
     }),
-    [user, login, register, logout],
+    [user, authReady, login, register, logout],
   )
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>

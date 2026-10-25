@@ -15,12 +15,21 @@ export function AuthForm() {
   const [error, setError] = useState<string | null>(null)
   const [showManagers, setShowManagers] = useState(false)
 
-  const onSubmit = (e: FormEvent) => {
+  const [submitting, setSubmitting] = useState(false)
+
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError(null)
-    const result =
-      mode === 'login' ? login(email, password) : register(name, email, password)
-    if (!result.ok) setError(t(result.error))
+    setSubmitting(true)
+    try {
+      const result =
+        mode === 'login'
+          ? await login(email, password)
+          : await register(name, email, password)
+      if (!result.ok) setError(t(result.error))
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -93,7 +102,11 @@ export function AuthForm() {
 
         {error ? <p className="auth-error">{error}</p> : null}
 
-        <button type="submit" className="btn-primary btn-primary--block">
+        <button
+          type="submit"
+          className="btn-primary btn-primary--block"
+          disabled={submitting}
+        >
           {mode === 'login' ? t('Войти') : t('Создать аккаунт')}
         </button>
       </form>

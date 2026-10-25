@@ -16,7 +16,7 @@ import { useI18n } from '../i18n'
 type Audience = 'men' | 'women'
 
 const categoryImage = (id: Category, audience: Audience) =>
-  `${import.meta.env.BASE_URL}catalog/${audience === 'women' ? 'women/' : ''}${id}.jpg?v=5`
+  `/catalog/${audience === 'women' ? 'women/' : ''}${id}.jpg?v=5`
 
 function matchesGender(product: Product, audience: Audience) {
   return !product.gender || product.gender === 'unisex' || product.gender === audience
