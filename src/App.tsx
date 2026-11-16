@@ -7,6 +7,7 @@ import { AuthProvider } from './auth'
 import { CatalogProvider } from './catalog'
 import { OrdersProvider } from './orders'
 import { BottomNav } from './components/BottomNav'
+import { DesktopHeader } from './components/DesktopHeader'
 import { HomePage } from './components/HomePage'
 import { CatalogPage } from './components/CatalogPage'
 import { FavoritesPage, CartPage, ProfilePage } from './components/OtherPages'
@@ -21,13 +22,22 @@ function Screens() {
   const { tab, selectedProductId, brandStack, managerOpen, ordersOpen, closeOrders } =
     useStore()
   const brandScreen = brandStack.at(-1)
+  const showHomeCanvas =
+    tab === 'home' &&
+    !selectedProductId &&
+    !managerOpen &&
+    !ordersOpen &&
+    !brandScreen
 
   useEffect(() => {
     document.querySelector('.app-main')?.scrollTo({ top: 0 })
   }, [brandScreen, managerOpen, ordersOpen, selectedProductId])
 
   return (
-    <div className={`app-shell ${selectedProductId ? 'app-shell--pdp' : ''}`}>
+    <div
+      className={`app-shell ${selectedProductId ? 'app-shell--pdp' : ''} ${showHomeCanvas ? 'app-shell--home' : ''}`}
+    >
+      <DesktopHeader />
       <main className="app-main">
         {selectedProductId ? (
           <ProductPage productId={selectedProductId} />

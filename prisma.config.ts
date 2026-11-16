@@ -1,5 +1,10 @@
+import fs from 'node:fs'
 import path from 'node:path'
+import { loadEnvFile } from 'node:process'
 import { defineConfig } from 'prisma/config'
+
+// Prisma 7 does not load .env on its own. Without this, db:push sees an empty URL.
+if (fs.existsSync('.env')) loadEnvFile('.env')
 
 function databaseUrl() {
   return (

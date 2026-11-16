@@ -16,7 +16,7 @@ npm run dev
 ## База данных (Vercel Postgres / Neon)
 
 1. Создай Postgres в Vercel/Neon, скопируй строки подключения.
-2. Заполни `.env` по образцу `.env.example` (`DATABASE_URL`, `DIRECT_URL`).
+2. Заполни `.env` по образцу `.env.example`: одна переменная `DATABASE_URL`.
 3. Примени схему и залей seed:
 
 ```bash
@@ -65,7 +65,7 @@ npm run db:seed     # менеджеры + базовый каталог
 Node 22. Сборка: `prisma generate && next build` (`vercel.json`).
 
 1. [vercel.com/new](https://vercel.com/new) → импорт `Qj7/five_seasons`. Framework: Next.js.
-2. Storage → Neon (или Postgres). Интеграция сама кладёт `DATABASE_URL` / `POSTGRES_URL`. Для миграций нужен ещё прямой URL: `DIRECT_URL` или `POSTGRES_URL_NON_POOLING`.
+2. Storage → Neon (или Postgres). Интеграция сама кладёт `DATABASE_URL`. Локально в `.env` нужна та же одна переменная.
 3. Deploy. Сайт открывается сразу; аккаунт, заказы и серверная корзина включаются после схемы.
 4. Локально, с prod-URL в `.env`:
 

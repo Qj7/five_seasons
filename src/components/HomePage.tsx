@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { A11y, Mousewheel, Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide, type SwiperClass } from 'swiper/react'
 import 'swiper/css'
@@ -31,6 +32,21 @@ const featuredBrands = featuredBrandSlugs
   .filter((b): b is Brand => Boolean(b))
 
 const categoryImage = (id: Category) => `/catalog/${id}.jpg?v=5`
+
+/** Desktop rail cutouts — transparent PNGs; mobile mosaic keeps the JPG tiles. */
+const deskCategoryCovers: Partial<Record<Category, string>> = {
+  sneakers: '/catalog/desk/sneakers.png?v=3',
+  hoodies: '/catalog/desk/hoodies.png?v=1',
+  slippers: '/catalog/desk/slippers.png?v=2',
+  boots: '/catalog/desk/boots.png?v=2',
+  handbags: '/catalog/desk/handbags.png?v=2',
+  backpacks: '/catalog/desk/backpacks.png?v=2',
+  watches: '/catalog/desk/watches.png?v=1',
+  glasses: '/catalog/desk/glasses.png?v=1',
+}
+
+const deskCategoryImage = (id: Category) =>
+  deskCategoryCovers[id] ?? categoryImage(id)
 
 const newSneakerIds = ['nb-530-white', 'dunk-cacao', 'aj1-chicago']
 const crocsPreviewIds = ['classic-white', 'classic-black']
@@ -133,7 +149,7 @@ export function HomePage() {
 
   return (
     <div className="page home">
-      <header className="home-header">
+      <header className="home-header mob-only">
         <div className="home-header__top">
           <h1 className="logo">
             <BrandLogo />
@@ -154,7 +170,9 @@ export function HomePage() {
         </label>
       </header>
 
-      <section className="hero-banners" aria-roledescription="carousel">
+      <DesktopHero />
+
+      <section className="hero-banners mob-only" aria-roledescription="carousel">
         <Swiper
           className="hero-track"
           modules={[Pagination, Mousewheel, A11y]}
@@ -232,11 +250,15 @@ export function HomePage() {
               {t('Обувь, одежда и аксессуары — {n} брендов', { n: brands.length })}
             </p>
           </div>
-          <button type="button" className="section__all" onClick={() => openBrands()}>
+          <button
+            type="button"
+            className="section__all mob-only"
+            onClick={() => openBrands()}
+          >
             {t('Все')} <Chevron />
           </button>
         </div>
-        <div className="brand-grid">
+        <div className="brand-grid mob-only">
           {featuredBrands.map((b) => (
             <BrandTile key={b.slug} brand={b} />
           ))}
@@ -247,9 +269,14 @@ export function HomePage() {
             <span className="brand-tile__name">{t('Все бренды')}</span>
           </button>
         </div>
+        <div className="brand-grid desk-only">
+          {brands.map((b) => (
+            <BrandTile key={b.slug} brand={b} />
+          ))}
+        </div>
       </section>
 
-      <section className="action-grid">
+      <section className="action-grid mob-only">
         <div className="action-stack">
           <div className="action-card action-card--points">
             <span className="action-card__label">{t('Баллы')}</span>
@@ -280,7 +307,13 @@ export function HomePage() {
         </button>
       </section>
 
-      <section className="promo-discount" onClick={() => setTab('cart')} role="button" tabIndex={0}>
+      <div className="home-sheet">
+      <section
+        className="promo-discount mob-only"
+        onClick={() => setTab('cart')}
+        role="button"
+        tabIndex={0}
+      >
         <div className="promo-discount__text">
           <h2>{t('Скидки в корзине!')}</h2>
           <ul>
@@ -298,7 +331,42 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="section home-categories" aria-label={t('Категории')}>
+      <section
+        className="promo-campaign desk-only"
+        onClick={() => setTab('cart')}
+        role="button"
+        tabIndex={0}
+        aria-label={t('Скидки в корзине!')}
+      >
+        <div className="promo-campaign__bar">
+          <p>
+            {t('−300 000 ₫ на вторые')}
+            {' · '}
+            {t('−450 000 ₫ на третьи')}
+            {' · '}
+            {t('−600 000 ₫ на четвёртые')}
+          </p>
+          <span className="promo-campaign__bar-cta">
+            {t('Купить')} <span aria-hidden>{'>'}</span>
+          </span>
+        </div>
+        <div className="promo-campaign__stage">
+          <img
+            className="promo-campaign__photo"
+            src="/promo/sale-model.jpg?v=1"
+            alt=""
+            draggable={false}
+          />
+          <div className="promo-campaign__copy">
+            <p className="promo-campaign__eyebrow">{t('[ Новый сезон, новые образы ]')}</p>
+            <h2 className="promo-campaign__title">{t('−30–70% на всё')}</h2>
+            <span className="promo-campaign__cta">{t('Купить')}</span>
+          </div>
+          <p className="promo-campaign__legal">{t('Цены указаны с учётом акции. Действуют условия.')}</p>
+        </div>
+      </section>
+
+      <section className="section home-categories mob-only" aria-label={t('Категории')}>
         <div className="section__head">
           <h2>{t('Категории')}</h2>
           <button type="button" className="section__all" onClick={() => openCatalog(null)}>
@@ -361,7 +429,137 @@ export function HomePage() {
           ))}
         </div>
       </section>
+      </div>
     </div>
+  )
+}
+
+const railOrder: Category[] = [
+  'sneakers',
+  'hoodies',
+  'slippers',
+  'boots',
+  'handbags',
+  'backpacks',
+  'watches',
+  'glasses',
+]
+
+const shoeCategories = new Set<Category>([
+  'sneakers',
+  'boots',
+  'custom-sneakers',
+  'sport-shoes',
+  'slippers',
+  'rain-boots',
+])
+
+function countWord(n: number, one: string, few: string, many: string) {
+  const n10 = n % 10
+  const n100 = n % 100
+  if (n10 === 1 && n100 !== 11) return one
+  if (n10 >= 2 && n10 <= 4 && (n100 < 12 || n100 > 14)) return few
+  return many
+}
+
+function DesktopHero() {
+  const { setSearch, setCatalogFilter, setTab, search } = useStore()
+  const { products } = useCatalog()
+  const { t } = useI18n()
+  const railRef = useRef<HTMLDivElement>(null)
+
+  // Desktop rail: only transparent cutouts — JPG studio tiles mix styles.
+  const categories = catalogDepartments.flatMap((d) => d.categories)
+  const rail = railOrder
+    .map((id) => categories.find((c) => c.id === id && deskCategoryCovers[c.id]))
+    .filter((c): c is (typeof categories)[number] => Boolean(c))
+
+  const openCategory = (filter: string) => {
+    setSearch('')
+    setCatalogFilter(filter)
+    setTab('catalog')
+  }
+
+  const submitSearch = () => {
+    setCatalogFilter(null)
+    setTab('catalog')
+  }
+
+  const scrollRail = () => {
+    const el = railRef.current
+    if (!el) return
+    const max = el.scrollWidth - el.clientWidth
+    if (el.scrollLeft >= max - 12) el.scrollTo({ left: 0, behavior: 'smooth' })
+    else el.scrollBy({ left: Math.max(240, el.clientWidth * 0.72), behavior: 'smooth' })
+  }
+
+  return (
+    <section className="desk-hero">
+      <h2 className="desk-hero__title">
+        {t('Оригинальные бренды')}
+        <br />
+        {t('со всего мира')}
+      </h2>
+
+      <form
+        className="desk-search"
+        onSubmit={(e) => {
+          e.preventDefault()
+          submitSearch()
+        }}
+      >
+        <SearchIcon />
+        <input
+          type="search"
+          placeholder={t('Найти бренд, обувь или одежду')}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <button type="submit" className="desk-search__go">
+          {t('Найти')}
+        </button>
+      </form>
+
+      <p className="desk-hero__trust">
+        {t('Гарантируем оригинальность. Проверяем каждую пару перед отправкой.')}
+      </p>
+
+      <div className="desk-cats">
+        <div className="desk-cats__row" ref={railRef}>
+          {rail.map((c) => {
+            const n = products.filter((p) => p.category === c.id).length
+            const word = shoeCategories.has(c.id)
+              ? countWord(n, 'пара', 'пары', 'пар')
+              : countWord(n, 'штука', 'штуки', 'штук')
+            return (
+              <button
+                key={c.id}
+                type="button"
+                className="desk-cat"
+                onClick={() => openCategory(c.id)}
+              >
+                <span
+                  className={`desk-cat__photo${deskCategoryCovers[c.id] ? ' desk-cat__photo--cut' : ''}`}
+                >
+                  <img src={deskCategoryImage(c.id)} alt="" draggable={false} />
+                </span>
+                <span className="desk-cat__name">
+                  {t(c.id === 'hoodies' ? 'Одежда' : c.label)}
+                </span>
+                {n > 0 && (
+                  <span className="desk-cat__count">
+                    {n.toLocaleString('ru-RU')} {t(word)}
+                  </span>
+                )}
+              </button>
+            )
+          })}
+        </div>
+        <button type="button" className="desk-cats__next" onClick={scrollRail} aria-label={t('Далее')}>
+          <ArrowRight />
+        </button>
+      </div>
+    </section>
   )
 }
 

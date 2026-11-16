@@ -59,7 +59,7 @@ function categoryTags(product: Product): string[] {
     const brandName = brands.find((b) => b.slug === product.brand)?.name ?? product.brand
     return [dept?.label ?? 'Обувь', meta?.label ?? 'Кроссовки и кеды', brandName]
   }
-  return [dept?.label ?? 'Обувь', meta?.label ?? 'Тапки', 'Crocs']
+  return [dept?.label ?? 'Обувь', meta?.label ?? 'Тапочки и кроксы', 'Crocs']
 }
 
 const FEATURES: Record<string, string> = {

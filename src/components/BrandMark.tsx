@@ -2,8 +2,8 @@ import { useId } from 'react'
 
 const FLAG = {
   red: '#d92a1f',
-  blue: '#3b8fea',
-  yellow: '#ffe11a',
+  coral: '#ff6b3d',
+  teal: '#128a7e',
   green: '#146b30',
   pink: '#ff6fae',
 } as const
@@ -43,19 +43,24 @@ export function BrandMark({
           <use key={t} href={`#${id}`} transform={t} />
         ))}
       </g>
-      <rect x="7" y="12" width="76" height="76" fill={FLAG.blue} />
-      <rect x="12.25" y="17.25" width="65.5" height="65.5" fill={FLAG.yellow} />
+      <rect x="7" y="12" width="76" height="76" fill={FLAG.coral} />
+      <rect x="12.25" y="17.25" width="65.5" height="65.5" fill={FLAG.teal} />
       <rect x="17.5" y="22.5" width="55" height="55" fill={FLAG.green} />
       <rect x="22.75" y="27.75" width="44.5" height="44.5" fill={FLAG.pink} />
     </svg>
   )
 }
 
-export function BrandLogo({ size = 34, compact = false }: { size?: number; compact?: boolean }) {
+/** Wordmark: 5 and SEASONS, same size, Satoshi Bold. */
+export function BrandLogo({ size = 22, compact = false }: { size?: number; compact?: boolean }) {
+  const word = compact ? Math.max(13, Math.round(size * 0.68)) : size
   return (
-    <span className={`brand-logo ${compact ? 'brand-logo--compact' : ''}`}>
-      <BrandMark size={size} className="brand-logo__mark" />
-      <span className="brand-logo__name">FIVE SEASONS</span>
+    <span
+      className={`brand-logo ${compact ? 'brand-logo--compact' : ''}`}
+      style={{ fontSize: word }}
+      aria-label="Five Seasons"
+    >
+      <span className="brand-logo__name">5 SEASONS</span>
     </span>
   )
 }

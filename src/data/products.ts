@@ -12,7 +12,8 @@ export type Category =
   | 'hoodies'
   | 'hats'
   | 'jeans'
-  | 'bags'
+  | 'handbags'
+  | 'backpacks'
   | 'watches'
   | 'glasses'
   | 'wallets'
@@ -43,10 +44,10 @@ export const catalogDepartments: CatalogDepartment[] = [
     womenTitle: 'Женская обувь',
     categories: [
       { id: 'sneakers', label: 'Кроссовки и кеды', short: 'Кроссовки' },
-      { id: 'boots', label: 'Ботинки', short: 'Ботинки' },
+      { id: 'boots', label: 'Ботинки и Лоферы', short: 'Ботинки и Лоферы' },
       { id: 'custom-sneakers', label: 'Кастомные кроссовки', short: 'Кастомные' },
       { id: 'sport-shoes', label: 'Обувь для спорта', short: 'Обувь для спорта' },
-      { id: 'slippers', label: 'Тапки', short: 'Тапки' },
+      { id: 'slippers', label: 'Тапочки и кроксы', short: 'Тапочки и кроксы' },
       { id: 'rain-boots', label: 'Сапоги', short: 'Сапоги' },
     ],
   },
@@ -70,7 +71,8 @@ export const catalogDepartments: CatalogDepartment[] = [
     menTitle: 'Мужские аксессуары',
     womenTitle: 'Женские аксессуары',
     categories: [
-      { id: 'bags', label: 'Сумки и рюкзаки', short: 'Сумки и рюкзаки' },
+      { id: 'handbags', label: 'Женские сумочки', short: 'Женские сумочки' },
+      { id: 'backpacks', label: 'Рюкзаки', short: 'Рюкзаки' },
       { id: 'watches', label: 'Часы', short: 'Часы' },
       { id: 'glasses', label: 'Очки', short: 'Очки' },
       { id: 'wallets', label: 'Кошельки', short: 'Кошельки' },

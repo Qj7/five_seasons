@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   brandsOf,
   catalogDepartments,
@@ -58,12 +58,40 @@ export function CatalogPage() {
   const [deptId, setDeptId] = useState<CatalogDepartment['id'] | null>(null)
   const [sectionId, setSectionId] = useState<Category | null>(null)
 
-  const department = catalogDepartments.find((d) => d.id === deptId) ?? null
-  const knownCategory = catalogDepartments
-    .flatMap((d) => d.categories)
-    .find((c) => c.id === catalogFilter)
+  const forceBrowse = catalogFilter === '__browse__'
+  const routedDepartment = catalogDepartments.find((d) => d.id === catalogFilter) ?? null
+  const routedCategory =
+    catalogDepartments.flatMap((d) => d.categories).find((c) => c.id === catalogFilter) ?? null
+  const routedParent = routedCategory
+    ? (catalogDepartments.find((d) => d.categories.some((c) => c.id === routedCategory.id)) ??
+      null)
+    : null
+  const localDepartment = catalogDepartments.find((d) => d.id === deptId) ?? null
+  const department = forceBrowse ? null : (routedDepartment ?? routedParent ?? localDepartment)
+  const activeSection = routedDepartment ? null : (routedCategory?.id ?? sectionId)
+  const knownCategory = routedParent ? null : routedCategory
 
-  const showBrowse = !deptId && !catalogFilter && !search.trim()
+  const showBrowse = forceBrowse || (!department && !catalogFilter && !search.trim())
+
+  useEffect(() => {
+    if (catalogFilter === '__browse__') {
+      setDeptId(null)
+      setSectionId(null)
+      setCatalogFilter(null)
+      return
+    }
+    if (routedDepartment) {
+      setDeptId(routedDepartment.id)
+      setSectionId(null)
+      setCatalogFilter(null)
+      return
+    }
+    if (routedCategory && routedParent) {
+      setDeptId(routedParent.id)
+      setSectionId(routedCategory.id)
+      setCatalogFilter(null)
+    }
+  }, [catalogFilter, routedDepartment, routedCategory, routedParent, setCatalogFilter])
 
   const openDepartment = (id: CatalogDepartment['id'], category?: Category) => {
     setDeptId(id)
@@ -84,7 +112,7 @@ export function CatalogPage() {
     if (department) {
       const ids = new Set(department.categories.map((c) => c.id))
       next = next.filter((p) => ids.has(p.category))
-      if (sectionId) next = next.filter((p) => p.category === sectionId)
+      if (activeSection) next = next.filter((p) => p.category === activeSection)
     } else if (knownCategory) {
       next = next.filter((p) => p.category === knownCategory.id)
     } else if (catalogFilter) {
@@ -103,7 +131,7 @@ export function CatalogPage() {
       )
     }
     return next
-  }, [products, audience, department, sectionId, knownCategory, catalogFilter, search])
+  }, [products, audience, department, activeSection, knownCategory, catalogFilter, search])
 
   const q = search.trim().toLowerCase()
   const matchedBrands = q
@@ -214,7 +242,7 @@ export function CatalogPage() {
                 <button
                   key={c.id}
                   type="button"
-                  className={`filter-pill ${sectionId === c.id ? 'is-active' : ''}`}
+                  className={`filter-pill ${activeSection === c.id ? 'is-active' : ''}`}
                   onClick={() => setSectionId((cur) => (cur === c.id ? null : c.id))}
                 >
                   {t(c.short)}
